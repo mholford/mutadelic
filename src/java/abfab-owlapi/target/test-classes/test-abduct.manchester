@@ -1,0 +1,36 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: hasInput
+ObjectProperty: hasOutput
+
+DataProperty: hasCost
+
+Class: ServiceInput
+Class: ServiceOutput
+
+Class: Service
+  EquivalentTo: (hasInput some ServiceInput) and (hasOutput some ServiceOutput)
+  
+Class: A
+Class: B
+Class: C
+
+Individual: ASI
+  Types: ServiceInput, A
+Individual: BSI
+  Types: ServiceInput, B
+Individual: BSO
+  Types: ServiceOutput, B
+Individual: CSO
+  Types: ServiceOutput, C
+
+Individual: Service1
+  Types: Service
+  Facts: hasInput ASI, hasOutput BSO, hasCost 1.0
+Individual: Service2
+  Types: Service
+  Facts: hasInput BSI, hasOutput CSO, hasCost 2.0
+    

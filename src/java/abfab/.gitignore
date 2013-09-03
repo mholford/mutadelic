@@ -1,0 +1,6 @@
+.settings/
+*.log
+vep-*
+target/
+1k-output
+all-sifts.out

@@ -1,0 +1,39 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+Class: Person
+
+Class: Musician
+  SubClassOf: Person
+  
+Class: Guitarist
+  SubClassOf: Musician
+  EquivalentTo: plays some Guitar
+  
+Class: Guitar
+  
+DataProperty: hasAge
+
+DataProperty: hasFirstName
+
+DataProperty: hasLastName
+
+ObjectProperty: hasSpouse
+
+ObjectProperty: hasChild
+
+ObjectProperty: plays
+
+Individual: JaneSmith
+
+Individual: RodSmith 
+
+Individual: JoeS
+
+Individual: JoeSmith
+  Types: Guitarist
+  Facts: hasAge 33, hasFirstName "Joe", hasLastName "Smith", hasSpouse JaneSmith, hasChild RodSmith
+  DifferentFrom: RodSmith, JaneSmith
+  SameAs: JoeS
