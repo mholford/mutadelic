@@ -1,80 +1,118 @@
 Ontology: <http://krauthammerlab.med.yale.edu/test#>
 
 Prefix: GELO: <http://krauthammerlab.med.yale.edu/ontologies/gelo#>
-Prefix: SIO: <http://semanticscience.org/ontologi/sio.owl>
+Prefix: SIO: <http://semanticscience.org/ontologi/sio.owl#>
 Prefix: SO: <http://purl.org/obo/owl/SO#>
 Prefix: : <http://krauthammerlab.med.yale.edu/test#>
 
-ObjectProperty: hasInput
-ObjectProperty: hasOutput
+ObjectProperty: has_input
+	
+ObjectProperty: has_output
 
-DataProperty: hasCost
+ObjectProperty: GELO:has_locus
+	
+ObjectProperty: GELO:on_chromosome
+	
+ObjectProperty: SIO:cites
+	
+ObjectProperty: SIO:is_described_by
+	
+ObjectProperty: SIO:is_modelled_by
+	
+ObjectProperty: SIO:refers_to
+	
+DataProperty: has_cost
+	
+DataProperty: GELO:locus_end
+
+DataProperty: GELO:locus_start
+	
+DataProperty: GELO:sequence
+
+DataProperty: GELO:strand
+	
+DataProperty: SIO:has_value
 
 Class: ServiceInput
 Class: ServiceOutput
 
 Class: Service
-  EquivalentTo: (hasInput some ServiceInput) and (hasOutput some ServiceOutput)
+    EquivalentTo: (has_input some ServiceInput) and (has_output some ServiceOutput)
 
-#Class: Annotation
-#  EquivalentTo: SIO:Description that SIO:cites some SIO:InformationContentEntity
-  
-#Class: CompletionStatus
-#  SubClassOf: SIO:InformationContentEntity
-  
+Class: GELO:GenomicElement
+	
+Class: SIO:BioinformaticData
+
+Class: SIO:Description
+	
+Class: SIO:InformationContentEntity
+	
+Class: SO:Chromosome
+	
+Class: SO:Gene
+
+Class: SO:SequenceVariant
+
+Class: Annotation
+    EquivalentTo: SIO:Description that SIO:cites some SIO:InformationContentEntity
+	
+Class: CompletionStatus
+    SubClassOf: SIO:InformationContentEntity
+	
 Class: SiftValue
-  SubClassOf: SIO:BioinformaticData
-  
+    SubClassOf: SIO:BioinformaticData
+	
 Class: Mutation
-  SubClassOf: GELO:GenomicElement, SO:SequenceVariant
-  EquivalentTo: (GELO:has_locus some 
-    (GELO:on_chromosome some SO:Chromosome 
-      and min 1 GELO:LocusStart
-      and min 1 GELO:LocusEnd
-      and min 1 GELO:Strand
-      and min 1 GELO:Sequence)
-    and (SIO:is_modelled_by min 1 SIO:has_value))
-    
+    SubClassOf: GELO:GenomicElement, SO:SequenceVariant
+    EquivalentTo: (GELO:has_locus some 
+	(GELO:on_chromosome some SO:Chromosome 
+	and (GELO:locus_start min 1 xsd:integer)
+	and (GELO:locus_end min 1 xsd:integer)
+	and (GELO:strand min 1 xsd:string)
+	and (GELO:sequence min 1 xsd:string)))
+	and (SIO:is_modelled_by some (SIO:has_value min 1 xsd:string))
+	
 Class: GeneAnnotatedMutation
-  EquivalentTo: Mutation that SIO:is_described_by some 
-    (Annotation that SIO:refers_to some SO:Gene)
-    
+    EquivalentTo: Mutation that
+	SIO:is_described_by some 
+	(Annotation that SIO:refers_to some SO:Gene)
+	
 Class: SiftValueAnnotatedMutation
-  EquivalentTo: Mutation that SIO:is_described_by some 
-    (Annotation that sio:refers to some SiftValue
-      and sio:has_value min 1)
-      
+    EquivalentTo: Mutation that SIO:is_described_by some 
+	(Annotation that SIO:refers_to some SiftValue)
+	and (SIO:has_value min 1 xsd:string)
+	
 Class: FullyAnnotatedMutation
-  EquivalentTo: GeneAnnotatedMutation and SiftValueAnnotatedMutation
-  
+    EquivalentTo: GeneAnnotatedMutation #and SiftValueAnnotatedMutation
+	
 Class: FinishedMutation
-  EquivalentTo: Mutation that SIO:is_described_by some
-    (Annotation that SIO:refers_to some CompletionStatus and
-      SIO:has_value min 1)
-      
+    EquivalentTo: Mutation that SIO:is_described_by some
+	(Annotation that SIO:refers_to some CompletionStatus)
+	and (SIO:has_value min 1 xsd:string)
+	
 Individual: FULI
-  Types: FullyAnnotatedMutation, ServiceInput      
-      
+    Types: FullyAnnotatedMutation, ServiceInput      
+	
 Individual: MI
-  Types: Mutation, ServiceInput
+    Types: Mutation, ServiceInput
 
 Individual: FINO
-  Types: FinishedMutation, ServiceOutput
-  
+    Types: FinishedMutation, ServiceOutput
+	
 Individual: GENO
-  Types: GeneAnnotatedMutation, ServiceOutput  
+    Types: GeneAnnotatedMutation, ServiceOutput  
 
 Individual: SIFO
-  Types: SiftAnnotatedMutation, ServiceOutput
-  
+    Types: SiftValueAnnotatedMutation, ServiceOutput
+	
 Individual: FINS
-  Types: Service
-  Facts: has_input FULI, has_output FINO  
-  
+    Types: Service
+    Facts: has_input FULI, has_output FINO  
+	
 Individual: GENS
-  Types; Service
-  Facts: has_input MI, has_output GENO    
-  
+    Types: Service
+    Facts: has_input MI, has_output GENO    
+	
 Individual: SIFS
-  Types: Service
-  Facts: has_input MI, has_output SIFO
+    Types: Service
+    Facts: has_input MI, has_output SIFO
