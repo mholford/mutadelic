@@ -54,7 +54,7 @@ import edu.yale.dlgen.util.CollUtils;
 
 public abstract class OWLAPIDLController implements DLController {
 
-	private OWLOntologyManager manager;
+	protected OWLOntologyManager manager;
 	private OWLOntology ontology;
 	private File outputFile;
 	private OWLReasoner reasoner;
@@ -149,6 +149,7 @@ public abstract class OWLAPIDLController implements DLController {
 
 	@Override
 	public boolean checkConsistency() {
+		reasoner.flush();
 		return reasoner.isConsistent();
 	}
 

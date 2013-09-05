@@ -3,6 +3,7 @@ package edu.yale.abfab;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -130,14 +131,24 @@ public abstract class Abductor {
 		ind.getAxioms().add(
 				dl.individualType(ind.getIndividual(),
 						dl.clazz(NS + "ServiceInput")));
-		return matchesToClass(ind, input, NS + "ServiceInput");
+		return matchesToClass(ind, input, NS + "ServiceInput")
+				&& matchesToClass2(
+						ind,
+						input,
+						Arrays.asList(new String[] { NS + "ServiceOutput",
+								NS + "ServiceInput" }));
 	}
 
 	public boolean matchesOutput(IndividualPlus ind, IndividualPlus output) {
 		ind.getAxioms().add(
 				dl.individualType(ind.getIndividual(),
 						dl.clazz(NS + "ServiceOutput")));
-		return matchesToClass(ind, output, NS + "ServiceOutput");
+		return matchesToClass(ind, output, NS + "ServiceOutput")
+				&& matchesToClass2(
+						ind,
+						output,
+						Arrays.asList(new String[] { NS + "ServiceOutput",
+								NS + "ServiceInput" }));
 	}
 
 	private boolean matchesToClass(IndividualPlus ind, IndividualPlus ind2,
@@ -167,6 +178,65 @@ public abstract class Abductor {
 			dl.removeAxioms(ax);
 		}
 		return false;
+	}
+
+	private boolean matchesToClass2(IndividualPlus ind, IndividualPlus ind2,
+			List<String> classNames) {
+		Set<DLAxiom<?>> ax = new HashSet<>();
+		try {
+			ax.addAll(ind.getAxioms());
+			ax.addAll(ind2.getAxioms());
+			dl.addAxioms(ax);
+			Set<DLClassExpression<?>> outputs = new HashSet<>();
+			Set<DLClassExpression<?>> assertedOutputs = new HashSet<>();
+			for (DLClassExpression<?> c : dl.getTypes(ind.getIndividual())) {
+				if (!classNames.contains(dl.getIRI(c))) {
+					assertedOutputs.add(c);
+				}
+			}
+			for (DLClassExpression<?> c : dl.getTypes(ind2.getIndividual())) {
+				if (!classNames.contains(dl.getIRI(c))) {
+					outputs.add(c);
+				}
+			}
+			for (DLClassExpression<?> c : outputs) {
+				for (DLClassExpression<?> ac : assertedOutputs) {
+					Set<DLAxiom<?>> adds = new HashSet<>();
+					Set<DLAxiom<?>> drops = new HashSet<>();
+					adds.add(dl.individualType(ind.getIndividual(), c));
+					adds.add(dl.individualType(ind.getIndividual(),
+							dl.notClass(ac)));
+					DLAxiom<?> dropAx = dl.individualType(ind.getIndividual(),
+							ac);
+					if (!adds.contains(dropAx)) {
+						drops.add(dropAx);
+					}
+					dl.addAxioms(adds);
+					dl.removeAxioms(drops);
+					debug();
+					if (!dl.checkConsistency()) {
+						dl.removeAxioms(adds);
+						dl.addAxioms(drops);
+						return true;
+					}
+					dl.removeAxioms(adds);
+					dl.addAxioms(drops);
+				}
+			}
+		} finally {
+			dl.removeAxioms(ax);
+		}
+		return false;
+	}
+
+	private void debug() {
+		try {
+			dl.setOutputFile(new File(
+					"/home/matt/sw/abfab-integration-output.owl"));
+			dl.saveOntology();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Path chooseBestPath(Set<Path> paths) {
@@ -220,15 +290,6 @@ public abstract class Abductor {
 
 				dl.addAxioms(ax);
 
-//				if (dl.getIRI(dci).equals(NS + "FINO")) {
-//					try {
-//						dl.setOutputFile(new File(
-//								"/home/matt/sw/abfab-integration-output.owl"));
-//						dl.saveOntology();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//				}
 				if (!dl.checkConsistency()) {
 					acceptableOutputs.add(dci);
 				}

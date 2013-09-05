@@ -2,6 +2,7 @@ package edu.yale.abfab;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import edu.yale.dlgen.DLAxiom;
@@ -96,8 +97,13 @@ public class Branch extends Step {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");
-		for (Path p : paths) {
+		Iterator<Path> piter = paths.iterator();
+		while (piter.hasNext()) {
+			Path p = piter.next();
 			sb.append(p.toString());
+			if (piter.hasNext()) {
+				sb.append(" & ");
+			}
 		}
 		sb.append(")");
 		return sb.toString();

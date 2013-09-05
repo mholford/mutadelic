@@ -35,4 +35,11 @@ public class IndividualPlus {
 	public void setAxioms(Set<DLAxiom<?>> axioms) {
 		this.axioms = axioms;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("name=%s; axioms=%s", individual.get().toString(),
+				axioms.toString());
+	}
+
 }

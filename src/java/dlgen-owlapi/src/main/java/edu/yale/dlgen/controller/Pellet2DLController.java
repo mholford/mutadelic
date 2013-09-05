@@ -12,6 +12,7 @@ public class Pellet2DLController extends OWLAPIDLController {
 	public OWLReasoner initReasoner() {
 		PelletReasonerFactory rf = new PelletReasonerFactory();
 		PelletReasoner reasoner = rf.createNonBufferingReasoner(getOntology());
+		manager.addOntologyChangeListener(reasoner);
 		return reasoner;
 	}
 

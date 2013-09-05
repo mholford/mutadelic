@@ -18,13 +18,13 @@ import edu.yale.dlgen.controller.DLController;
 
 public class Pellet2AbductorTest {
 
-	private Pellet2Abductor abductor;
+	private OWLAPIAbductor abductor;
 	private DLController dl;
 	private final String NS = "http://krauthammerlab.med.yale.edu/test#";
 
 	@Before
 	public void setUp() throws Exception {
-		abductor = new Pellet2Abductor("");
+		abductor = new HermitAbductor("");
 		abductor.setNamespace(NS);
 		dl = abductor.getDLController();
 		dl.load(new InputStreamReader(Pellet2AbductorTest.class
