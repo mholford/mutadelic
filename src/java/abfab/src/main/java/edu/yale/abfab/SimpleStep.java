@@ -18,12 +18,12 @@ public class SimpleStep extends Step {
 		String NS = abductor.getNamespace();
 		input = new IndividualPlus(dl
 				.getObjectPropertyValues(service,
-						dl.objectProp(NS + "hasInput")).iterator().next());
+						dl.objectProp(NS + "has_input")).iterator().next());
 		output = new IndividualPlus(dl
 				.getObjectPropertyValues(service,
-						dl.objectProp(NS + "hasOutput")).iterator().next());
+						dl.objectProp(NS + "has_output")).iterator().next());
 		cost = Double.parseDouble(dl.getLiteralValue(dl
-				.getDataPropertyValues(service, dl.dataProp(NS + "hasCost"))
+				.getDataPropertyValues(service, dl.dataProp(NS + "has_cost"))
 				.iterator().next()));
 	}
 

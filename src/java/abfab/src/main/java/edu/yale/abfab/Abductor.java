@@ -1,5 +1,7 @@
 package edu.yale.abfab;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -112,7 +114,7 @@ public abstract class Abductor {
 		IndividualPlus i = p.getLastInput();
 		for (DLIndividual<?> s : dl.getInstances(dl.clazz(NS + "Service"))) {
 			Collection<DLIndividual> ios = dl.getObjectPropertyValues(s,
-					dl.objectProp(NS + "hasOutput"));
+					dl.objectProp(NS + "has_output"));
 			for (DLIndividual<?> io : ios) {
 				if (matchesOutput(i, new IndividualPlus(io))) {
 					Path np = p.copy();
@@ -218,6 +220,15 @@ public abstract class Abductor {
 
 				dl.addAxioms(ax);
 
+//				if (dl.getIRI(dci).equals(NS + "FINO")) {
+//					try {
+//						dl.setOutputFile(new File(
+//								"/home/matt/sw/abfab-integration-output.owl"));
+//						dl.saveOntology();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
 				if (!dl.checkConsistency()) {
 					acceptableOutputs.add(dci);
 				}
@@ -229,7 +240,7 @@ public abstract class Abductor {
 
 		for (DLIndividual<?> i : acceptableOutputs) {
 			Collection<DLIndividual> services = dl.getHavingPropertyValue(
-					dl.clazz(NS + "Service"), dl.objectProp(NS + "hasOutput"),
+					dl.clazz(NS + "Service"), dl.objectProp(NS + "has_output"),
 					i);
 			out.addAll(services);
 		}

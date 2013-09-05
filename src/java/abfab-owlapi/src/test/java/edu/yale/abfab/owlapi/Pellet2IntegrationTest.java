@@ -35,7 +35,7 @@ public class Pellet2IntegrationTest {
 					dl.individualType(dl.individual(NS + "test"),
 							dl.clazz(NS + "Mutation")));
 			Path p = abductor.getBestPath(ip,
-					dl.clazz(NS + "FInishedMutation"));
+					dl.clazz(NS + "FinishedMutation"));
 			assertEquals(
 					String.format("[%s%s -> %s%s]", NS, "GENS", NS, "FINS"),
 					p.toString());
