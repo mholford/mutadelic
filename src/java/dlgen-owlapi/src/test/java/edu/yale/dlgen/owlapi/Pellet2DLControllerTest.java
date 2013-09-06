@@ -55,7 +55,7 @@ public class Pellet2DLControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		//dl = new Pellet2DLController();
+		// dl = new Pellet2DLController();
 		dl = new HermitDLController();
 		dl.load(new InputStreamReader(Pellet2DLControllerTest.class
 				.getClassLoader().getResourceAsStream("test.manchester")),
@@ -99,6 +99,31 @@ public class Pellet2DLControllerTest {
 
 		dl.removeAxioms(ax);
 		assertEquals(26, dl.getAxioms().size());
+	}
+
+	@Test
+	public void testContainsAxiom() {
+		DLAxiom<?> ax = new DLAxiom<>(df.getOWLSubClassOfAxiom(
+				df.getOWLClass(IRI.create(NS + "Guitarist")),
+				df.getOWLClass(IRI.create(NS + "Musician"))));
+		DLAxiom<?> ax2 = new DLAxiom<>(df.getOWLSubClassOfAxiom(
+				df.getOWLClass(IRI.create(NS + "Dar")),
+				df.getOWLClass(IRI.create(NS + "Instrument"))));
+		assertEquals(true, dl.containsAxiom(ax));
+		assertEquals(false, dl.containsAxiom(ax2));
+		dl.addAxiom(ax2);
+		assertEquals(true, dl.containsAxiom(ax2));
+
+		assertEquals(
+				true,
+				dl.containsAxiom(dl.individualType(
+						dl.individual(NS + "JoeSmith"),
+						dl.clazz(NS + "Guitarist"))));
+		assertEquals(
+				false,
+				dl.containsAxiom(dl.individualType(
+						dl.individual(NS + "JoeSmith"),
+						dl.notClass(dl.clazz(NS + "Guitarist")))));
 	}
 
 	@Test
@@ -157,7 +182,7 @@ public class Pellet2DLControllerTest {
 		OWLLiteral lit = (OWLLiteral) next.get();
 		assertEquals(33, lit.parseInteger());
 	}
-	
+
 	@Test
 	public void testGetLiteralValue() {
 		DLIndividual<OWLNamedIndividual> ind = new DLIndividual<>(
@@ -265,6 +290,19 @@ public class Pellet2DLControllerTest {
 	}
 
 	@Test
+	public void testAndClass() {
+		DLClassExpression<?> clz = dl.andClass(dl.clazz(NS + "Person"),
+				dl.clazz(NS + "Guitarist"));
+		boolean b1 = String.format(
+				"ObjectIntersectionOf(<%sPerson> <%sGuitarist>)", NS, NS).equals(clz
+				.get().toString());
+		boolean b2 = String.format(
+				"ObjectIntersectionOf(<%sGuitarist> <%sPerson>)", NS, NS).equals(clz
+				.get().toString());
+		assertEquals(true, b1 || b2);
+	}
+
+	@Test
 	public void testDataProp() {
 		DLDataPropertyExpression<?> dp = dl.dataProp(NS + "hasProp");
 		assertEquals(NS + "hasProp", ((OWLDataProperty) dp.get()).getIRI()
@@ -335,14 +373,16 @@ public class Pellet2DLControllerTest {
 		DLClass<?> g = dl.clazz(NS + "Guitarist");
 		assertEquals(true, sc.contains(g));
 	}
-	
+
 	@Test
 	public void testIsSubclass() {
-		boolean sub = dl.isSubclass(dl.clazz(NS + "Guitarist"), dl.clazz(NS + "Person"));
+		boolean sub = dl.isSubclass(dl.clazz(NS + "Guitarist"),
+				dl.clazz(NS + "Person"));
 		assertEquals(true, sub);
 		sub = dl.isSubclass(dl.clazz(NS + "Person"), dl.clazz(NS + "Guitarist"));
 		assertEquals(false, sub);
-		sub = dl.isSubclass(dl.clazz(NS + "Guitarist"), dl.clazz(NS + "Guitarist"));
+		sub = dl.isSubclass(dl.clazz(NS + "Guitarist"),
+				dl.clazz(NS + "Guitarist"));
 		assertEquals(false, sub);
 	}
 

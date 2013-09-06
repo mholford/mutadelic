@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,6 +118,11 @@ public abstract class OWLAPIDLController implements DLController {
 	@Override
 	public Collection<DLAxiom> getAxioms() {
 		return CollUtils.wrap(ontology.getAxioms(), DLAxiom.class);
+	}
+
+	@Override
+	public boolean containsAxiom(DLAxiom<?> ax) {
+		return ontology.containsAxiom((OWLAxiom) ax.get());
 	}
 
 	@Override
@@ -271,6 +278,15 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
+	public DLClassExpression<?> andClass(DLClassExpression<?>... clz) {
+		Set<OWLClassExpression> toJoin = new HashSet<>();
+		for (DLClassExpression<?> c:clz) {
+			toJoin.add((OWLClassExpression) c.get());
+		}
+		return new DLClassExpression<>(df.getOWLObjectIntersectionOf(toJoin));
+	}
+
+	@Override
 	public DLDataPropertyExpression<?> dataProp(String name) {
 		return new DLDataPropertyExpression<OWLDataProperty>(
 				df.getOWLDataProperty(IRI.create(name)));
@@ -292,7 +308,7 @@ public abstract class OWLAPIDLController implements DLController {
 			OWLIndividual ind) {
 		OWLClassExpression oce = (OWLClassExpression) clz.get();
 		OWLClassAssertionAxiom ax = df.getOWLClassAssertionAxiom(oce, ind);
-		manager.addAxiom(ontology, ax);
+//		manager.addAxiom(ontology, ax);
 		return new DLAxiom<OWLAxiom>(ax);
 	}
 

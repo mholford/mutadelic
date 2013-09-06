@@ -32,6 +32,7 @@ import com.clarkparsia.pellet.api.term.entity.Individual;
 import com.clarkparsia.pellet.api.term.entity.Literal;
 import com.clarkparsia.pellet.api.term.entity.NamedClass;
 import com.clarkparsia.pellet.api.term.entity.NamedDataProperty;
+import com.clarkparsia.pellet.api.term.entity.NamedEntity;
 import com.clarkparsia.pellet.api.term.entity.NamedIndividual;
 import com.clarkparsia.pellet.api.term.entity.NamedObjectProperty;
 import com.clarkparsia.pellet.api.term.entity.ObjectProperty;
@@ -80,6 +81,11 @@ public class Pellet3DLController implements DLController {
 	@Override
 	public void addAxiom(DLAxiom<?> axiom) {
 		kb.add((Axiom) axiom.get());
+	}
+
+	@Override
+	public boolean containsAxiom(DLAxiom<?> ax) {
+		return kb.contains((Axiom) ax.get());
 	}
 
 	@Override
@@ -409,6 +415,15 @@ public class Pellet3DLController implements DLController {
 	public DLClassExpression<?> notClass(DLClassExpression<?> clz) {
 		ClassExpression c = (ClassExpression) clz.get();
 		return new DLClassExpression<>(not(c));
+	}
+
+	@Override
+	public DLClassExpression<?> andClass(DLClassExpression<?>... clz) {
+		Set<ClassExpression> toJoin = new HashSet<>();
+		for (DLClassExpression<?> c : clz) {
+			toJoin.add((ClassExpression) c.get());
+		}
+		return new DLClassExpression<>(and(toJoin));
 	}
 
 	@Override

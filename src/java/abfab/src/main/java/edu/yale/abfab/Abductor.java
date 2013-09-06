@@ -29,13 +29,8 @@ import edu.yale.dlgen.controller.DLController;
 public abstract class Abductor {
 
 	private DLController dl;
-	private String pkg;
 	private Map<DLClassExpression<?>, Path> goalPathCache;
 	private Map<DLIndividual<?>, Path> servicePathCache;
-	private Set<DLAxiom<?>> dummyAxioms;
-	private List<Set<DLAxiom<?>>> mergedIndivAxioms;
-	private int mergedCount;
-	private int dummyCount;
 	private String namespace;
 	private String NS;
 
@@ -112,17 +107,40 @@ public abstract class Abductor {
 
 	public Collection<Path> extendPath(Path p) {
 		Set<Path> out = new HashSet<>();
-		IndividualPlus i = p.getLastInput();
+		IndividualPlus ind = p.getLastInput();
 		for (DLIndividual<?> s : dl.getInstances(dl.clazz(NS + "Service"))) {
 			Collection<DLIndividual> ios = dl.getObjectPropertyValues(s,
 					dl.objectProp(NS + "has_output"));
 			for (DLIndividual<?> io : ios) {
-				if (matchesOutput(i, new IndividualPlus(io))) {
+				if (matchesOutput(ind, new IndividualPlus(io))) {
 					Path np = p.copy();
 					np.add(s);
 					out.add(np);
 				}
 			}
+		}
+		if (out.size() == 0) {
+			// try by two's
+			List<DLIndividual> instances = new ArrayList<>(dl.getInstances(dl
+					.clazz(NS + "Service")));
+			List<List<DLIndividual<?>>> pairs = new ArrayList<>();
+			for (int i = 0; i < instances.size(); i++) {
+				for (int j = i + 1; j < instances.size(); j++) {
+					pairs.add(Arrays.asList(new DLIndividual<?>[] {
+							instances.get(i), instances.get(j) }));
+				}
+			}
+			for (List<DLIndividual<?>> pair : pairs) {
+				List<IndividualPlus> ips = new ArrayList<>();
+				for (DLIndividual<?> dli:pair) {
+					ips.add(new IndividualPlus(dli));
+				}
+				if (matchesOutput(ind, ips)) {
+					Path np = p.copy();
+					np.add(pair);
+				}
+			}
+
 		}
 		return out;
 	}
@@ -131,89 +149,86 @@ public abstract class Abductor {
 		ind.getAxioms().add(
 				dl.individualType(ind.getIndividual(),
 						dl.clazz(NS + "ServiceInput")));
-		return matchesToClass(ind, input, NS + "ServiceInput")
-				&& matchesToClass2(
-						ind,
-						input,
-						Arrays.asList(new String[] { NS + "ServiceOutput",
-								NS + "ServiceInput" }));
+		// return matchesAny(ind, input, NS + "ServiceInput")
+		// && matchesAllOrNone(
+		// ind,
+		// input,
+		// Arrays.asList(new String[] { NS + "ServiceOutput",
+		// NS + "ServiceInput" }));
+		return matches(
+				ind,
+				input,
+				Arrays.asList(new String[] { NS + "ServiceOutput",
+						NS + "ServiceInput" }));
 	}
 
+	// If it's a list of ind (ie conjunction), try assigning ind to type conjunction of the type of has_output
 	public boolean matchesOutput(IndividualPlus ind, IndividualPlus output) {
 		ind.getAxioms().add(
 				dl.individualType(ind.getIndividual(),
 						dl.clazz(NS + "ServiceOutput")));
-		return matchesToClass(ind, output, NS + "ServiceOutput")
-				&& matchesToClass2(
-						ind,
-						output,
-						Arrays.asList(new String[] { NS + "ServiceOutput",
-								NS + "ServiceInput" }));
+		return matches(
+				ind,
+				output,
+				Arrays.asList(new String[] { NS + "ServiceOutput",
+						NS + "ServiceInput" }));
 	}
 
-	private boolean matchesToClass(IndividualPlus ind, IndividualPlus ind2,
-			String className) {
-		Set<DLAxiom<?>> ax = new HashSet<>();
-		try {
-			ax.addAll(ind.getAxioms());
-			ax.addAll(ind2.getAxioms());
-			dl.addAxioms(ax);
-			Set<DLClassExpression<?>> outputs = new HashSet<>();
-			for (DLClassExpression<?> c : dl.getTypes(ind2.getIndividual())) {
-				if (!dl.getIRI(c).equals(className)) {
-					outputs.add(c);
-				}
-			}
-			for (DLClassExpression<?> c : outputs) {
-				DLAxiom<?> testAx = dl.individualType(ind.getIndividual(),
-						dl.notClass(c));
-				dl.addAxiom(testAx);
-				if (!dl.checkConsistency()) {
-					dl.removeAxiom(testAx);
-					return true;
-				}
-				dl.removeAxiom(testAx);
-			}
-		} finally {
-			dl.removeAxioms(ax);
-		}
-		return false;
+	private boolean matches(IndividualPlus i1, IndividualPlus i2,
+			List<String> classFilters) {
+		// Both (I1 and !I2) and (!I1 and I2) clash
+		return matchesLR(i1, i2, classFilters)
+				&& matchesLR(i2, i1, classFilters);
 	}
 
-	private boolean matchesToClass2(IndividualPlus ind, IndividualPlus ind2,
-			List<String> classNames) {
+	private boolean matchesLR(IndividualPlus i1, IndividualPlus i2,
+			List<String> classFilters) {
+		// !I1 and I2 clash
 		Set<DLAxiom<?>> ax = new HashSet<>();
+		boolean matches = false;
 		try {
-			ax.addAll(ind.getAxioms());
-			ax.addAll(ind2.getAxioms());
+			ax.addAll(i1.getAxioms());
+			ax.addAll(i2.getAxioms());
 			dl.addAxioms(ax);
-			Set<DLClassExpression<?>> outputs = new HashSet<>();
-			Set<DLClassExpression<?>> assertedOutputs = new HashSet<>();
-			for (DLClassExpression<?> c : dl.getTypes(ind.getIndividual())) {
-				if (!classNames.contains(dl.getIRI(c))) {
-					assertedOutputs.add(c);
+			Set<DLClassExpression<?>> i1Outputs = new HashSet<>();
+			Set<DLClassExpression<?>> i2Outputs = new HashSet<>();
+			for (DLClassExpression<?> c : dl.getTypes(i1.getIndividual())) {
+				if (!classFilters.contains(dl.getIRI(c))) {
+					i1Outputs.add(c);
 				}
 			}
-			for (DLClassExpression<?> c : dl.getTypes(ind2.getIndividual())) {
-				if (!classNames.contains(dl.getIRI(c))) {
-					outputs.add(c);
+			for (DLClassExpression<?> c : dl.getTypes(i2.getIndividual())) {
+				if (!classFilters.contains(dl.getIRI(c))) {
+					i2Outputs.add(c);
 				}
 			}
-			for (DLClassExpression<?> c : outputs) {
-				for (DLClassExpression<?> ac : assertedOutputs) {
+			for (DLClassExpression<?> i2o : i2Outputs) {
+				for (DLClassExpression<?> i1o : i1Outputs) {
 					Set<DLAxiom<?>> adds = new HashSet<>();
 					Set<DLAxiom<?>> drops = new HashSet<>();
-					adds.add(dl.individualType(ind.getIndividual(), c));
-					adds.add(dl.individualType(ind.getIndividual(),
-							dl.notClass(ac)));
-					DLAxiom<?> dropAx = dl.individualType(ind.getIndividual(),
-							ac);
-					if (!adds.contains(dropAx)) {
-						drops.add(dropAx);
+					Collection<DLAxiom> axioms = dl.getAxioms();
+					DLAxiom<?> ax1 = dl.individualType(i1.getIndividual(), i2o);
+					if (!dl.containsAxiom(ax1)) {
+						adds.add(ax1);
 					}
-					dl.addAxioms(adds);
+					DLAxiom<?> ax2 = dl.individualType(i1.getIndividual(),
+							dl.notClass(i1o));
+					if (!dl.containsAxiom(ax2)) {
+						adds.add(ax2);
+					}
+					DLAxiom<?> dropAx = dl.individualType(i1.getIndividual(),
+							i1o);
+					if (!adds.contains(dropAx)) {
+						// Make sure the "drop" is not the same as an attempted
+						// "add"
+						if (!ax1.get().equals(dropAx.get())
+								&& !ax2.get().equals(dropAx.get())) {
+							drops.add(dropAx);
+						}
+					}
 					dl.removeAxioms(drops);
-					debug();
+					dl.addAxioms(adds);
+
 					if (!dl.checkConsistency()) {
 						dl.removeAxioms(adds);
 						dl.addAxioms(drops);
@@ -226,7 +241,7 @@ public abstract class Abductor {
 		} finally {
 			dl.removeAxioms(ax);
 		}
-		return false;
+		return matches;
 	}
 
 	private void debug() {

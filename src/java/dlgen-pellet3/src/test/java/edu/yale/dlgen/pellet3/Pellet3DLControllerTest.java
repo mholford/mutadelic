@@ -80,6 +80,29 @@ public class Pellet3DLControllerTest {
 	}
 
 	@Test
+	public void testContainsAxiom() {
+		DLAxiom<?> ax = new DLAxiom<>(namedClass(NS + "Guitarist").subClassOf(
+				namedClass(NS + "Musician")));
+		DLAxiom<?> ax2 = new DLAxiom<>(namedClass(NS + "Sitar").subClassOf(
+				namedClass(NS + "Instrument")));
+		assertEquals(true, dl.containsAxiom(ax));
+		assertEquals(false, dl.containsAxiom(ax2));
+		dl.addAxiom(ax2);
+		assertEquals(true, dl.containsAxiom(ax2));
+
+		assertEquals(
+				true,
+				dl.containsAxiom(dl.individualType(
+						dl.individual(NS + "JoeSmith"),
+						dl.clazz(NS + "Guitarist"))));
+		assertEquals(
+				false,
+				dl.containsAxiom(dl.individualType(
+						dl.individual(NS + "JoeSmith"),
+						dl.notClass(dl.clazz(NS + "Guitarist")))));
+	}
+
+	@Test
 	public void testRemoveAxioms() {
 		Set<DLAxiom<?>> ax = new HashSet<DLAxiom<?>>();
 		ax.add(new DLAxiom<>(namedClass(NS + "Sitar").subClassOf(
@@ -255,6 +278,18 @@ public class Pellet3DLControllerTest {
 	public void testNotClass() {
 		DLClassExpression<?> clz = dl.notClass(dl.clazz(NS + "Guitarist"));
 		assertEquals("not(test:Guitarist)", clz.get().toString());
+	}
+	
+	@Test
+	public void testAndClass() {
+		DLClassExpression<?> clz = dl.andClass(dl.clazz(NS + "Person"),
+				dl.clazz(NS + "Guitarist"));
+		System.out.println(clz.get().toString());
+		boolean b1 = "and(test:Person, test:Guitarist)".equals(clz
+				.get().toString());
+		boolean b2 = "and(test:Guitarist, test:Person)".equals(clz
+				.get().toString());
+		assertEquals(true, b1 || b2);
 	}
 
 	@Test

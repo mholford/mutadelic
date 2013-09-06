@@ -52,6 +52,15 @@ public interface DLController {
 	Collection<DLAxiom> getAxioms();
 
 	/**
+	 * Answer whether the knowledge base has the axiom
+	 * 
+	 * @param ax
+	 *            The Axiom to check for
+	 * @return Whether the axiom exists in the kb
+	 */
+	boolean containsAxiom(DLAxiom<?> ax);
+
+	/**
 	 * Removes the {@link Set} of axioms from the KB
 	 * 
 	 * @param axioms
@@ -242,6 +251,15 @@ public interface DLController {
 	 * @return The Complement class
 	 */
 	DLClassExpression<?> notClass(DLClassExpression<?> clz);
+
+	/**
+	 * Return the conjunction (AND) of the given class expression.
+	 * 
+	 * @param clz
+	 *            The classes to AND together
+	 * @return The Conjunction class
+	 */
+	DLClassExpression<?> andClass(DLClassExpression<?>... clz);
 
 	/**
 	 * Returns a DL data property with the specified IRI
