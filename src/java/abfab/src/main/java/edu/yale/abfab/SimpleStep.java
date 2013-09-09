@@ -1,5 +1,8 @@
 package edu.yale.abfab;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
@@ -38,8 +41,8 @@ public class SimpleStep extends Step {
 	}
 
 	@Override
-	public IndividualPlus getInput() {
-		return input;
+	public Collection<IndividualPlus> getInput() {
+		return Arrays.asList(new IndividualPlus[] { input });
 	}
 
 	@Override

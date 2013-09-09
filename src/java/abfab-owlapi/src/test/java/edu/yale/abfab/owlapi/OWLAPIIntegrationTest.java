@@ -11,7 +11,7 @@ import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
 import edu.yale.dlgen.controller.DLController;
 
-public class Pellet2IntegrationTest {
+public class OWLAPIIntegrationTest {
 
 	private OWLAPIAbductor abductor;
 	private DLController dl;
@@ -27,7 +27,7 @@ public class Pellet2IntegrationTest {
 	@Test
 	public void testSimpleCondition() {
 		try {
-			dl.load(new InputStreamReader(Pellet2AbductorTest.class
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream(
 							"integration-abduct.owl")), "Manchester");
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
@@ -48,7 +48,7 @@ public class Pellet2IntegrationTest {
 	@Test
 	public void testBranchingCondition() {
 		try {
-			dl.load(new InputStreamReader(Pellet2AbductorTest.class
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream(
 							"integration-abduct2.owl")), "Manchester");
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
@@ -57,9 +57,16 @@ public class Pellet2IntegrationTest {
 							dl.clazz(NS + "Mutation")));
 			Path p = abductor
 					.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
-			assertNull(p);
-//			assertEquals(String.format("[(%s%s & %s%s) -> %s%s]", NS, "SIFS", NS,
-//					"GENS", NS, "FINS"), p.toString());
+			
+			System.out.println(p.toString());
+
+			boolean matches = p.toString().equals(
+					String.format("[([%s%s] & [%s%s]) -> %s%s]", NS, "SIFS", NS,
+							"GENS", NS, "FINS"))
+					|| p.toString().equals(
+							String.format("[([%s%s] & [%s%s]) -> %s%s]", NS,
+									"GENS", NS, "SIFS", NS, "FINS"));
+			assertEquals(true, matches);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

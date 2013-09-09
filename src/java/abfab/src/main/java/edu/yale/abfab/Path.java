@@ -125,7 +125,7 @@ public class Path {
 		return steps.get(0).getOutput();
 	}
 
-	IndividualPlus getLastInput() {
+	Collection<IndividualPlus> getLastInput() {
 		return steps.get(0).getInput();
 	}
 }

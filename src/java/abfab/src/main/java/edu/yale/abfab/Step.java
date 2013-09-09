@@ -27,7 +27,7 @@ public abstract class Step {
 
 	public abstract IndividualPlus exec(IndividualPlus input);
 
-	public abstract IndividualPlus getInput();
+	public abstract Collection<IndividualPlus> getInput();
 
 	public abstract IndividualPlus getOutput();
 	

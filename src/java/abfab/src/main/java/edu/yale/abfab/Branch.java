@@ -22,6 +22,7 @@ public class Branch extends Step {
 			IndividualPlus initialInput, Abductor abductor) {
 		super(abductor);
 		dl = abductor.getDLController();
+		paths = new HashSet<>();
 		for (DLIndividual<?> i : inds) {
 			Set<DLIndividual> terminals = new HashSet<>();
 			terminals.add(i);
@@ -76,12 +77,15 @@ public class Branch extends Step {
 	}
 
 	@Override
-	public IndividualPlus getInput() {
+	public Collection<IndividualPlus> getInput() {
 		Set<IndividualPlus> outcomes = new HashSet<>();
 		for (Path p : paths) {
-			outcomes.add(p.getLastInput());
+			for (IndividualPlus ip : p.getLastInput()) {
+				outcomes.add(ip);
+			}
 		}
-		return mergeIndividuals(outcomes);
+		// return mergeIndividuals(outcomes);
+		return outcomes;
 	}
 
 	@Override

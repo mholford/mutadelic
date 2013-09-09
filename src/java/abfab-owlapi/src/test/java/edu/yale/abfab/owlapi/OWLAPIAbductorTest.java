@@ -16,7 +16,7 @@ import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
-public class Pellet2AbductorTest {
+public class OWLAPIAbductorTest {
 
 	private OWLAPIAbductor abductor;
 	private DLController dl;
@@ -27,7 +27,7 @@ public class Pellet2AbductorTest {
 		abductor = new HermitAbductor("");
 		abductor.setNamespace(NS);
 		dl = abductor.getDLController();
-		dl.load(new InputStreamReader(Pellet2AbductorTest.class
+		dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 				.getClassLoader().getResourceAsStream("test-abduct.manchester")),
 				"Manchester");
 	}
