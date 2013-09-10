@@ -60,6 +60,12 @@ public class Branch extends Step {
 
 			for (Path p : paths) {
 				outcomes.add(p.exec(input));
+				// peek and check if passes next step
+				Abductor ab = getAbductor();
+				Step nextStep = ab.getExecutingPath().nextStep();
+				if (!ab.partMatchesInput(outcomes, nextStep.getInput())) {
+					return null;
+				}
 			}
 			out = mergeIndividuals(outcomes);
 		} finally {

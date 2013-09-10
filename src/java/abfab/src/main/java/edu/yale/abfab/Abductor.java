@@ -33,6 +33,7 @@ public abstract class Abductor {
 	private Map<DLIndividual<?>, Path> servicePathCache;
 	private String namespace;
 	private String NS;
+	private Path executingPath;
 
 	public Abductor() {
 		dl = initDLController();
@@ -53,6 +54,19 @@ public abstract class Abductor {
 
 	public String getNamespace() {
 		return namespace;
+	}
+	
+	public Path getExecutingPath() {
+		return executingPath;
+	}
+
+	public void setExecutingPath(Path executingPath) {
+		this.executingPath = executingPath;
+	}
+
+	public IndividualPlus exec(IndividualPlus input, Path goalPath) {
+		executingPath = goalPath;
+		return goalPath.exec(input);
 	}
 
 	public Path getBestPath(IndividualPlus input, DLClassExpression<?> goalClass) {
@@ -183,6 +197,26 @@ public abstract class Abductor {
 			ip1.getAxioms().add(ax);
 		}
 		boolean m = matches(
+				ind,
+				input,
+				Arrays.asList(new String[] { NS + "ServiceOutput",
+						NS + "ServiceInput" }));
+		for (IndividualPlus ip : adds.keySet()) {
+			ip.getAxioms().remove(adds.get(ip));
+		}
+		return m;
+	}
+	
+	public boolean partMatchesInput(Collection<IndividualPlus> ind,
+			Collection<IndividualPlus> input) {
+		Map<IndividualPlus, DLAxiom<?>> adds = new HashMap<>();
+		for (IndividualPlus ip1 : ind) {
+			DLAxiom<?> ax = dl.individualType(ip1.getIndividual(),
+					dl.clazz(NS + "ServiceInput"));
+			adds.put(ip1, ax);
+			ip1.getAxioms().add(ax);
+		}
+		boolean m = matchesLR(
 				ind,
 				input,
 				Arrays.asList(new String[] { NS + "ServiceOutput",

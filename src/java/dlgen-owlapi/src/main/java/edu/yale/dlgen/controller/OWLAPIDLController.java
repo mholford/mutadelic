@@ -261,6 +261,11 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
+	public DLLiteral<?> asLiteral(boolean val) {
+		return new DLLiteral<>(df.getOWLLiteral(val));
+	}
+
+	@Override
 	public DLIndividual<?> individual(String name) {
 		return new DLIndividual<OWLIndividual>(df.getOWLNamedIndividual(IRI
 				.create(name)));
@@ -326,7 +331,7 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLLiteral lit = (OWLLiteral) value.get();
 		OWLDataPropertyAssertionAxiom ax = df.getOWLDataPropertyAssertionAxiom(
 				dp, ind, lit);
-		manager.addAxiom(ontology, ax);
+//		manager.addAxiom(ontology, ax);
 		return new DLAxiom<OWLAxiom>(ax);
 	}
 
@@ -339,7 +344,7 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLIndividual val = (OWLIndividual) value.get();
 		OWLObjectPropertyAssertionAxiom ax = df
 				.getOWLObjectPropertyAssertionAxiom(op, ind, val);
-		manager.addAxiom(ontology, ax);
+//		manager.addAxiom(ontology, ax);
 		return new DLAxiom<OWLAxiom>(ax);
 	}
 

@@ -19,6 +19,7 @@ public class Path {
 	private DLController dl;
 	private Abductor abductor;
 	private IndividualPlus initialInput;
+	private int execStep = -1;
 
 	public Path(IndividualPlus initialInput, Abductor abductor) {
 		this.abductor = abductor;
@@ -59,6 +60,10 @@ public class Path {
 		}
 		return sum;
 	}
+	
+	public Step nextStep() {
+		return steps.get(execStep + 1);
+	}
 
 	public IndividualPlus exec(IndividualPlus input) {
 		IndividualPlus out = null;
@@ -69,7 +74,15 @@ public class Path {
 			Iterator<Step> stepIter = steps.iterator();
 			IndividualPlus in = input;
 			while (stepIter.hasNext()) {
-				out = stepIter.next().exec(in);
+				Step step = stepIter.next();
+				if (!abductor.matchesInput(in, step.getInput())) {
+					return null;
+				}
+				++execStep;
+				out = step.exec(in);
+				if (out == null) {
+					return null;
+				}
 				in = out;
 			}
 		} finally {

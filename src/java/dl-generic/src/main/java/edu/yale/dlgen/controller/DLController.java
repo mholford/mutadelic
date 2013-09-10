@@ -224,6 +224,8 @@ public interface DLController {
 	 * @return The lexical value of the literal
 	 */
 	String getLiteralValue(DLLiteral<?> literal);
+	
+	DLLiteral<?> asLiteral(boolean val);
 
 	/**
 	 * Returns an individual with specified IRI cast as a {@link DLIndividual}

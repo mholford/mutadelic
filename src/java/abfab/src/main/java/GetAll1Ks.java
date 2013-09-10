@@ -11,7 +11,7 @@ import java.util.List;
 public class GetAll1Ks {
 	public static final String FILE_SUFFIX = ".phase1_release_v3.20101123.snps_indels_svs.genotypes.vcf.gz";
 	public static final String OUTPUT_FILE = "1k-output";
-	public static final String ADDRESS = "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20110521";
+	public static final String ADDRESS = "ftp://ftp-trace.ncbi.nih.gov/1000genomes/ftp/release/20110521";
 
 	public static void main(String[] args) {
 		new GetAll1Ks().exec();

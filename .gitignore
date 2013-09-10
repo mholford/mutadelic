@@ -6,3 +6,5 @@
 *.ear
 .settings
 target
+*-input
+*-output

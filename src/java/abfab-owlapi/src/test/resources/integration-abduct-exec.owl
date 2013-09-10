@@ -107,12 +107,12 @@ Individual: SIFO
 	
 Individual: FINS
     Types: Service
-    Facts: has_input FULI, has_output FINO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
+    Facts: has_input FULI, has_output FINO, has_cost 1.0
 	
 Individual: GENS
     Types: Service
-    Facts: has_input MI, has_output GENO , has_cost 1.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
+    Facts: has_input MI, has_output GENO , has_cost 1.0
 	
 Individual: SIFS
     Types: Service
-    Facts: has_input MI, has_output SIFO, has_cost 1.0, has_executable "edu.yale.abfab.TestSiftValueAnnotatedMutationService"
+    Facts: has_input MI, has_output SIFO, has_cost 1.0

@@ -301,6 +301,11 @@ public class Pellet3DLController implements DLController {
 	}
 
 	@Override
+	public DLLiteral<?> asLiteral(boolean val) {
+		return new DLLiteral<>(val);
+	}
+
+	@Override
 	public DLAxiom<?> newIndividual(String name, DLClassExpression<?> clz) {
 		return new DLAxiom<>(type(namedIndividual(name),
 				(ClassExpression) clz.get()));

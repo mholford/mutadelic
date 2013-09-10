@@ -3,6 +3,7 @@ package edu.yale.abfab;
 import java.util.Arrays;
 import java.util.Collection;
 
+import edu.yale.abfab.service.Service;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
@@ -12,6 +13,7 @@ public class SimpleStep extends Step {
 	private IndividualPlus output;
 	private DLController dl;
 	private DLIndividual<?> service;
+	private String executable;
 	private double cost = 0.0;
 
 	public SimpleStep(DLIndividual<?> service, Abductor abductor) {
@@ -28,6 +30,9 @@ public class SimpleStep extends Step {
 		cost = Double.parseDouble(dl.getLiteralValue(dl
 				.getDataPropertyValues(service, dl.dataProp(NS + "has_cost"))
 				.iterator().next()));
+		executable = dl
+				.getDataPropertyValues(service, dl.dataProp(NS + "has_executable"))
+				.iterator().next().toString();
 	}
 
 	@Override
@@ -37,7 +42,14 @@ public class SimpleStep extends Step {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input) {
-		return null;
+		IndividualPlus output = null;
+		try {
+			Service service = (Service) Class.forName(executable).newInstance();
+			output = service.exec(input, getAbductor());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return output;
 	}
 
 	@Override

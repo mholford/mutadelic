@@ -1,9 +1,12 @@
 package edu.yale.abfab.service;
 
-import edu.yale.dlgen.DLIndividual;
+import edu.yale.abfab.Abductor;
+import edu.yale.abfab.IndividualPlus;
 
 public interface Service {
-	
-	DLIndividual exec(DLIndividual input) throws AbfabServiceException;
+
+	IndividualPlus exec(IndividualPlus input, Abductor abductor)
+			throws AbfabServiceException;
+
 	double cost();
 }
