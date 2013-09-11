@@ -226,6 +226,14 @@ public interface DLController {
 	String getLiteralValue(DLLiteral<?> literal);
 	
 	DLLiteral<?> asLiteral(boolean val);
+	
+	DLLiteral<?> asLiteral(double val);
+	
+	DLLiteral<?> asLiteral(int val);
+	
+	DLLiteral<?> asLiteral(float val);
+	
+	DLLiteral<?> asLiteral(String val);
 
 	/**
 	 * Returns an individual with specified IRI cast as a {@link DLIndividual}

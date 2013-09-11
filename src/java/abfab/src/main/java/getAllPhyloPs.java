@@ -53,12 +53,12 @@ public class getAllPhyloPs {
 
    private File dlFile(String fname) throws IOException, InterruptedException {
       System.out.println("Download input for " + fname);
-      File outFile = new File(fname + "-input.gz");
+      File outFile = new File("phylop-" + fname + "-input.gz");
       List<String> inv = new ArrayList<String>();
       inv.add("curl");
       inv.add("-s");
       inv.add("-o");
-      inv.add(fname + "-input.gz");
+      inv.add("phylop-" + fname + "-input.gz");
       inv.add(String.format("%s/%s%s", ADDRESS, fname, FILE_SUFFIX));
       ProcessBuilder pb = new ProcessBuilder(inv);
       Process p = pb.start();

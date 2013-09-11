@@ -1,8 +1,12 @@
 package edu.yale.abfab;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import edu.yale.dlgen.DLAxiom;
@@ -58,6 +62,18 @@ public class Branch extends Step {
 			ax.addAll(input.getAxioms());
 			dl.addAxioms(ax);
 
+			//Run the cheapest path first so sort by cost
+			List<Path> costSortedPaths = new ArrayList<>(paths);
+			Collections.sort(costSortedPaths, new Comparator<Path>() {
+
+				@Override
+				public int compare(Path o1, Path o2) {
+					Double d1 = o1.getCost();
+					Double d2 = o2.getCost();
+					return d1.compareTo(d2);
+				}
+			});
+			
 			for (Path p : paths) {
 				outcomes.add(p.exec(input));
 				// peek and check if passes next step

@@ -259,9 +259,29 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLLiteral ol = (OWLLiteral) literal.get();
 		return ol.getLiteral();
 	}
-
+	
 	@Override
 	public DLLiteral<?> asLiteral(boolean val) {
+		return new DLLiteral<>(df.getOWLLiteral(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(double val) {
+		return new DLLiteral<>(df.getOWLLiteral(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(int val) {
+		return new DLLiteral<>(df.getOWLLiteral(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(float val) {
+		return new DLLiteral<>(df.getOWLLiteral(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(String val) {
 		return new DLLiteral<>(df.getOWLLiteral(val));
 	}
 

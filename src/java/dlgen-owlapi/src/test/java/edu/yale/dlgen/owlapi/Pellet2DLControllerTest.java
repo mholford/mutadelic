@@ -196,6 +196,36 @@ public class Pellet2DLControllerTest {
 	}
 
 	@Test
+	public void testBooleanAsLiteral() {
+		DLLiteral<?> lit = dl.asLiteral(true);
+		assertEquals("true", dl.getLiteralValue(lit));
+	}
+
+	@Test
+	public void testDoubleAsLiteral() {
+		DLLiteral<?> lit = dl.asLiteral(1.234d);
+		assertEquals("1.234", dl.getLiteralValue(lit));
+	}
+
+	@Test
+	public void testIntAsLiteral() {
+		DLLiteral<?> lit = dl.asLiteral(12);
+		assertEquals("12", dl.getLiteralValue(lit));
+	}
+
+	@Test
+	public void testFloatAsLiteral() {
+		DLLiteral<?> lit = dl.asLiteral(12.3f);
+		assertEquals("12.3", dl.getLiteralValue(lit));
+	}
+
+	@Test
+	public void testStringAsLiteral() {
+		DLLiteral<?> lit = dl.asLiteral("hello");
+		assertEquals("hello", dl.getLiteralValue(lit));
+	}
+
+	@Test
 	public void testGetObjectProperties() {
 		Collection<DLObjectPropertyExpression> objectProperties = dl
 				.getObjectProperties(new DLIndividual<>(df
@@ -294,11 +324,11 @@ public class Pellet2DLControllerTest {
 		DLClassExpression<?> clz = dl.andClass(dl.clazz(NS + "Person"),
 				dl.clazz(NS + "Guitarist"));
 		boolean b1 = String.format(
-				"ObjectIntersectionOf(<%sPerson> <%sGuitarist>)", NS, NS).equals(clz
-				.get().toString());
+				"ObjectIntersectionOf(<%sPerson> <%sGuitarist>)", NS, NS)
+				.equals(clz.get().toString());
 		boolean b2 = String.format(
-				"ObjectIntersectionOf(<%sGuitarist> <%sPerson>)", NS, NS).equals(clz
-				.get().toString());
+				"ObjectIntersectionOf(<%sGuitarist> <%sPerson>)", NS, NS)
+				.equals(clz.get().toString());
 		assertEquals(true, b1 || b2);
 	}
 

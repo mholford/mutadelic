@@ -30,9 +30,9 @@ public class SimpleStep extends Step {
 		cost = Double.parseDouble(dl.getLiteralValue(dl
 				.getDataPropertyValues(service, dl.dataProp(NS + "has_cost"))
 				.iterator().next()));
-		executable = dl
-				.getDataPropertyValues(service, dl.dataProp(NS + "has_executable"))
-				.iterator().next().toString();
+		executable = dl.getLiteralValue(dl
+				.getDataPropertyValues(service,
+						dl.dataProp(NS + "has_executable")).iterator().next());
 	}
 
 	@Override

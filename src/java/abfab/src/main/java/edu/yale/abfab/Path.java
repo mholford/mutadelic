@@ -1,5 +1,6 @@
 package edu.yale.abfab;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,8 +20,7 @@ public class Path {
 	private DLController dl;
 	private Abductor abductor;
 	private IndividualPlus initialInput;
-	private int execStep = -1;
-
+	private int execStep;
 	public Path(IndividualPlus initialInput, Abductor abductor) {
 		this.abductor = abductor;
 		dl = abductor.getDLController();
@@ -60,12 +60,13 @@ public class Path {
 		}
 		return sum;
 	}
-	
+
 	public Step nextStep() {
 		return steps.get(execStep + 1);
 	}
 
 	public IndividualPlus exec(IndividualPlus input) {
+		execStep = -1;
 		IndividualPlus out = null;
 		Set<DLAxiom<?>> ax = new HashSet<>();
 		try {
@@ -75,7 +76,8 @@ public class Path {
 			IndividualPlus in = input;
 			while (stepIter.hasNext()) {
 				Step step = stepIter.next();
-				if (!abductor.matchesInput(in, step.getInput())) {
+
+				if (!abductor.individualMatchesType(in, step.getInput())) {
 					return null;
 				}
 				++execStep;
@@ -89,6 +91,16 @@ public class Path {
 			dl.removeAxioms(ax);
 		}
 		return out;
+	}
+
+	private void debug() {
+		try {
+			dl.setOutputFile(new File(
+					"/home/matt/sw/abfab-integration-output.owl"));
+			dl.saveOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

@@ -302,7 +302,27 @@ public class Pellet3DLController implements DLController {
 
 	@Override
 	public DLLiteral<?> asLiteral(boolean val) {
-		return new DLLiteral<>(val);
+		return new DLLiteral<>(literal(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(double val) {
+		return new DLLiteral<>(literal(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(int val) {
+		return new DLLiteral<>(literal(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(float val) {
+		return new DLLiteral<>(literal(val));
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(String val) {
+		return new DLLiteral<>(literal(val));
 	}
 
 	@Override

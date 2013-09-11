@@ -55,7 +55,7 @@ public abstract class Abductor {
 	public String getNamespace() {
 		return namespace;
 	}
-	
+
 	public Path getExecutingPath() {
 		return executingPath;
 	}
@@ -206,7 +206,7 @@ public abstract class Abductor {
 		}
 		return m;
 	}
-	
+
 	public boolean partMatchesInput(Collection<IndividualPlus> ind,
 			Collection<IndividualPlus> input) {
 		Map<IndividualPlus, DLAxiom<?>> adds = new HashMap<>();
@@ -344,8 +344,6 @@ public abstract class Abductor {
 			dl.removeAxioms(drops);
 			dl.addAxioms(adds);
 
-			debug();
-
 			if (!dl.checkConsistency()) {
 				dl.removeAxioms(adds);
 				dl.addAxioms(drops);
@@ -357,6 +355,44 @@ public abstract class Abductor {
 		} finally {
 			dl.removeAxioms(ax);
 		}
+		return matches;
+	}
+
+	/* Does the individual (in) match the type of the other individual (typeIn)? */
+	public boolean individualMatchesType(IndividualPlus in,
+			Collection<IndividualPlus> typeIn) {
+		Set<DLAxiom<?>> ax = new HashSet<>();
+		DLClassExpression<?> typeClass = null;
+		boolean matches = false;
+		try {
+			dl.addAxioms(in.getAxioms());
+			ax.addAll(in.getAxioms());
+			Set<DLClassExpression<?>> join = new HashSet<>();
+			for (IndividualPlus tin : typeIn) {
+				for (DLClassExpression<?> t : dl.getTypes(tin.getIndividual())) {
+					if (!t.equals(dl.clazz(NS + "ServiceInput"))
+							&& !t.equals(dl.clazz(NS + "ServiceOutput"))) {
+						join.add(t);
+					}
+				}
+			}
+			if (join.size() == 1) {
+				typeClass = join.iterator().next();
+			} else if (join.size() > 1) {
+				typeClass = dl.andClass(join
+						.toArray(new DLClassExpression<?>[join.size()]));
+			}
+			if (typeClass != null) {
+				DLAxiom<?> newAx = dl.individualType(in.getIndividual(),
+						dl.notClass(typeClass));
+				dl.addAxiom(newAx);
+				ax.add(newAx);
+				matches = !dl.checkConsistency();
+			}
+		} finally {
+			dl.removeAxioms(ax);
+		}
+
 		return matches;
 	}
 

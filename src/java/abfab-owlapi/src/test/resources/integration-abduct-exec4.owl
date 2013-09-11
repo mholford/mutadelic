@@ -81,19 +81,28 @@ Class: GeneAnnotatedMutation
 	
 Class: SiftValueAnnotatedMutation
     EquivalentTo: Mutation that SIO:is_described_by some 
-	(Annotation that SIO:refers_to some SiftValue)
-	and (SIO:has_value min 1 xsd:string)
+	(Annotation that SIO:refers_to some 
+	(SiftValue that SIO:has_value min 1 xsd:double))
 	
-Class: FullyAnnotatedMutation
-    EquivalentTo: GeneAnnotatedMutation and SiftValueAnnotatedMutation
+Class: HighSiftMutation
+    EquivalentTo: SiftValueAnnotatedMutation that 
+        SIO:is_described_by some 
+            (Annotation that refers to some 
+                (SiftValue that SIO:has_value xsd:minInclusive 0.1)) 
 	
+Class: InterestingMutation
+    EquivalentTo: HighSiftMutation and GeneAnnotatedMutation
+    
 Class: FinishedMutation
     EquivalentTo: Mutation that SIO:is_described_by some
 	(Annotation that SIO:refers_to some CompletionStatus)
-	and (SIO:has_value min 1 xsd:string)
+	and (SIO:has_value min 1 xsd:string)    
 	
-Individual: FULI
-    Types: FullyAnnotatedMutation, ServiceInput      
+Individual: VEP
+    Types: SIO:InformationContentEntity	
+	
+Individual: IMI
+    Types: InterestingMutation, ServiceInput      
 	
 Individual: MI
     Types: Mutation, ServiceInput
@@ -109,11 +118,11 @@ Individual: SIFO
 	
 Individual: FINS
     Types: Service
-    Facts: has_input FULI, has_output FINO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
+    Facts: has_input IMI, has_output FINO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
 	
 Individual: GENS
     Types: Service
-    Facts: has_input MI, has_output GENO, has_cost 1.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
+    Facts: has_input MI, has_output GENO, has_cost 5.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
 	
 Individual: SIFS
     Types: Service
