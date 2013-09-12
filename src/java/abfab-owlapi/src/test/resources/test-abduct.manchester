@@ -7,6 +7,7 @@ ObjectProperty: has_input
 ObjectProperty: has_output
 
 DataProperty: has_cost
+DataProperty: has_executable
 
 Class: ServiceInput
 Class: ServiceOutput
@@ -29,8 +30,8 @@ Individual: CSO
 
 Individual: Service1
   Types: Service
-  Facts: has_input ASI, has_output BSO, has_cost 1.0
+  Facts: has_input ASI, has_output BSO, has_cost 1.0, has_executable "xyz"
 Individual: Service2
   Types: Service
-  Facts: has_input BSI, has_output CSO, has_cost 2.0
+  Facts: has_input BSI, has_output CSO, has_cost 2.0, has_executable "abc"
     

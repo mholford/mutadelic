@@ -152,7 +152,57 @@ public class OWLAPIIntegrationTest {
 								ref, dl.dataProp(SIO + "has_value"));
 						for (DLLiteral<?> val : vals) {
 							if (sift != null) {
-								System.out.println("Oops; more than one gene");
+								System.out.println("Oops; more than one sift value");
+								fail();
+							}
+							String preSift = dl.getLiteralValue(val);
+							sift = Double.parseDouble(preSift);
+						}
+					}
+				}
+			}
+			dl.removeAxioms(output.getAxioms());
+
+			assertEquals(new Double(0.5), sift);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testSimpleExecFDP() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("integration-abduct-exec4.owl")),
+					"Manchester");
+
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path p = abductor
+					.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output = abductor.exec(ip, p);
+
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			Double sift = null;
+			Collection<DLIndividual> descs = dl.getObjectPropertyValues(
+					output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(SIO + "has_value"));
+						for (DLLiteral<?> val : vals) {
+							if (sift != null) {
+								System.out.println("Oops; more than one sift value");
 								fail();
 							}
 							String preSift = dl.getLiteralValue(val);
@@ -175,7 +225,7 @@ public class OWLAPIIntegrationTest {
 	public void testConditionalExec() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
-					.getResourceAsStream("integration-abduct-exec3.owl")),
+					.getResourceAsStream("integration-abduct-exec5.owl")),
 					"Manchester");
 
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));

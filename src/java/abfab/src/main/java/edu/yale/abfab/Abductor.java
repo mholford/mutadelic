@@ -133,6 +133,8 @@ public abstract class Abductor {
 				}
 			}
 		}
+
+		// Next try pairs of Services
 		if (out.size() == 0) {
 			// try by two's
 			List<DLIndividual> instances = new ArrayList<>(dl.getInstances(dl
@@ -155,7 +157,21 @@ public abstract class Abductor {
 					out.add(np);
 				}
 			}
-
+		}
+		
+		// Next try facet-restricted subclasses
+		if (out.size() == 0) {
+			for (DLIndividual<?> s : dl.getInstances(dl.clazz(NS + "Service"))) {
+				Collection<DLIndividual> ios = dl.getObjectPropertyValues(s,
+						dl.objectProp(NS + "has_output"));
+				for (DLIndividual<?> io : ios) {
+					if (subclassMatchesOutput(ind, new IndividualPlus(io))) {
+						Path np = p.copy();
+						np.add(s);
+						out.add(np);
+					}
+				}
+			}
 		}
 		return out;
 	}
@@ -169,6 +185,12 @@ public abstract class Abductor {
 	public boolean matchesOutput(Collection<IndividualPlus> ind,
 			IndividualPlus output) {
 		return matchesOutput(ind,
+				Arrays.asList(new IndividualPlus[] { output }));
+	}
+
+	public boolean subclassMatchesOutput(Collection<IndividualPlus> ind,
+			IndividualPlus output) {
+		return subclassMatchesOutput(ind,
 				Arrays.asList(new IndividualPlus[] { output }));
 	}
 
@@ -227,8 +249,6 @@ public abstract class Abductor {
 		return m;
 	}
 
-	// If it's a list of ind (ie conjunction), try assigning ind to type
-	// conjunction of the type of has_output
 	public boolean matchesOutput(Collection<IndividualPlus> ind,
 			Collection<IndividualPlus> output) {
 		Map<IndividualPlus, Set<DLAxiom<?>>> adds = new HashMap<>();
@@ -262,6 +282,68 @@ public abstract class Abductor {
 
 		for (IndividualPlus ip : adds.keySet()) {
 			ip.getAxioms().removeAll(adds.get(ip));
+		}
+		return m;
+	}
+
+	public boolean subclassMatchesOutput(Collection<IndividualPlus> ind,
+			Collection<IndividualPlus> output) {
+		Map<IndividualPlus, Set<DLAxiom<?>>> adds = new HashMap<>();
+		Set<DLAxiom<?>> removes = new HashSet<>();
+		List<DLClassExpression<?>> serviceOutputs = new ArrayList<>();
+		for (IndividualPlus ip : output) {
+			Collection<DLIndividual> vals = dl.getObjectPropertyValues(
+					ip.getIndividual(), dl.objectProp(NS + "has_output"));
+			for (DLIndividual<?> i : vals) {
+				for (DLClassExpression<?> dce : dl.getTypes(i)) {
+					serviceOutputs.add(dce);
+				}
+			}
+			for (IndividualPlus out : output) {
+				Collection<DLClassExpression> dlTypes = dl.getTypes(out
+						.getIndividual());
+				for (DLClassExpression<?> dce : dl
+						.getTypes(out.getIndividual())) {
+
+					DLClass<?> dlc = new DLClass(dce.get());
+					for (DLClassExpression<?> sc : dl.getSubclasses(dlc)) {
+						serviceOutputs.add(sc);
+					}
+
+				}
+
+			}
+		}
+		for (IndividualPlus ip1 : output) {
+			adds.put(ip1, new HashSet<DLAxiom<?>>());
+			DLAxiom<?> ax1 = dl.individualType(ip1.getIndividual(),
+					dl.clazz(NS + "ServiceOutput"));
+			ip1.getAxioms().add(ax1);
+			adds.get(ip1).add(ax1);
+			Collection<DLClassExpression> origTypes = dl.getTypes(ip1
+					.getIndividual());
+			for (DLClassExpression<?> o : origTypes) {
+				DLAxiom<?> rem = dl.individualType(ip1.getIndividual(), o);
+				dl.removeAxiom(rem);
+				removes.add(rem);
+			}
+			for (DLClassExpression<?> so : serviceOutputs) {
+				DLAxiom<?> axx = dl.individualType(ip1.getIndividual(), so);
+				ip1.getAxioms().add(axx);
+				adds.get(ip1).add(axx);
+			}
+		}
+		boolean m = matches(
+				ind,
+				output,
+				Arrays.asList(new String[] { NS + "ServiceOutput",
+						NS + "ServiceInput" }));
+
+		for (IndividualPlus ip : adds.keySet()) {
+			ip.getAxioms().removeAll(adds.get(ip));
+		}
+		for (DLAxiom<?> rem : removes) {
+			dl.addAxiom(rem);
 		}
 		return m;
 	}
@@ -306,17 +388,19 @@ public abstract class Abductor {
 			Set<DLAxiom<?>> drops = new HashSet<>();
 
 			for (DLClassExpression<?> i2o : i2Outputs) {
-				for (DLClassExpression<?> i1o : i1Outputs) {
-					Collection<DLAxiom> axioms = dl.getAxioms();
-					Set<DLAxiom<?>> ax1s = new HashSet<>();
-					for (IndividualPlus ip1 : i1) {
-						DLAxiom<?> ax1 = dl.individualType(ip1.getIndividual(),
-								i2o);
-						ax1s.add(ax1);
-						if (!dl.containsAxiom(ax1)) {
-							adds.add(ax1);
-						}
+
+				Collection<DLAxiom> axioms = dl.getAxioms();
+				Set<DLAxiom<?>> ax1s = new HashSet<>();
+				for (IndividualPlus ip1 : i1) {
+					DLAxiom<?> ax1 = dl
+							.individualType(ip1.getIndividual(), i2o);
+					ax1s.add(ax1);
+					if (!dl.containsAxiom(ax1)) {
+						adds.add(ax1);
 					}
+				}
+
+				for (DLClassExpression<?> i1o : i1Outputs) {
 					Set<DLAxiom<?>> ax2s = new HashSet<>();
 					for (IndividualPlus ip1 : i1) {
 						DLAxiom<?> ax2 = dl.individualType(ip1.getIndividual(),
@@ -343,7 +427,7 @@ public abstract class Abductor {
 			}
 			dl.removeAxioms(drops);
 			dl.addAxioms(adds);
-
+			debug();
 			if (!dl.checkConsistency()) {
 				dl.removeAxioms(adds);
 				dl.addAxioms(drops);
