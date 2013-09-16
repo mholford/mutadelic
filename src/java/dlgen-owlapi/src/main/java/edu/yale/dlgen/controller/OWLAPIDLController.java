@@ -24,6 +24,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -259,7 +260,7 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLLiteral ol = (OWLLiteral) literal.get();
 		return ol.getLiteral();
 	}
-	
+
 	@Override
 	public DLLiteral<?> asLiteral(boolean val) {
 		return new DLLiteral<>(df.getOWLLiteral(val));
@@ -305,7 +306,7 @@ public abstract class OWLAPIDLController implements DLController {
 	@Override
 	public DLClassExpression<?> andClass(DLClassExpression<?>... clz) {
 		Set<OWLClassExpression> toJoin = new HashSet<>();
-		for (DLClassExpression<?> c:clz) {
+		for (DLClassExpression<?> c : clz) {
 			toJoin.add((OWLClassExpression) c.get());
 		}
 		return new DLClassExpression<>(df.getOWLObjectIntersectionOf(toJoin));
@@ -333,7 +334,7 @@ public abstract class OWLAPIDLController implements DLController {
 			OWLIndividual ind) {
 		OWLClassExpression oce = (OWLClassExpression) clz.get();
 		OWLClassAssertionAxiom ax = df.getOWLClassAssertionAxiom(oce, ind);
-//		manager.addAxiom(ontology, ax);
+		// manager.addAxiom(ontology, ax);
 		return new DLAxiom<OWLAxiom>(ax);
 	}
 
@@ -344,6 +345,36 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
+	public DLAxiom<?> clazzRestriction(DLClassExpression<?> clz,
+			DLObjectPropertyExpression<?> prop, DLClassExpression<?> restriction) {
+		OWLClassExpression c = (OWLClassExpression) clz.get();
+		OWLObjectPropertyExpression op = (OWLObjectPropertyExpression) prop
+				.get();
+		OWLClassExpression r = (OWLClassExpression) restriction.get();
+		OWLEquivalentClassesAxiom ax = df.getOWLEquivalentClassesAxiom(c,
+				df.getOWLObjectSomeValuesFrom(op, r));
+		return new DLAxiom<OWLAxiom>(ax);
+	}
+
+	@Override
+	public DLClassExpression<?> some(DLObjectPropertyExpression<?> prop,
+			DLClassExpression<?> restriction) {
+		OWLObjectPropertyExpression op = (OWLObjectPropertyExpression) prop
+				.get();
+		OWLClassExpression r = (OWLClassExpression) restriction.get();
+		return new DLClassExpression<OWLClassExpression>(
+				df.getOWLObjectSomeValuesFrom(op, r));
+	}
+
+	@Override
+	public DLAxiom<?> equiv(DLClassExpression<?> c1,
+			DLClassExpression<?> c2) {
+		OWLClassExpression oc1 = (OWLClassExpression) c1.get();
+		OWLClassExpression oc2 = (OWLClassExpression) c2.get();
+		return new DLAxiom<OWLAxiom>(df.getOWLEquivalentClassesAxiom(oc1, oc2));
+	}
+
+	@Override
 	public DLAxiom<?> newDataFact(DLIndividual<?> individual,
 			DLDataPropertyExpression<?> prop, DLLiteral<?> value) {
 		OWLIndividual ind = (OWLIndividual) individual.get();
@@ -351,7 +382,7 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLLiteral lit = (OWLLiteral) value.get();
 		OWLDataPropertyAssertionAxiom ax = df.getOWLDataPropertyAssertionAxiom(
 				dp, ind, lit);
-//		manager.addAxiom(ontology, ax);
+		// manager.addAxiom(ontology, ax);
 		return new DLAxiom<OWLAxiom>(ax);
 	}
 
@@ -364,7 +395,7 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLIndividual val = (OWLIndividual) value.get();
 		OWLObjectPropertyAssertionAxiom ax = df
 				.getOWLObjectPropertyAssertionAxiom(op, ind, val);
-//		manager.addAxiom(ontology, ax);
+		// manager.addAxiom(ontology, ax);
 		return new DLAxiom<OWLAxiom>(ax);
 	}
 

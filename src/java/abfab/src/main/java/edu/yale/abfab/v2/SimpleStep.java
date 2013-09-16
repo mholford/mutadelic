@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import edu.yale.abfab.v2.service.Service;
+import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
@@ -66,6 +67,11 @@ public class SimpleStep extends Step {
 	public SimpleStep copy() {
 		SimpleStep out = new SimpleStep(service, getAbductor());
 		return out;
+	}
+
+	@Override
+	public Collection<DLClassExpression> getDLClasses() {
+		return dl.getTypes(service);
 	}
 
 	@Override

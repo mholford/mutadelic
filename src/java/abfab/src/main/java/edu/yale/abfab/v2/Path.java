@@ -150,6 +150,10 @@ public class Path {
 			return false;
 		return true;
 	}
+	
+	public Collection<DLClassExpression> getTopStepDLClasses() {
+		return steps.get(0).getDLClasses();
+	}
 
 	public IndividualPlus getLastOutput() {
 		return steps.get(0).getOutput();

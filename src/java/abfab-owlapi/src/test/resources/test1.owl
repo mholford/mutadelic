@@ -1,0 +1,55 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: has_input
+	
+ObjectProperty: has_output
+
+DataProperty: has_cost
+
+DataProperty: has_executable
+	
+Class: ServiceInput
+Class: ServiceOutput
+
+Class: Service
+    EquivalentTo: (has_input some ServiceInput) and (has_output some ServiceOutput)
+	
+Class: Mutation
+
+Class: GeneAnnotatedMutation
+	
+Class: FullyAnnotatedMutation
+    EquivalentTo: GeneAnnotatedMutation #and SiftValueAnnotatedMutation
+	
+Class: FinishedMutation
+	
+Class: FinishedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some FullyAnnotatedMutation) and (has_output some FinishedMutation)
+	
+Class: GeneAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some GeneAnnotatedMutation)
+	
+Individual: FMI
+    Types: FullyAnnotatedMutation
+	
+Individual: FMO
+    Types: FinishedMutation
+	
+Individual: GMI
+    Types: Mutation
+
+Individual: GMO
+    Types: GeneAnnotatedMutation
+
+Individual: FMS
+    Types: FinishedMutationService
+    Facts: has_input FMI, has_output FMO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
+	
+Individual: GMS
+    Types: GeneAnnotatedMutationService
+    Facts: has_input GMI, has_output GMO, has_cost 1.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
+	

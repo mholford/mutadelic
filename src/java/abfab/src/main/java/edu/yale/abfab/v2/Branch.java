@@ -118,6 +118,15 @@ public class Branch extends Step {
 	}
 
 	@Override
+	public Collection<DLClassExpression> getDLClasses() {
+		Set<DLClassExpression> output = new HashSet<>();
+		for (Path p : paths) {
+			output.addAll(p.getTopStepDLClasses());
+		}
+		return output;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");

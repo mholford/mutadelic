@@ -224,15 +224,15 @@ public interface DLController {
 	 * @return The lexical value of the literal
 	 */
 	String getLiteralValue(DLLiteral<?> literal);
-	
+
 	DLLiteral<?> asLiteral(boolean val);
-	
+
 	DLLiteral<?> asLiteral(double val);
-	
+
 	DLLiteral<?> asLiteral(int val);
-	
+
 	DLLiteral<?> asLiteral(float val);
-	
+
 	DLLiteral<?> asLiteral(String val);
 
 	/**
@@ -311,6 +311,14 @@ public interface DLController {
 	 */
 	DLAxiom<?> individualType(DLIndividual<?> individual,
 			DLClassExpression<?> clz);
+
+	DLAxiom<?> clazzRestriction(DLClassExpression<?> clz,
+			DLObjectPropertyExpression<?> prop, DLClassExpression<?> restriction);
+
+	DLClassExpression<?> some(DLObjectPropertyExpression<?> prop,
+			DLClassExpression<?> restriction);
+	
+	DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**
 	 * Returns an axiom asserting a fact about an individual via a data property
