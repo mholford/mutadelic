@@ -97,23 +97,27 @@ public abstract class OWLAPIDLController implements DLController {
 	public void addAxiom(DLAxiom<?> axiom) {
 		OWLAxiom ax = (OWLAxiom) axiom.get();
 		manager.addAxiom(ontology, ax);
+		reasoner.flush();
 	}
 
 	@Override
 	public void addAxioms(Set<DLAxiom<?>> axioms) {
 		Set<OWLAxiom> ax = CollUtils.cast(axioms);
 		manager.addAxioms(ontology, ax);
+		reasoner.flush();
 	}
 
 	@Override
 	public void removeAxiom(DLAxiom<?> axiom) {
 		manager.removeAxiom(ontology, (OWLAxiom) axiom.get());
+		reasoner.flush();
 	}
 
 	@Override
 	public void removeAxioms(Set<DLAxiom<?>> axioms) {
 		Set<OWLAxiom> ax = CollUtils.cast(axioms);
 		manager.removeAxioms(ontology, ax);
+		reasoner.flush();
 	}
 
 	@Override
@@ -367,11 +371,16 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
-	public DLAxiom<?> equiv(DLClassExpression<?> c1,
-			DLClassExpression<?> c2) {
+	public DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2) {
 		OWLClassExpression oc1 = (OWLClassExpression) c1.get();
 		OWLClassExpression oc2 = (OWLClassExpression) c2.get();
 		return new DLAxiom<OWLAxiom>(df.getOWLEquivalentClassesAxiom(oc1, oc2));
+	}
+
+	@Override
+	public DLAxiom<?> newClazz(DLClassExpression<?> c) {
+		OWLClass oc = (OWLClass) c.get();
+		return new DLAxiom<OWLAxiom>(df.getOWLDeclarationAxiom(oc));
 	}
 
 	@Override

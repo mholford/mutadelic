@@ -318,6 +318,8 @@ public interface DLController {
 	DLClassExpression<?> some(DLObjectPropertyExpression<?> prop,
 			DLClassExpression<?> restriction);
 	
+	DLAxiom<?> newClazz(DLClassExpression<?> c);
+	
 	DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**

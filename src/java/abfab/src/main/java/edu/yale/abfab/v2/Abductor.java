@@ -2,10 +2,13 @@ package edu.yale.abfab.v2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +16,7 @@ import edu.yale.abfab.v2.Path;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
+import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
 
 import static edu.yale.abfab.v2.NS.*;
@@ -83,6 +87,7 @@ public abstract class Abductor {
 	}
 
 	public boolean matchesInput(IndividualPlus i, Path p) {
+		boolean matches = false;
 		try {
 			dl.addAxioms(i.getAxioms());
 			// Get Class representing top step of the Path
@@ -101,24 +106,10 @@ public abstract class Abductor {
 							.getObjectPropertyValues(pathTopClassI,
 									dl.objectProp(NS + "has_output"));
 					for (DLIndividual<?> pathTopClassOutput : pathTopClassOutputs) {
-						Set<DLAxiom<?>> ax = new HashSet<>();
-						ax.add(dl.newObjectFact(testServiceI.getIndividual(),
+						matches = serviceClassMatches(i, pathTopClass,
+								testServiceI, pathTopClassOutput,
 								dl.objectProp(NS + "has_output"),
-								pathTopClassOutput));
-						// Set the input of the new individual to the individual
-						// we are checking
-						ax.add(dl.newObjectFact(testServiceI.getIndividual(),
-								dl.objectProp(NS + "has_input"),
-								i.getIndividual()));
-						ax.add(dl.individualType(testServiceI.getIndividual(),
-								dl.notClass(pathTopClass)));
-						dl.addAxioms(ax);
-						debug();
-						// Check entailed return if entailed
-						if (!dl.checkConsistency()) {
-							return true;
-						}
-						dl.removeAxioms(ax);
+								dl.objectProp(NS + "has_input"));
 					}
 				}
 			}
@@ -126,7 +117,7 @@ public abstract class Abductor {
 			dl.removeAxioms(i.getAxioms());
 		}
 
-		return false;
+		return matches;
 	}
 
 	public Collection<Collection<IndividualPlus>> findServiceOutputMatch(
@@ -140,59 +131,19 @@ public abstract class Abductor {
 					.clazz(NS + "Service"))) {
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
-				serviceI.getAxioms().add(
-						dl.individualType(dl.individual(NS + "testService"),
-								dl.clazz(NS + "Service")));
+				// serviceI.getAxioms().add(
+				// dl.individualType(dl.individual(NS + "testService"),
+				// dl.clazz(NS + "Service")));
 				for (DLIndividual<?> serviceClassI : dl
 						.getInstances(serviceClass)) {
 					Collection<DLIndividual> serviceClassInputs = dl
 							.getObjectPropertyValues(serviceClassI,
 									dl.objectProp(NS + "has_input"));
 					for (DLIndividual<?> serviceClassInput : serviceClassInputs) {
-						Set<DLAxiom<?>> ax = new HashSet<>();
-						ax.add(dl.newObjectFact(serviceI.getIndividual(),
+						boolean add = serviceClassMatches(i, serviceClass,
+								serviceI, serviceClassInput,
 								dl.objectProp(NS + "has_input"),
-								serviceClassInput));
-						ax.add(dl.newObjectFact(serviceI.getIndividual(),
-								dl.objectProp(NS + "has_output"),
-								i.getIndividual()));
-						ax.add(dl.individualType(serviceI.getIndividual(),
-								dl.notClass(serviceClass)));
-						dl.addAxioms(ax);
-						debug();
-						boolean add = false;
-						if (!dl.checkConsistency()) {
-							add = true;
-						}
-						dl.removeAxioms(ax);
-
-						if (add) {
-							ax = new HashSet<>();
-							for (DLClassExpression<?> serviceClassInputClass : dl
-									.getTypes(serviceClassInput)) {
-								for (DLClassExpression<?> iClass : dl
-										.getTypes(i.getIndividual())) {
-									ax.add(dl.equiv(dl.clazz(NS + "TestC"), dl
-											.andClass(dl.some(
-													dl.objectProp(NS
-															+ "has_input"),
-													serviceClassInputClass), dl
-													.some(dl.objectProp(NS
-															+ "has_output"),
-															iClass))));
-								}
-							}
-							ax.add(dl.individualType(
-									dl.individual(NS + "testI"), serviceClass));
-							ax.add(dl.individualType(
-									dl.individual(NS + "testI"),
-									dl.notClass(dl.clazz(NS + "TestC"))));
-							dl.addAxioms(ax);
-
-							add = !dl.checkConsistency();
-							debug();
-							dl.removeAxioms(ax);
-						}
+								dl.objectProp(NS + "has_output"));
 
 						if (add) {
 							output.add(Arrays
@@ -202,10 +153,206 @@ public abstract class Abductor {
 					}
 				}
 			}
+
+			if (output.size() == 0) {
+				debug();
+				Collection<DLAxiom> axioms = dl.getAxioms();
+				List<DLClassExpression> serviceClasses = new ArrayList<>(
+						dl.getSubclasses(dl.clazz(NS + "Service")));
+				List<List<DLClassExpression<?>>> serviceClassPairs = new ArrayList<>();
+				for (int j = 0; j < serviceClasses.size(); j++) {
+					for (int k = j + 1; k < serviceClasses.size(); k++) {
+						serviceClassPairs.add(Arrays
+								.asList(new DLClassExpression<?>[] {
+										serviceClasses.get(j),
+										serviceClasses.get(k) }));
+					}
+				}
+
+				for (List<DLClassExpression<?>> serviceClassPair : serviceClassPairs) {
+					IndividualPlus serviceI = new IndividualPlus(
+							dl.individual(NS + "testService"));
+
+					// Get distinct n-tuples of service class instances where n
+					// is size of "pair"
+					Map<Integer, Collection<DLIndividual>> serviceClassMap = new HashMap<>();
+					int cnt = 0;
+					for (DLClassExpression<?> serviceClass : serviceClassPair) {
+						Collection<DLIndividual> serviceClassIList = dl
+								.getInstances(serviceClass);
+						serviceClassMap.put(cnt, serviceClassIList);
+						cnt++;
+					}
+					cnt = 0;
+					List<List<IndividualPlus>> prevLists = new ArrayList<>();
+					for (Integer c : serviceClassMap.keySet()) {
+						List<List<IndividualPlus>> newLists = new ArrayList<>();
+						Collection<DLIndividual> serviceClassIList = serviceClassMap
+								.get(c);
+						if (prevLists.size() == 0) {
+							for (DLIndividual serviceClassI : serviceClassIList) {
+								List<IndividualPlus> newIList = new ArrayList<>();
+								newIList.add(new IndividualPlus(serviceClassI));
+								newLists.add(newIList);
+							}
+						} else {
+							for (List<IndividualPlus> prevList : prevLists) {
+								for (DLIndividual serviceClassI : serviceClassIList) {
+									List<IndividualPlus> newIList = new ArrayList<>();
+									newIList.addAll(prevList);
+									newIList.add(new IndividualPlus(
+											serviceClassI));
+									newLists.add(newIList);
+								}
+							}
+						}
+						prevLists = newLists;
+					}
+					List<List<IndividualPlus>> serviceClassIPairs = prevLists;
+
+					for (List<IndividualPlus> serviceClassIPair : serviceClassIPairs) {
+
+						// Get distinct n-tuples of serviceClassInputs where n
+						// is size of "pair"
+						Map<Integer, Collection<DLIndividual>> serviceClassInputMap = new HashMap<>();
+						cnt = 0;
+						for (IndividualPlus serviceClassI : serviceClassIPair) {
+							Collection<DLIndividual> serviceClassInputList = dl
+									.getObjectPropertyValues(
+											serviceClassI.getIndividual(),
+											dl.objectProp(NS + "has_input"));
+							serviceClassInputMap
+									.put(cnt, serviceClassInputList);
+							cnt++;
+						}
+						cnt = 0;
+						List<List<DLIndividual>> prevLists2 = new ArrayList<>();
+						for (Integer c : serviceClassInputMap.keySet()) {
+							List<List<DLIndividual>> newLists = new ArrayList<>();
+							Collection<DLIndividual> serviceClassInputList = serviceClassInputMap
+									.get(c);
+							if (prevLists2.size() == 0) {
+								for (DLIndividual serviceClassInput : serviceClassInputList) {
+									List<DLIndividual> newInputList = new ArrayList<>();
+									newInputList.add(serviceClassInput);
+									newLists.add(newInputList);
+								}
+							} else {
+								for (List<DLIndividual> prevList : prevLists2) {
+									for (DLIndividual serviceClassInput : serviceClassInputList) {
+										List<DLIndividual> newInputList = new ArrayList<>();
+										newInputList.addAll(prevList);
+										newInputList.add(serviceClassInput);
+										newLists.add(newInputList);
+									}
+								}
+							}
+							prevLists2 = newLists;
+						}
+
+						List<List<DLIndividual>> serviceClassInputPairs = prevLists2;
+
+						for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
+							debug();
+							boolean add = serviceClassMatches(i,
+									serviceClassPair, serviceI,
+									serviceClassInputPair,
+									dl.objectProp(NS + "has_input"),
+									dl.objectProp(NS + "has_output"));
+							if (add) {
+								List<IndividualPlus> toReturn = new ArrayList<>();
+								for (DLIndividual<?> s:serviceClassInputPair) {
+									toReturn.add(new IndividualPlus(s));
+								}
+//								output.add(serviceClassIPair);
+								output.add(toReturn);
+							}
+						}
+					}
+				}
+			}
 		} finally {
 			dl.removeAxioms(i.getAxioms());
 		}
 		return output;
+	}
+
+	private boolean serviceClassMatches(IndividualPlus testI,
+			DLClassExpression<?> serviceClass, IndividualPlus serviceClassI,
+			DLIndividual<?> serviceClassIFiller,
+			DLObjectPropertyExpression<?> propToKeep,
+			DLObjectPropertyExpression<?> propToReplace) {
+		return serviceClassMatches(testI,
+				Arrays.asList(new DLClassExpression<?>[] { serviceClass }),
+				serviceClassI,
+				Arrays.asList(new DLIndividual[] { serviceClassIFiller }),
+				propToKeep, propToReplace);
+	}
+
+	private boolean serviceClassMatches(IndividualPlus testI,
+			Collection<DLClassExpression<?>> serviceClasses,
+			IndividualPlus serviceClassI,
+			Collection<DLIndividual> serviceClassIFillers,
+			DLObjectPropertyExpression<?> propToKeep,
+			DLObjectPropertyExpression<?> propToReplace) {
+		Set<DLAxiom<?>> ax = new HashSet<>();
+		for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
+			ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToKeep,
+					serviceClassIFiller));
+		}
+		ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToReplace,
+				testI.getIndividual()));
+
+		DLClassExpression<?> serv;
+		if (serviceClasses.size() > 1) {
+			DLClassExpression<?>[] sc = new DLClassExpression[serviceClasses
+					.size()];
+			int cnt = 0;
+			for (DLClassExpression<?> service : serviceClasses) {
+				sc[cnt] = service;
+				cnt++;
+			}
+			serv = dl.andClass(sc);
+		} else {
+			serv = serviceClasses.iterator().next();
+		}
+		ax.add(dl.individualType(serviceClassI.getIndividual(),
+				dl.notClass(serv)));
+		dl.addAxioms(ax);
+		debug();
+		boolean add = false;
+		if (!dl.checkConsistency()) {
+			add = true;
+		}
+		dl.removeAxioms(ax);
+
+		if (add && serviceClasses.size() == 1) {
+			ax = new HashSet<>();
+			for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
+				for (DLClassExpression<?> serviceClassInputClass : dl
+						.getTypes(serviceClassIFiller)) {
+					for (DLClassExpression<?> iClass : dl.getTypes(testI
+							.getIndividual())) {
+						ax.add(dl.newClazz(dl.clazz(NS + "TestC")));
+						ax.add(dl.equiv(dl.clazz(NS + "TestC"), dl.andClass(
+								dl.some(propToKeep, serviceClassInputClass),
+								dl.some(propToReplace, iClass))));
+					}
+				}
+			}
+			for (DLClassExpression<?> serviceClass : serviceClasses) {
+				ax.add(dl.individualType(dl.individual(NS + "testI"),
+						serviceClass));
+			}
+			ax.add(dl.individualType(dl.individual(NS + "testI"),
+					dl.notClass(dl.clazz(NS + "TestC"))));
+			dl.addAxioms(ax);
+
+			add = !dl.checkConsistency();
+			debug();
+			dl.removeAxioms(ax);
+		}
+		return add;
 	}
 
 	public Set<Path> extendPath(Path p, IndividualPlus origInput,
