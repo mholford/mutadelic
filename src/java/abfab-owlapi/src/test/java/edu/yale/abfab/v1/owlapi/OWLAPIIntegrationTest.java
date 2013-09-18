@@ -1,7 +1,7 @@
-package edu.yale.abfab.owlapi;
+package edu.yale.abfab.v1.owlapi;
 
 import static org.junit.Assert.*;
-import static edu.yale.abfab.NS.*;
+import static edu.yale.abfab.old.NS.*;
 
 import java.io.InputStreamReader;
 import java.util.Collection;
@@ -9,9 +9,11 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.yale.abfab.IndividualPlus;
-import edu.yale.abfab.Path;
 import edu.yale.abfab.TestVals;
+import edu.yale.abfab.old.IndividualPlus;
+import edu.yale.abfab.old.Path;
+import edu.yale.abfab.owlapi.HermitAbductor;
+import edu.yale.abfab.owlapi.OWLAPIAbductor;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.controller.DLController;

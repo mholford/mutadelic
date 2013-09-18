@@ -10,11 +10,8 @@ DataProperty: has_cost
 
 DataProperty: has_executable
 	
-Class: ServiceInput
-Class: ServiceOutput
-
 Class: Service
-    EquivalentTo: (has_input some ServiceInput) and (has_output some ServiceOutput)
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
 	
 Class: Mutation
 

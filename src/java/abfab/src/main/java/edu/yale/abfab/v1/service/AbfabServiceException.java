@@ -1,4 +1,4 @@
-package edu.yale.abfab.v2.service;
+package edu.yale.abfab.v1.service;
 
 @SuppressWarnings("serial")
 public class AbfabServiceException extends Exception {

@@ -1,4 +1,4 @@
-package edu.yale.abfab.v2;
+package edu.yale.abfab;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,9 @@ public class Branch extends Step {
 		dl = abductor.getDLController();
 		paths = new HashSet<>();
 		for (DLIndividual<?> i : inds) {
-			Path p = abductor.getBestPath(initialInput, new IndividualPlus(i));
+			Set<DLIndividual> terminals = new HashSet<>();
+			terminals.add(i);
+			Path p = abductor.getBestPathToServices(initialInput, terminals);
 			paths.add(p);
 		}
 	}
@@ -60,7 +62,7 @@ public class Branch extends Step {
 			ax.addAll(input.getAxioms());
 			dl.addAxioms(ax);
 
-			// Run the cheapest path first so sort by cost
+			//Run the cheapest path first so sort by cost
 			List<Path> costSortedPaths = new ArrayList<>(paths);
 			Collections.sort(costSortedPaths, new Comparator<Path>() {
 
@@ -71,15 +73,15 @@ public class Branch extends Step {
 					return d1.compareTo(d2);
 				}
 			});
-
+			
 			for (Path p : paths) {
 				outcomes.add(p.exec(input));
 				// peek and check if passes next step
-				// Abductor ab = getAbductor();
-				// Step nextStep = ab.getExecutingPath().nextStep();
-				// if (!ab.partMatchesInput(outcomes, nextStep.getInput())) {
-				// return null;
-				// }
+				Abductor ab = getAbductor();
+				Step nextStep = ab.getExecutingPath().nextStep();
+				if (!ab.partMatchesInput(outcomes, nextStep.getInput())) {
+					return null;
+				}
 			}
 			out = mergeIndividuals(outcomes);
 		} finally {
@@ -115,15 +117,6 @@ public class Branch extends Step {
 			outcomes.add(p.getLastOutput());
 		}
 		return mergeIndividuals(outcomes);
-	}
-
-	@Override
-	public Collection<DLClassExpression> getDLClasses() {
-		Set<DLClassExpression> output = new HashSet<>();
-		for (Path p : paths) {
-			output.addAll(p.getTopStepDLClasses());
-		}
-		return output;
 	}
 
 	@Override

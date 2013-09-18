@@ -3,6 +3,8 @@ package edu.yale.abfab;
 import java.util.Set;
 import java.util.UUID;
 
+import edu.yale.abfab.Abductor;
+import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.abfab.service.Service;
 import edu.yale.dlgen.DLAxiom;

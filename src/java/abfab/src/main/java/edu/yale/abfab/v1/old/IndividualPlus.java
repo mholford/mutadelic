@@ -1,4 +1,4 @@
-package edu.yale.abfab.v2;
+package edu.yale.abfab;
 
 import java.util.HashSet;
 import java.util.Set;

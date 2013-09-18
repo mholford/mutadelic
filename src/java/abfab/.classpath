@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="edu/yale/abfab/old/|edu/yale/abfab/old/service/|edu/yale/abfab/old/vep/" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="edu/yale/abfab/old/|edu/yale/abfab/old/service/|edu/yale/abfab/old/vep/|edu/yale/abfab/v1/|edu/yale/abfab/v1/old/|edu/yale/abfab/v1/old/service/|edu/yale/abfab/v1/old/vep/|edu/yale/abfab/v1/service/" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

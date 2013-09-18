@@ -1,4 +1,4 @@
-package edu.yale.abfab.v2;
+package edu.yale.abfab.v1;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ public class Path {
 	private Abductor abductor;
 	private IndividualPlus initialInput;
 	private int execStep;
-
 	public Path(IndividualPlus initialInput, Abductor abductor) {
 		this.abductor = abductor;
 		dl = abductor.getDLController();
@@ -39,18 +38,14 @@ public class Path {
 		return out;
 	}
 
-	public void add(Collection<IndividualPlus> inds) {
+	public void add(Collection<DLIndividual<?>> inds) {
 		if (inds == null || inds.size() == 0) {
 			throw new RuntimeException("Invalid addition to path");
 		}
 		if (inds.size() == 1) {
-			add(inds.iterator().next().getIndividual());
+			add(inds.iterator().next());
 		} else {
-			List<DLIndividual<?>> l = new ArrayList<>();
-			for (IndividualPlus ip : inds) {
-				l.add(ip.getIndividual());
-			}
-			steps.add(0, new Branch(l, initialInput, abductor));
+			steps.add(0, new Branch(inds, initialInput, abductor));
 		}
 	}
 
@@ -82,9 +77,9 @@ public class Path {
 			while (stepIter.hasNext()) {
 				Step step = stepIter.next();
 
-				// if (!abductor.individualMatchesType(in, step.getInput())) {
-				// return null;
-				// }
+				if (!abductor.individualMatchesType(in, step.getInput())) {
+					return null;
+				}
 				++execStep;
 				out = step.exec(in);
 				if (out == null) {
@@ -150,16 +145,12 @@ public class Path {
 			return false;
 		return true;
 	}
-	
-	public Collection<DLClassExpression> getTopStepDLClasses() {
-		return steps.get(0).getDLClasses();
-	}
 
-	public IndividualPlus getLastOutput() {
+	IndividualPlus getLastOutput() {
 		return steps.get(0).getOutput();
 	}
 
-	public Collection<IndividualPlus> getLastInput() {
+	Collection<IndividualPlus> getLastInput() {
 		return steps.get(0).getInput();
 	}
 }

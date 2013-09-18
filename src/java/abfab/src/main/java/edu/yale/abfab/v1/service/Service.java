@@ -1,8 +1,7 @@
-package edu.yale.abfab.v2.service;
+package edu.yale.abfab.v1.service;
 
-import edu.yale.abfab.v2.Abductor;
-import edu.yale.abfab.v2.IndividualPlus;
-
+import edu.yale.abfab.old.Abductor;
+import edu.yale.abfab.old.IndividualPlus;
 
 public interface Service {
 

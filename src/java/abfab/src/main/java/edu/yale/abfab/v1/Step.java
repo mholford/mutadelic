@@ -1,4 +1,4 @@
-package edu.yale.abfab.v2;
+package edu.yale.abfab.v1;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,8 +32,6 @@ public abstract class Step {
 	public abstract IndividualPlus getOutput();
 	
 	public abstract Step copy();
-	
-	public abstract Collection<DLClassExpression> getDLClasses();
 
 	public Abductor getAbductor() {
 		return abductor;

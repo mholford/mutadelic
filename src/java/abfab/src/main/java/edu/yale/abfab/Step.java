@@ -32,6 +32,8 @@ public abstract class Step {
 	public abstract IndividualPlus getOutput();
 	
 	public abstract Step copy();
+	
+	public abstract Collection<DLClassExpression> getDLClasses();
 
 	public Abductor getAbductor() {
 		return abductor;
