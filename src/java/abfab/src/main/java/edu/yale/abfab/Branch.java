@@ -55,6 +55,7 @@ public class Branch extends Step {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input) {
+		Abductor ab = getAbductor();
 		Set<IndividualPlus> outcomes = new HashSet<>();
 		IndividualPlus out = null;
 		Set<DLAxiom<?>> ax = new HashSet<>();
@@ -74,62 +75,74 @@ public class Branch extends Step {
 				}
 			});
 
-			for (Path p : paths) {
-				outcomes.add(p.exec(input));
-				// peek and check if passes next step
-				Abductor ab = getAbductor();
-				Step currentStep = ab.getExecutingPath().currentStep();
-				Step nextStep = ab.getExecutingPath().nextStep();
+			Set<Path> unexecutedPaths = new HashSet<>(paths);
+			IndividualPlus currentEx = null;
+			for (Path p : costSortedPaths) {
+				unexecutedPaths.remove(p);
+				IndividualPlus latestOutcome = p.exec(input);
+				outcomes.add(latestOutcome);
 				for (IndividualPlus outcome : outcomes) {
-					dl.addAxioms(outcome.getAxioms());
+					currentEx = mergeIndividuals(outcomes);
+				}
 
-					for (DLClassExpression<?> cc : currentStep.getDLClasses()) {
-						for (DLClassExpression<?> nc : nextStep.getDLClasses()) {
-							for (DLIndividual<?> cci : dl.getInstances(cc)) {
-								for (DLIndividual<?> nci : dl.getInstances(nc)) {
-									for (DLIndividual<?> ncInput : dl
-											.getObjectPropertyValues(
-													nci,
-													dl.objectProp(NS
-															+ "has_input"))) {
-										Set<DLAxiom<?>> ax2 = new HashSet<>();
-										ax2.add(dl.individualType(
-												dl.individual(NS
-														+ "TestService"),
-												dl.clazz(NS + "Service")));
-										ax2.add(dl.newObjectFact(
-												dl.individual(NS
-														+ "TestService"),
-												dl.objectProp(NS + "has_input"),
-												outcome.getIndividual()));
-										ax2.add(dl.newObjectFact(
-												dl.individual(NS
-														+ "TestService"),
-												dl.objectProp(NS + "has_output"),
-												ncInput));
-										ax2.add(dl.individualType(
-												dl.individual(NS
-														+ "TestService"),
-												dl.notClass(cc)));
-										dl.addAxioms(ax2);
-										ab.debug();
-										if (dl.checkConsistency()) {
-											dl.removeAxioms(ax2);
-											return null;
-										} else {
-											dl.removeAxioms(ax2);
-										}
-									}
+				// peek and check if passes next step
+				Set<DLAxiom<?>> ax2 = new HashSet<>();
+				Step nextStep = ab.getExecutingPath().nextStep();
+
+				// Get classes of outputs of unexecutedPaths
+				Set<DLClassExpression<?>> otherPathOutputClasses = new HashSet<>();
+				for (Path up : unexecutedPaths) {
+					for (DLClassExpression<?> tc : up.getTopStepDLClasses()) {
+						for (DLIndividual<?> tci : dl.getInstances(tc)) {
+							for (DLIndividual<?> tcOut : dl
+									.getObjectPropertyValues(tci,
+											dl.objectProp(NS + "has_output"))) {
+								for (DLClassExpression<?> tcOutC : dl
+										.getTypes(tcOut)) {
+									otherPathOutputClasses.add(tcOutC);
 								}
 							}
 						}
 					}
+				}
 
-					dl.removeAxioms(outcome.getAxioms());
+				for (DLClassExpression<?> nc : nextStep.getDLClasses()) {
+					for (DLIndividual<?> nci : dl.getInstances(nc)) {
+						for (DLIndividual<?> ncOut : dl
+								.getObjectPropertyValues(nci,
+										dl.objectProp(NS + "has_output"))) {
+							DLIndividual<?> testI = dl.individual(NS + "testI");
+							ax2.add(dl.newObjectFact(testI,
+									dl.objectProp(NS + "has_output"), ncOut));
+							for (IndividualPlus outcome : outcomes) {
+								ax2.addAll(outcome.getAxioms());
+								ax2.add(dl.newObjectFact(testI,
+										dl.objectProp(NS + "has_input"),
+										outcome.getIndividual()));
+
+								for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
+									ax2.add(dl.individualType(
+											outcome.getIndividual(),
+											otherPathOutputClass));
+								}
+							}
+							ax2.add(dl.individualType(testI, dl.notClass(nc)));
+							dl.addAxioms(ax2);
+							boolean fail = false;
+							ab.debug();
+							if (dl.checkConsistency()) {
+								fail = true;
+							}
+							dl.removeAxioms(ax2);
+							if (fail) {
+								return null;
+							}
+						}
+					}
 				}
 			}
 
-			out = mergeIndividuals(outcomes);
+			out = currentEx;
 		} finally {
 			dl.removeAxioms(ax);
 		}

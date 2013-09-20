@@ -78,8 +78,8 @@ Class: GeneAnnotatedMutation
 	
 Class: SiftValueAnnotatedMutation
     EquivalentTo: Mutation that SIO:is_described_by some 
-	(Annotation that SIO:refers_to some SiftValue)
-	and (SIO:has_value min 1 xsd:string)
+	(Annotation that SIO:refers_to some 
+	(SiftValue that SIO:has_value min 1 xsd:double))
 	
 Class: FullyAnnotatedMutation
     EquivalentTo: GeneAnnotatedMutation and SiftValueAnnotatedMutation
