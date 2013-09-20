@@ -29,7 +29,7 @@ public abstract class Step {
 
 	public abstract Collection<IndividualPlus> getInput();
 
-	public abstract IndividualPlus getOutput();
+	public abstract Collection<IndividualPlus> getOutput();
 	
 	public abstract Step copy();
 	

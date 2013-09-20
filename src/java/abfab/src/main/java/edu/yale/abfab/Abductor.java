@@ -394,12 +394,12 @@ public abstract class Abductor {
 		Set<Path> output = new HashSet<>();
 		for (IndividualPlus gi : goalI) {
 			Collection<Collection<IndividualPlus>> services = findServiceOutputMatch(gi);
-			for (Collection<IndividualPlus> service : services) {
-				Path np = p != null ? p.copy() : new Path(origInput, this);
-				np.add(service);
-				output.add(np);
-			}
+
+			Path np = p != null ? p.copy() : new Path(origInput, this);
+			np.add(services);
+			output.add(np);
 		}
+
 		return output;
 	}
 

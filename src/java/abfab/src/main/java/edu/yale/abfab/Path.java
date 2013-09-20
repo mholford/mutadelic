@@ -39,20 +39,45 @@ public class Path {
 		return out;
 	}
 
-	public void add(Collection<IndividualPlus> inds) {
-		if (inds == null || inds.size() == 0) {
+	public void add(Collection<Collection<IndividualPlus>> collInds) {
+		if (collInds == null || collInds.size() == 0) {
 			throw new RuntimeException("Invalid addition to path");
 		}
-		if (inds.size() == 1) {
-			add(inds.iterator().next().getIndividual());
-		} else {
-			List<DLIndividual<?>> l = new ArrayList<>();
-			for (IndividualPlus ip : inds) {
-				l.add(ip.getIndividual());
+		Set<Step> ss = new HashSet<>();
+		for (Collection<IndividualPlus> inds : collInds) {
+			if (inds.size() == 1) {
+				ss.add(new SimpleStep(
+						inds.iterator().next().getIndividual(), abductor));
+			} else {
+				List<DLIndividual<?>> l = new ArrayList<>();
+				for (IndividualPlus ip:inds){
+					l.add(ip.getIndividual());
+				}
+				ss.add(new Branch(l, initialInput, abductor));
 			}
-			steps.add(0, new Branch(l, initialInput, abductor));
+		}
+		
+		if (ss.size() == 1) {
+			steps.add(0, ss.iterator().next());
+		} else {
+			steps.add(new Condition(ss, initialInput, abductor));
 		}
 	}
+
+//	public void add(Collection<IndividualPlus> inds) {
+//		if (inds == null || inds.size() == 0) {
+//			throw new RuntimeException("Invalid addition to path");
+//		}
+//		if (inds.size() == 1) {
+//			add(inds.iterator().next().getIndividual());
+//		} else {
+//			List<DLIndividual<?>> l = new ArrayList<>();
+//			for (IndividualPlus ip : inds) {
+//				l.add(ip.getIndividual());
+//			}
+//			steps.add(0, new Branch(l, initialInput, abductor));
+//		}
+//	}
 
 	public void add(DLIndividual<?> ind) {
 		steps.add(0, new SimpleStep(ind, abductor));
@@ -69,7 +94,7 @@ public class Path {
 	public Step nextStep() {
 		return steps.get(execStep + 1);
 	}
-	
+
 	public Step currentStep() {
 		return steps.get(execStep);
 	}
@@ -154,12 +179,12 @@ public class Path {
 			return false;
 		return true;
 	}
-	
+
 	public Collection<DLClassExpression> getTopStepDLClasses() {
 		return steps.get(0).getDLClasses();
 	}
 
-	public IndividualPlus getLastOutput() {
+	public Collection<IndividualPlus> getLastOutput() {
 		return steps.get(0).getOutput();
 	}
 

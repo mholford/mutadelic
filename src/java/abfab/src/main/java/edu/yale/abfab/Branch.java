@@ -1,6 +1,7 @@
 package edu.yale.abfab;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,17 +20,18 @@ import static edu.yale.abfab.NS.*;
 public class Branch extends Step {
 	Set<Path> paths;
 	DLController dl;
+	Collection<DLIndividual<?>> services;
 
 	public Branch(Abductor abductor) {
 		super(abductor);
 	}
 
-	public Branch(Collection<DLIndividual<?>> inds,
+	public Branch(Collection<DLIndividual<?>> services,
 			IndividualPlus initialInput, Abductor abductor) {
 		super(abductor);
 		dl = abductor.getDLController();
 		paths = new HashSet<>();
-		for (DLIndividual<?> i : inds) {
+		for (DLIndividual<?> i : services) {
 			Path p = abductor.getBestPath(initialInput, new IndividualPlus(i));
 			paths.add(p);
 		}
@@ -157,6 +159,10 @@ public class Branch extends Step {
 		this.paths = paths;
 	}
 
+	public Collection<DLIndividual<?>> getServices() {
+		return services;
+	}
+
 	@Override
 	public Collection<IndividualPlus> getInput() {
 		Set<IndividualPlus> outcomes = new HashSet<>();
@@ -170,12 +176,15 @@ public class Branch extends Step {
 	}
 
 	@Override
-	public IndividualPlus getOutput() {
+	public Collection<IndividualPlus> getOutput() {
 		Set<IndividualPlus> outcomes = new HashSet<>();
 		for (Path p : paths) {
-			outcomes.add(p.getLastOutput());
+			for (IndividualPlus output : p.getLastOutput()) {
+				outcomes.add(output);
+			}
 		}
-		return mergeIndividuals(outcomes);
+		return Arrays
+				.asList(new IndividualPlus[] { mergeIndividuals(outcomes) });
 	}
 
 	@Override

@@ -59,8 +59,8 @@ public class SimpleStep extends Step {
 	}
 
 	@Override
-	public IndividualPlus getOutput() {
-		return output;
+	public Collection<IndividualPlus> getOutput() {
+		return Arrays.asList(new IndividualPlus[] { output });
 	}
 
 	@Override
@@ -72,6 +72,10 @@ public class SimpleStep extends Step {
 	@Override
 	public Collection<DLClassExpression> getDLClasses() {
 		return dl.getTypes(service);
+	}
+
+	public DLIndividual<?> getService() {
+		return service;
 	}
 
 	@Override
