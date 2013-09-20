@@ -1,6 +1,6 @@
 mutadelic
 =========
 
-Mutation Analysis using Description Logic inferrence capabilities.
+Mutation Analysis using Description Logic inferencing capabilities.
 
 Trippy.
