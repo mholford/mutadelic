@@ -69,6 +69,10 @@ public class Path {
 	public Step nextStep() {
 		return steps.get(execStep + 1);
 	}
+	
+	public Step currentStep() {
+		return steps.get(execStep);
+	}
 
 	public IndividualPlus exec(IndividualPlus input) {
 		execStep = -1;

@@ -14,6 +14,8 @@ import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
+import static edu.yale.abfab.NS.*;
+
 public class Branch extends Step {
 	Set<Path> paths;
 	DLController dl;
@@ -75,12 +77,58 @@ public class Branch extends Step {
 			for (Path p : paths) {
 				outcomes.add(p.exec(input));
 				// peek and check if passes next step
-				// Abductor ab = getAbductor();
-				// Step nextStep = ab.getExecutingPath().nextStep();
-				// if (!ab.partMatchesInput(outcomes, nextStep.getInput())) {
-				// return null;
-				// }
+				Abductor ab = getAbductor();
+				Step currentStep = ab.getExecutingPath().currentStep();
+				Step nextStep = ab.getExecutingPath().nextStep();
+				for (IndividualPlus outcome : outcomes) {
+					dl.addAxioms(outcome.getAxioms());
+
+					for (DLClassExpression<?> cc : currentStep.getDLClasses()) {
+						for (DLClassExpression<?> nc : nextStep.getDLClasses()) {
+							for (DLIndividual<?> cci : dl.getInstances(cc)) {
+								for (DLIndividual<?> nci : dl.getInstances(nc)) {
+									for (DLIndividual<?> ncInput : dl
+											.getObjectPropertyValues(
+													nci,
+													dl.objectProp(NS
+															+ "has_input"))) {
+										Set<DLAxiom<?>> ax2 = new HashSet<>();
+										ax2.add(dl.individualType(
+												dl.individual(NS
+														+ "TestService"),
+												dl.clazz(NS + "Service")));
+										ax2.add(dl.newObjectFact(
+												dl.individual(NS
+														+ "TestService"),
+												dl.objectProp(NS + "has_input"),
+												outcome.getIndividual()));
+										ax2.add(dl.newObjectFact(
+												dl.individual(NS
+														+ "TestService"),
+												dl.objectProp(NS + "has_output"),
+												ncInput));
+										ax2.add(dl.individualType(
+												dl.individual(NS
+														+ "TestService"),
+												dl.notClass(cc)));
+										dl.addAxioms(ax2);
+										ab.debug();
+										if (dl.checkConsistency()) {
+											dl.removeAxioms(ax2);
+											return null;
+										} else {
+											dl.removeAxioms(ax2);
+										}
+									}
+								}
+							}
+						}
+					}
+
+					dl.removeAxioms(outcome.getAxioms());
+				}
 			}
+
 			out = mergeIndividuals(outcomes);
 		} finally {
 			dl.removeAxioms(ax);

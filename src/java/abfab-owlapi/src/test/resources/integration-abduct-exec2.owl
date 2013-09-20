@@ -35,11 +35,8 @@ DataProperty: GELO:strand
 	
 DataProperty: SIO:has_value
 
-Class: ServiceInput
-Class: ServiceOutput
-
 Class: Service
-    EquivalentTo: (has_input some ServiceInput) and (has_output some ServiceOutput)
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
 
 Class: GELO:GenomicElement
 	
@@ -92,32 +89,47 @@ Class: FinishedMutation
 	(Annotation that SIO:refers_to some CompletionStatus)
 	and (SIO:has_value min 1 xsd:string)
 	
+Class: FinishedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some FullyAnnotatedMutation) and (has_output some FinishedMutation)
+	
+Class: GeneAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some GeneAnnotatedMutation)
+	
+Class: SiftValueAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some SiftValueAnnotatedMutation)
+
 Individual: VEP
     Types: SIO:InformationContentEntity	
 	
-Individual: FULI
-    Types: FullyAnnotatedMutation, ServiceInput      
+Individual: FMI
+    Types: FullyAnnotatedMutation
 	
-Individual: MI
-    Types: Mutation, ServiceInput
+Individual: FMO
+    Types: FinishedMutation
+	
+Individual: GMI
+    Types: Mutation
+	
+Individual: GMO
+    Types: GeneAnnotatedMutation
+	
+Individual: SVI
+    Types: Mutation
 
-Individual: FINO
-    Types: FinishedMutation, ServiceOutput
+Individual: SVO
+    Types: SiftValueAnnotatedMutation
 	
-Individual: GENO
-    Types: GeneAnnotatedMutation, ServiceOutput  
-
-Individual: SIFO
-    Types: SiftValueAnnotatedMutation, ServiceOutput
+Individual: FMS
+    Types: FinishedMutationService
+    Facts: has_input FMI, has_output FMO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
 	
-Individual: FINS
-    Types: Service
-    Facts: has_input FULI, has_output FINO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
+Individual: GMS
+    Types: GeneAnnotatedMutationService
+    Facts: has_input GMI, has_output GMO, has_cost 1.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
 	
-Individual: GENS
-    Types: Service
-    Facts: has_input MI, has_output GENO, has_cost 1.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
-	
-Individual: SIFS
-    Types: Service
-    Facts: has_input MI, has_output SIFO, has_cost 1.0, has_executable "edu.yale.abfab.TestSiftValueAnnotatedMutationService"
+Individual: SVS
+    Types: SiftValueAnnotatedMutationService
+    Facts: has_input SVI, has_output SVO, has_cost 1.0, has_executable "edu.yale.abfab.TestSiftValueAnnotatedMutationService"

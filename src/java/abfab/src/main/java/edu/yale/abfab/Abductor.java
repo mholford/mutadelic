@@ -108,29 +108,35 @@ public abstract class Abductor {
 			Collection<DLClassExpression> pathTopClasses = p
 					.getTopStepDLClasses();
 			// Cast a new individual as a member of that class
-			IndividualPlus testServiceI = new IndividualPlus(dl.individual(NS
-					+ "testService"));
+
 			// Set the output of the new individual to existing output for
 			// instance
 			// of the class
 			for (DLClassExpression<?> pathTopClass : pathTopClasses) {
-				for (DLIndividual<?> pathTopClassI : dl
-						.getInstances(pathTopClass)) {
-					Collection<DLIndividual> pathTopClassOutputs = dl
-							.getObjectPropertyValues(pathTopClassI,
-									dl.objectProp(NS + "has_output"));
-					for (DLIndividual<?> pathTopClassOutput : pathTopClassOutputs) {
-						matches = serviceClassMatches(i, pathTopClass,
-								testServiceI, pathTopClassOutput,
-								dl.objectProp(NS + "has_output"),
-								dl.objectProp(NS + "has_input"));
-					}
-				}
+				matches = matchInputToPathClass(i, pathTopClass);
 			}
 		} finally {
 			dl.removeAxioms(i.getAxioms());
 		}
 
+		return matches;
+	}
+
+	public boolean matchInputToPathClass(IndividualPlus i,
+			DLClassExpression<?> pathTopClass) {
+		boolean matches = false;
+		IndividualPlus testServiceI = new IndividualPlus(dl.individual(NS
+				+ "testService"));
+		for (DLIndividual<?> pathTopClassI : dl.getInstances(pathTopClass)) {
+			Collection<DLIndividual> pathTopClassOutputs = dl
+					.getObjectPropertyValues(pathTopClassI,
+							dl.objectProp(NS + "has_output"));
+			for (DLIndividual<?> pathTopClassOutput : pathTopClassOutputs) {
+				matches = serviceClassMatches(i, pathTopClass, testServiceI,
+						pathTopClassOutput, dl.objectProp(NS + "has_output"),
+						dl.objectProp(NS + "has_input"));
+			}
+		}
 		return matches;
 	}
 
@@ -410,7 +416,7 @@ public abstract class Abductor {
 		return bestPath;
 	}
 
-	private void debug() {
+	public void debug() {
 		try {
 			dl.setOutputFile(new File(
 					"/home/matt/sw/abfab-integration-output.owl"));
