@@ -95,17 +95,20 @@ Class: LowSiftMutation
 	(Annotation that SIO:refers_to some
 	(SiftValue that SIO:has_value min 1 xsd:double[<0.1]))
 	
-Class: InterestingMutation
-    EquivalentTo: HighSiftMutation
-    
 Class: FinishedMutation
     EquivalentTo: Mutation that SIO:is_described_by some
-	(Annotation that SIO:refers_to some CompletionStatus)
-	and (SIO:has_value min 1 xsd:string)    
+	(Annotation that SIO:refers_to some 
+	(CompletionStatus that SIO:has_value min 1 xsd:boolean))
+	
+Class: CompletedMutation
 	
 Class: FinishedMutationService
     SubClassOf: Service
-    EquivalentTo: (has_input some InterestingMutation) and (has_output some FinishedMutation)
+    EquivalentTo: (has_input some HighSiftMutation) and (has_output some FinishedMutation)
+	
+Class: FinishedLowMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some LowSiftMutation) and (has_output some FinishedMutation)
 	
 Class: GeneAnnotatedMutationService
     SubClassOf: Service
@@ -114,6 +117,10 @@ Class: GeneAnnotatedMutationService
 Class: SiftValueAnnotatedMutationService
     SubClassOf: Service
     EquivalentTo: (has_input some Mutation) and (has_output some (HighSiftMutation or LowSiftMutation))
+	
+Class: CompletedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some FinishedMutation) and (has_output some CompletedMutation)
 	
 Individual: VEP
     Types: SIO:InformationContentEntity	
@@ -124,6 +131,12 @@ Individual: FMI
 Individual: FMO
     Types: FinishedMutation
 	
+Individual: FLMI
+    Types: LowSiftMutation
+	
+Individual: FLMO
+    Types: FinishedMutation
+
 Individual: GMI
     Types: Mutation
 	
@@ -142,9 +155,19 @@ Individual: LSVI
 Individual: LSVO
     Types: LowSiftMutation
 	
+Individual: CMI
+    Types: FinishedMutation
+	
+Individual: CMO
+    Types: CompletedMutation
+	
 Individual: FMS
     Types: FinishedMutationService
     Facts: has_input FMI, has_output FMO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
+	
+Individual: FLMS
+    Types: FinishedLowMutationService
+    Facts: has_input FLMI, has_output FLMO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedLowMutationService"
 	
 Individual: GENS
     Types: GeneAnnotatedMutationService
@@ -158,5 +181,7 @@ Individual: LSVS
     Types: SiftValueAnnotatedMutationService
     Facts: has_input LSVI, has_output LSVO, has_cost 1.0, has_executable "edu.yale.abfab.TestLowSiftValueAnnotatedMutationService"
 
-
+Individual: CMS
+    Types: CompletedMutationService
+    Facts: has_input CMI, has_output CMO, has_cost 1.0, has_executable "edu.yale.abfab.TestCompletedMutationService"
 

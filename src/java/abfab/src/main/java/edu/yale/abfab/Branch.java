@@ -57,7 +57,7 @@ public class Branch extends Step {
 	}
 
 	@Override
-	public IndividualPlus exec(IndividualPlus input) {
+	public IndividualPlus exec(IndividualPlus input, Path contextPath) {
 		Abductor ab = getAbductor();
 		Set<IndividualPlus> outcomes = new HashSet<>();
 		IndividualPlus out = null;
@@ -90,7 +90,14 @@ public class Branch extends Step {
 
 				// peek and check if passes next step
 				Set<DLAxiom<?>> ax2 = new HashSet<>();
-				Step nextStep = ab.getExecutingPath().nextStep();
+
+				Step nextStep = null;
+				if (contextPath.nextStep() != null) {
+					nextStep = contextPath.nextStep();
+				} else {
+					nextStep = ab.getExecutingPath().nextStep();
+				}
+//				Step nextStep = ab.getExecutingPath().nextStep();
 
 				// Get classes of outputs of unexecutedPaths
 				Set<DLClassExpression<?>> otherPathOutputClasses = new HashSet<>();

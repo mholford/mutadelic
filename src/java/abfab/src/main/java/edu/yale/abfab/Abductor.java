@@ -82,9 +82,8 @@ public abstract class Abductor {
 	//
 	// return p;
 	// }
-
-	public Path getBestPath(IndividualPlus origInput,
-			DLClassExpression<?> goalClass) {
+	
+	public Set<Path> getAllPaths(IndividualPlus origInput, DLClassExpression<?> goalClass) {
 		Set<Path> completedPaths = new HashSet<>();
 
 		// Set<Path> paths = extendPath(null, origInput, goalI);
@@ -105,6 +104,12 @@ public abstract class Abductor {
 			}
 			paths = nextPaths;
 		}
+		return completedPaths;
+	}
+
+	public Path getBestPath(IndividualPlus origInput,
+			DLClassExpression<?> goalClass) {
+		Set<Path> completedPaths = getAllPaths(origInput, goalClass);
 
 		return chooseBestPath(completedPaths);
 	}

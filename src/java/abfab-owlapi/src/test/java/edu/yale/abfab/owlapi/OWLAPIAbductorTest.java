@@ -14,6 +14,7 @@ import edu.yale.abfab.Path;
 import edu.yale.abfab.TestVals;
 import edu.yale.abfab.owlapi.HermitAbductor;
 import edu.yale.abfab.owlapi.OWLAPIAbductor;
+import edu.yale.dlgen.DLDataPropertyExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.controller.DLController;
@@ -338,46 +339,88 @@ public class OWLAPIAbductorTest {
 		} finally {
 			dl.removeAxioms(output.getAxioms());
 		}
+	}
 
-		TestVals.sift = 0.05;
+	@Test
+	public void testConditionalBranchingExec2() {
+		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+				.getResourceAsStream("integration-abduct-exec7.owl")),
+				"Manchester");
 
-		ip = new IndividualPlus(dl.individual(NS + "test2"));
+		IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
 		ip.getAxioms().add(
-				dl.individualType(dl.individual(NS + "test2"),
+				dl.individualType(dl.individual(NS + "test"),
 						dl.clazz(NS + "Mutation")));
-		p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
+		Path p = abductor.getBestPath(ip, dl.clazz(NS + "CompletedMutation"));
 
-		output = abductor.exec(ip, p);
+		IndividualPlus output = abductor.exec(ip, p);
 
+		Collection<DLIndividual> descs;
 		try {
 			// Test results
 			dl.addAxioms(output.getAxioms());
-			level = null;
+			Boolean finished = false;
 			descs = dl.getObjectPropertyValues(output.getIndividual(),
 					dl.objectProp(SIO + "is_described_by"));
 			for (DLIndividual<?> desc : descs) {
 				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
 						desc, dl.objectProp(SIO + "refers_to"));
 				for (DLIndividual<?> ref : refs) {
-					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
+					if (dl.getTypes(ref).contains(
+							dl.clazz(NS + "CompletionStatus"))) {
 						Collection<DLLiteral> vals = dl.getDataPropertyValues(
-								ref, dl.dataProp(NS + "has_level"));
+								ref, dl.dataProp(SIO + "has_value"));
 						for (DLLiteral<?> val : vals) {
-							if (level != null) {
+							finished = Boolean.valueOf(dl.getLiteralValue(val));
+						}
+					}
+				}
+			}
+
+			assertEquals(true, finished);
+		} finally {
+			dl.removeAxioms(output.getAxioms());
+		}
+		
+		TestVals.sift = 0.05;
+		
+		ip = new IndividualPlus(dl.individual(NS + "test"));
+		ip.getAxioms().add(
+				dl.individualType(dl.individual(NS + "test"),
+						dl.clazz(NS + "Mutation")));
+		p = abductor.getBestPath(ip, dl.clazz(NS + "CompletedMutation"));
+
+		output = abductor.exec(ip, p);
+
+		try {
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			Boolean finished = false;
+			descs = dl.getObjectPropertyValues(output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(
+							dl.clazz(NS + "CompletionStatus"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(NS + "has_value"));
+						for (DLLiteral<?> val : vals) {
+							if (finished != null) {
 								System.out.println("Oops; more than one level");
 								fail();
 							}
-							level = dl.getLiteralValue(val);
+							finished = Boolean.valueOf(dl.getLiteralValue(val));
 
 						}
 					}
 				}
 			}
 
-			assertEquals("low", level);
+			assertEquals(false, finished);
 		} finally {
 			dl.removeAxioms(output.getAxioms());
-			TestVals.sift = 0.5;
 		}
 	}
 
@@ -455,6 +498,8 @@ public class OWLAPIAbductorTest {
 
 			IndividualPlus output2 = abductor.exec(ip2, p2);
 			assertEquals(null, output2);
+
+			TestVals.sift = 0.5;
 
 		} catch (Exception e) {
 			e.printStackTrace();

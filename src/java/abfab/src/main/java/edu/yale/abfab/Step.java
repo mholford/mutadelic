@@ -25,7 +25,7 @@ public abstract class Step {
 
 	public abstract double getCost();
 
-	public abstract IndividualPlus exec(IndividualPlus input);
+	public abstract IndividualPlus exec(IndividualPlus input, Path contextPath);
 
 	public abstract Collection<IndividualPlus> getInput();
 

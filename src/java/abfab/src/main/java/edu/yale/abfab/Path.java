@@ -92,7 +92,11 @@ public class Path {
 	}
 
 	public Step nextStep() {
-		return steps.get(execStep + 1);
+		if (steps.size() > execStep + 1) {
+			return steps.get(execStep + 1);
+		} else {
+			return null;
+		}
 	}
 
 	public Step currentStep() {
@@ -115,7 +119,7 @@ public class Path {
 				// return null;
 				// }
 				++execStep;
-				out = step.exec(in);
+				out = step.exec(in, this);
 				if (out == null) {
 					return null;
 				}
@@ -179,7 +183,7 @@ public class Path {
 			return false;
 		return true;
 	}
-	
+
 	public DLClassExpression<?> getTopStepUnifiedClass() {
 		return steps.get(0).getUnifiedClass();
 	}

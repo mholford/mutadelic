@@ -42,7 +42,7 @@ public class SimpleStep extends Step {
 	}
 
 	@Override
-	public IndividualPlus exec(IndividualPlus input) {
+	public IndividualPlus exec(IndividualPlus input, Path contextPath) {
 		IndividualPlus output = null;
 		try {
 			Service service = (Service) Class.forName(executable).newInstance();

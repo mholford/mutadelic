@@ -3,17 +3,27 @@ package edu.yale.abfab;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
+import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
+
+import static edu.yale.abfab.NS.*;
 
 public class Condition extends Step {
 	Set<Path> paths;
 	DLController dl;
+	private DLObjectPropertyExpression<?> HAS_INPUT;
+	private DLObjectPropertyExpression<?> HAS_OUTPUT;
 
 	public Condition(Abductor abductor) {
 		super(abductor);
@@ -23,15 +33,19 @@ public class Condition extends Step {
 			Abductor abductor) {
 		super(abductor);
 		dl = abductor.getDLController();
+		HAS_INPUT = dl.objectProp(NS + "has_input");
+		HAS_OUTPUT = dl.objectProp(NS + "has_output");
+
 		paths = new HashSet<>();
 		for (Step s : steps) {
 			if (s instanceof SimpleStep) {
 				SimpleStep simp = (SimpleStep) s;
 				for (IndividualPlus output : simp.getOutput()) {
-					DLClassExpression<?> unionType = dl.getIntersectingType(output
-							.getIndividual());
-					Path p = abductor.getBestPath(initialInput, unionType);
-					paths.add(p);
+					DLClassExpression<?> unionType = dl
+							.getIntersectingType(output.getIndividual());
+					Set<Path> ps = abductor
+							.getAllPaths(initialInput, unionType);
+					paths.addAll(ps);
 				}
 			} else if (s instanceof Branch) {
 				Path newPath = new Path(initialInput, abductor);
@@ -65,20 +79,94 @@ public class Condition extends Step {
 	}
 
 	@Override
-	public IndividualPlus exec(IndividualPlus input) {
-		Path pathToUse = null;
+	public IndividualPlus exec(IndividualPlus input, Path contextPath) {
+		// Path pathToUse = null;
+		// Abductor ab = getAbductor();
+		// for (Path p : paths) {
+		// if (ab.matchesInput(input, p)) {
+		// pathToUse = p;
+		// break;
+		// }
+		// }
+		// if (pathToUse == null) {
+		// return null;
+		// } else {
+		// return pathToUse.exec(input);
+		// }
+
 		Abductor ab = getAbductor();
-		for (Path p : paths) {
-			if (ab.matchesInput(input, p)) {
-				pathToUse = p;
-				break;
+		IndividualPlus out = null;
+		Set<DLAxiom<?>> ax = new HashSet<>();
+		try {
+			ax.addAll(input.getAxioms());
+			dl.addAxioms(ax);
+
+			// Try the cheapest path first
+			List<Path> costSortedPaths = new ArrayList<>(paths);
+			Collections.sort(costSortedPaths, new Comparator<Path>() {
+
+				@Override
+				public int compare(Path o1, Path o2) {
+					Double d1 = o1.getCost();
+					Double d2 = o2.getCost();
+					return d1.compareTo(d2);
+				}
+			});
+
+			for (Path p : costSortedPaths) {
+				boolean fail = false;
+				//ab.setExecutingPath(p);
+				IndividualPlus outcome = p.exec(input);
+
+				if (outcome == null) {
+					continue;
+				}
+				// Peek and see if it passes the next step
+				Set<DLAxiom<?>> ax2 = new HashSet<>();
+				
+				Step nextStep = null;
+				if (contextPath.nextStep() != null) {
+					nextStep = contextPath.nextStep();
+				} else {
+					nextStep = ab.getExecutingPath().nextStep();
+				}
+
+				if (nextStep != null) {
+					for (DLClassExpression<?> nc : nextStep.getDLClasses()) {
+						for (DLIndividual<?> nci : dl.getInstances(nc)) {
+							for (DLIndividual<?> ncOut : dl
+									.getObjectPropertyValues(nci, HAS_OUTPUT)) {
+								DLIndividual<?> testI = dl.individual(NS
+										+ "testI");
+								ax2.add(dl.newObjectFact(testI, HAS_OUTPUT,
+										ncOut));
+								ax2.addAll(outcome.getAxioms());
+								ax2.add(dl.newObjectFact(testI, HAS_INPUT,
+										outcome.getIndividual()));
+								ax2.add(dl.individualType(testI,
+										dl.notClass(nc)));
+								dl.addAxioms(ax2);
+								ab.debug();
+								if (dl.checkConsistency()) {
+									fail = true;
+								}
+								dl.removeAxioms(ax2);
+								if (!fail) {
+									out = outcome;
+									return out;
+								}
+							}
+						}
+					}
+				} else {
+					out = outcome;
+				}
 			}
+		} finally {
+			dl.removeAxioms(ax);
 		}
-		if (pathToUse == null) {
-			return null;
-		} else {
-			return pathToUse.exec(input);
-		}
+
+		return out;
 	}
 
 	@Override
@@ -120,7 +208,8 @@ public class Condition extends Step {
 		if (dlClasses.size() == 1) {
 			output = dlClasses.iterator().next();
 		} else {
-			output = dl.orClass(dlClasses.toArray(new DLClassExpression[dlClasses.size()]));
+			output = dl.orClass(dlClasses
+					.toArray(new DLClassExpression[dlClasses.size()]));
 		}
 		return output;
 	}

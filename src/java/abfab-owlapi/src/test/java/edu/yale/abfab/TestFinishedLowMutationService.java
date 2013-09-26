@@ -12,7 +12,7 @@ import edu.yale.dlgen.controller.DLController;
 
 import static edu.yale.abfab.NS.*;
 
-public class TestFinishedMutationService implements Service {
+public class TestFinishedLowMutationService implements Service {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
@@ -28,7 +28,7 @@ public class TestFinishedMutationService implements Service {
 		axioms.add(dl.newObjectFact(dl.individual(NS + descID),
 				dl.objectProp(SIO + "cites"), dl.individual(NS + "VEP")));
 		axioms.add(dl.newDataFact(dl.individual(NS + csID),
-				dl.dataProp(SIO + "has_value"), dl.asLiteral(true)));
+				dl.dataProp(SIO + "has_value"), dl.asLiteral(false)));
 		axioms.add(dl.newObjectFact(dl.individual(NS + descID),
 				dl.objectProp(SIO + "refers_to"), dl.individual(NS + csID)));
 		axioms.add(dl.newObjectFact(input.getIndividual(),
