@@ -211,6 +211,20 @@ public class Pellet3DLController implements DLController {
 		}
 		return CollUtils.wrap(clzs, DLClassExpression.class);
 	}
+	
+	@Override
+	public DLClassExpression getIntersectingType(DLIndividual<?> individual) {
+		DLClassExpression unionType;
+		Collection<DLClassExpression> ce = getTypes(individual);
+		if (ce.size() == 1) {
+			unionType = ce.iterator().next();
+		} else {
+			unionType = andClass(ce
+					.toArray(new DLClassExpression[ce.size()]));
+		}
+		
+		return unionType;
+	}
 
 	@Override
 	public Collection<DLIndividual> getHavingPropertyValue(

@@ -31,7 +31,7 @@ public class OWLAPIAbductorTest {
 	}
 
 	@Test
-	public void testSimpleCondition() {
+	public void testSimpleStaging() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test1.owl")),
@@ -51,7 +51,7 @@ public class OWLAPIAbductorTest {
 	}
 
 	@Test
-	public void testBranchingCondition() {
+	public void testBranchedStaging() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test2.owl")),
@@ -307,33 +307,37 @@ public class OWLAPIAbductorTest {
 
 		IndividualPlus output = abductor.exec(ip, p);
 
-		// Test results
-		dl.addAxioms(output.getAxioms());
-		String level = null;
-		Collection<DLIndividual> descs = dl.getObjectPropertyValues(
-				output.getIndividual(), dl.objectProp(SIO + "is_described_by"));
-		for (DLIndividual<?> desc : descs) {
-			Collection<DLIndividual> refs = dl.getObjectPropertyValues(desc,
-					dl.objectProp(SIO + "refers_to"));
-			for (DLIndividual<?> ref : refs) {
-				if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
-					Collection<DLLiteral> vals = dl.getDataPropertyValues(ref,
-							dl.dataProp(NS + "has_level"));
-					for (DLLiteral<?> val : vals) {
-						if (level != null) {
-							System.out.println("Oops; more than one level");
-							fail();
-						}
-						level = dl.getLiteralValue(val);
+		String level;
+		Collection<DLIndividual> descs;
+		try {
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			level = null;
+			descs = dl.getObjectPropertyValues(output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(NS + "has_level"));
+						for (DLLiteral<?> val : vals) {
+							if (level != null) {
+								System.out.println("Oops; more than one level");
+								fail();
+							}
+							level = dl.getLiteralValue(val);
 
+						}
 					}
 				}
 			}
+
+			assertEquals("High", level);
+		} finally {
+			dl.removeAxioms(output.getAxioms());
 		}
-
-		assertEquals("high", level);
-
-		dl.removeAxioms(output.getAxioms());
 
 		TestVals.sift = 0.05;
 
@@ -345,33 +349,36 @@ public class OWLAPIAbductorTest {
 
 		output = abductor.exec(ip, p);
 
-		// Test results
-		dl.addAxioms(output.getAxioms());
-		level = null;
-		descs = dl.getObjectPropertyValues(output.getIndividual(),
-				dl.objectProp(SIO + "is_described_by"));
-		for (DLIndividual<?> desc : descs) {
-			Collection<DLIndividual> refs = dl.getObjectPropertyValues(desc,
-					dl.objectProp(SIO + "refers_to"));
-			for (DLIndividual<?> ref : refs) {
-				if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
-					Collection<DLLiteral> vals = dl.getDataPropertyValues(ref,
-							dl.dataProp(NS + "has_level"));
-					for (DLLiteral<?> val : vals) {
-						if (level != null) {
-							System.out.println("Oops; more than one level");
-							fail();
-						}
-						level = dl.getLiteralValue(val);
+		try {
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			level = null;
+			descs = dl.getObjectPropertyValues(output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(NS + "has_level"));
+						for (DLLiteral<?> val : vals) {
+							if (level != null) {
+								System.out.println("Oops; more than one level");
+								fail();
+							}
+							level = dl.getLiteralValue(val);
 
+						}
 					}
 				}
 			}
-		}
 
-		assertEquals("low", level);
-		
-		dl.removeAxioms(output.getAxioms());
+			assertEquals("low", level);
+		} finally {
+			dl.removeAxioms(output.getAxioms());
+			TestVals.sift = 0.5;
+		}
 	}
 
 	@Test

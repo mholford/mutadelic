@@ -74,6 +74,19 @@ public class SimpleStep extends Step {
 		return dl.getTypes(service);
 	}
 
+	@Override
+	public DLClassExpression<?> getUnifiedClass() {
+		DLClassExpression<?> output;
+		Collection<DLClassExpression> dlClasses = getDLClasses();
+		if (dlClasses.size() == 1) {
+			output = dlClasses.iterator().next();
+		} else {
+			output = dl.andClass(dlClasses
+					.toArray(new DLClassExpression[dlClasses.size()]));
+		}
+		return output;
+	}
+
 	public DLIndividual<?> getService() {
 		return service;
 	}

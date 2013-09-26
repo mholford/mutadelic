@@ -173,6 +173,16 @@ public interface DLController {
 	Collection<DLClassExpression> getTypes(DLIndividual<?> individual);
 
 	/**
+	 * Return the asserted Class Expressions to which the Individual belongs.
+	 * Form a union of the types if more than one exists.
+	 * 
+	 * @param individual
+	 *            The individual to get the Type of
+	 * @return The type of the individual joined into a UNION if needed
+	 */
+	DLClassExpression getIntersectingType(DLIndividual<?> individual);
+
+	/**
 	 * Return the individuals which have a specified property filled by a
 	 * specified value
 	 * 
@@ -263,6 +273,15 @@ public interface DLController {
 	DLClassExpression<?> notClass(DLClassExpression<?> clz);
 
 	/**
+	 * Return the union (OR) of the given class expression.
+	 * 
+	 * @param clz
+	 *            The classes to AND together
+	 * @return The Conjunction class
+	 */
+	DLClassExpression<?> orClass(DLClassExpression<?>... clz);
+	
+	/**
 	 * Return the conjunction (AND) of the given class expression.
 	 * 
 	 * @param clz
@@ -317,9 +336,9 @@ public interface DLController {
 
 	DLClassExpression<?> some(DLObjectPropertyExpression<?> prop,
 			DLClassExpression<?> restriction);
-	
+
 	DLAxiom<?> newClazz(DLClassExpression<?> c);
-	
+
 	DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**

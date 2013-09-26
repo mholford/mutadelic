@@ -32,7 +32,8 @@ public class Branch extends Step {
 		dl = abductor.getDLController();
 		paths = new HashSet<>();
 		for (DLIndividual<?> i : services) {
-			Path p = abductor.getBestPath(initialInput, new IndividualPlus(i));
+			DLClassExpression<?> unionType = dl.getIntersectingType(i);
+			Path p = abductor.getBestPath(initialInput, unionType);
 			paths.add(p);
 		}
 	}
@@ -192,6 +193,19 @@ public class Branch extends Step {
 		Set<DLClassExpression> output = new HashSet<>();
 		for (Path p : paths) {
 			output.addAll(p.getTopStepDLClasses());
+		}
+		return output;
+	}
+
+	@Override
+	public DLClassExpression getUnifiedClass() {
+		DLClassExpression<?> output;
+		Collection<DLClassExpression> dlClasses = getDLClasses();
+		if (dlClasses.size() == 1) {
+			output = dlClasses.iterator().next();
+		} else {
+			output = dl.andClass(dlClasses
+					.toArray(new DLClassExpression[dlClasses.size()]));
 		}
 		return output;
 	}

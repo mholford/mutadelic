@@ -34,6 +34,8 @@ public abstract class Step {
 	public abstract Step copy();
 	
 	public abstract Collection<DLClassExpression> getDLClasses();
+	
+	public abstract DLClassExpression<?> getUnifiedClass();
 
 	public Abductor getAbductor() {
 		return abductor;
@@ -83,17 +85,17 @@ public abstract class Step {
 
 				newAx.add(dl.newIndividual(NS + name, dl.thing()));
 				for (DLClassExpression<?> t : types) {
-					newAx.add(dl.newIndividual(name, t));
+					newAx.add(dl.individualType(dl.individual(NS + name), t));
 				}
 				for (DLDataPropertyExpression<?> odpe : dpvs.keySet()) {
 					for (DLLiteral<?> owls : dpvs.get(odpe)) {
-						newAx.add(dl.newDataFact(dl.individual(name), odpe,
+						newAx.add(dl.newDataFact(dl.individual(NS + name), odpe,
 								owls));
 					}
 				}
 				for (DLObjectPropertyExpression<?> oope : opvs.keySet()) {
 					for (DLIndividual<?> oi : opvs.get(oope)) {
-						newAx.add(dl.newObjectFact(dl.individual(name), oope,
+						newAx.add(dl.newObjectFact(dl.individual(NS + name), oope,
 								oi));
 					}
 				}

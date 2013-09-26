@@ -28,7 +28,9 @@ public class Condition extends Step {
 			if (s instanceof SimpleStep) {
 				SimpleStep simp = (SimpleStep) s;
 				for (IndividualPlus output : simp.getOutput()) {
-					Path p = abductor.getBestPath(initialInput, output);
+					DLClassExpression<?> unionType = dl.getIntersectingType(output
+							.getIndividual());
+					Path p = abductor.getBestPath(initialInput, unionType);
 					paths.add(p);
 				}
 			} else if (s instanceof Branch) {
@@ -67,7 +69,7 @@ public class Condition extends Step {
 		Path pathToUse = null;
 		Abductor ab = getAbductor();
 		for (Path p : paths) {
-			if (!ab.matchesInput(input, p)) {
+			if (ab.matchesInput(input, p)) {
 				pathToUse = p;
 				break;
 			}
@@ -107,6 +109,18 @@ public class Condition extends Step {
 		Set<DLClassExpression> output = new HashSet<>();
 		for (Path p : paths) {
 			output.addAll(p.getTopStepDLClasses());
+		}
+		return output;
+	}
+
+	@Override
+	public DLClassExpression<?> getUnifiedClass() {
+		DLClassExpression<?> output;
+		Collection<DLClassExpression> dlClasses = getDLClasses();
+		if (dlClasses.size() == 1) {
+			output = dlClasses.iterator().next();
+		} else {
+			output = dl.orClass(dlClasses.toArray(new DLClassExpression[dlClasses.size()]));
 		}
 		return output;
 	}

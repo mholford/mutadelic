@@ -213,6 +213,22 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLIndividual ind = (OWLIndividual) individual.get();
 		return CollUtils.wrap(ind.getTypes(ontology), DLClassExpression.class);
 	}
+	
+	
+
+	@Override
+	public DLClassExpression getIntersectingType(DLIndividual<?> individual) {
+		DLClassExpression unionType;
+		Collection<DLClassExpression> ce = getTypes(individual);
+		if (ce.size() == 1) {
+			unionType = ce.iterator().next();
+		} else {
+			unionType = andClass(ce
+					.toArray(new DLClassExpression[ce.size()]));
+		}
+		
+		return unionType;
+	}
 
 	@Override
 	public Collection<DLIndividual> getInstances(DLClassExpression<?> clz) {
@@ -314,6 +330,15 @@ public abstract class OWLAPIDLController implements DLController {
 			toJoin.add((OWLClassExpression) c.get());
 		}
 		return new DLClassExpression<>(df.getOWLObjectIntersectionOf(toJoin));
+	}
+	
+	@Override
+	public DLClassExpression<?> orClass(DLClassExpression<?>... clz) {
+		Set<OWLClassExpression> toJoin = new HashSet<>();
+		for (DLClassExpression<?> c : clz) {
+			toJoin.add((OWLClassExpression) c.get());
+		}
+		return new DLClassExpression<>(df.getOWLObjectUnionOf(toJoin));
 	}
 
 	@Override
