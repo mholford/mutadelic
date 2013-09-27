@@ -213,8 +213,6 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLIndividual ind = (OWLIndividual) individual.get();
 		return CollUtils.wrap(ind.getTypes(ontology), DLClassExpression.class);
 	}
-	
-	
 
 	@Override
 	public DLClassExpression getIntersectingType(DLIndividual<?> individual) {
@@ -223,10 +221,9 @@ public abstract class OWLAPIDLController implements DLController {
 		if (ce.size() == 1) {
 			unionType = ce.iterator().next();
 		} else {
-			unionType = andClass(ce
-					.toArray(new DLClassExpression[ce.size()]));
+			unionType = andClass(ce.toArray(new DLClassExpression[ce.size()]));
 		}
-		
+
 		return unionType;
 	}
 
@@ -331,7 +328,7 @@ public abstract class OWLAPIDLController implements DLController {
 		}
 		return new DLClassExpression<>(df.getOWLObjectIntersectionOf(toJoin));
 	}
-	
+
 	@Override
 	public DLClassExpression<?> orClass(DLClassExpression<?>... clz) {
 		Set<OWLClassExpression> toJoin = new HashSet<>();
@@ -400,6 +397,14 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLClassExpression oc1 = (OWLClassExpression) c1.get();
 		OWLClassExpression oc2 = (OWLClassExpression) c2.get();
 		return new DLAxiom<OWLAxiom>(df.getOWLEquivalentClassesAxiom(oc1, oc2));
+	}
+
+	@Override
+	public DLAxiom<?> subClass(DLClassExpression<?> sub,
+			DLClassExpression<?> sup) {
+		OWLClassExpression ocSub = (OWLClassExpression) sub.get();
+		OWLClassExpression ocSup = (OWLClassExpression) sup.get();
+		return new DLAxiom<OWLAxiom>(df.getOWLSubClassOfAxiom(ocSub, ocSup));
 	}
 
 	@Override

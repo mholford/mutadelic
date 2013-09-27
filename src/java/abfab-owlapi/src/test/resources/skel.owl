@@ -1,0 +1,14 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: has_input
+    
+ObjectProperty: has_output
+
+DataProperty: has_cost
+
+DataProperty: has_executable
+    
+Class: Service
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)

@@ -5,6 +5,10 @@ import static org.junit.Assert.*;
 
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +16,14 @@ import org.junit.Test;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
 import edu.yale.abfab.TestVals;
+import edu.yale.abfab.mazes.MazeGenerator;
+import edu.yale.abfab.mazes.MazeGenerator.Maze;
+import edu.yale.abfab.mazes.MazeGenerator.Node;
+import edu.yale.abfab.mazes.MazeTransformer;
 import edu.yale.abfab.owlapi.HermitAbductor;
 import edu.yale.abfab.owlapi.OWLAPIAbductor;
+import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLDataPropertyExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
@@ -295,6 +305,51 @@ public class OWLAPIAbductorTest {
 	}
 
 	@Test
+	public void testMazeStaging() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("skel.owl")), "Manchester");
+			int numNodes = 20;
+			MazeGenerator mg = new MazeGenerator();
+			Maze m = mg.createDAG(numNodes);
+			MazeTransformer mt = new MazeTransformer();
+			Set<DLAxiom<?>> ax = mt.transform(m);
+			dl.addAxioms(ax);
+			
+			abductor.debug();
+
+			DLIndividual<?> test = dl.individual(NS + "test");
+			IndividualPlus ip = new IndividualPlus(test);
+			DLClassExpression<?> ipType = dl.clazz(String.format(
+					"%sType%sInput", NS, m.getRoot().getName()));
+			ip.getAxioms().add(dl.individualType(test, ipType));
+
+			int randomOut = new Random().nextInt(numNodes) + 1;
+			DLClassExpression<?> goalClass = dl.clazz(String.format(
+					"%sType%sOutput", NS, String.valueOf(randomOut)));
+			Path p = abductor.getBestPath(ip, goalClass);
+
+			List<Node> solution = mg.solveRandomDAG(m,
+					String.valueOf(randomOut));
+			StringBuilder sb = new StringBuilder();
+			Iterator<Node> solIter = solution.iterator();
+			sb.append("[");
+			while (solIter.hasNext()) {
+				sb.append(String.format("%sT%sS", NS, solIter.next()));
+				if (solIter.hasNext()) {
+					sb.append(" -> ");
+				}
+			}
+			sb.append("]");
+
+			assertEquals(sb.toString(), p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
 	public void testConditionalBranchingExec() {
 		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 				.getResourceAsStream("integration-abduct-exec6.owl")),
@@ -381,9 +436,9 @@ public class OWLAPIAbductorTest {
 		} finally {
 			dl.removeAxioms(output.getAxioms());
 		}
-		
+
 		TestVals.sift = 0.05;
-		
+
 		ip = new IndividualPlus(dl.individual(NS + "test"));
 		ip.getAxioms().add(
 				dl.individualType(dl.individual(NS + "test"),

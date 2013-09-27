@@ -340,6 +340,8 @@ public interface DLController {
 	DLAxiom<?> newClazz(DLClassExpression<?> c);
 
 	DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2);
+	
+	DLAxiom<?> subClass(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**
 	 * Returns an axiom asserting a fact about an individual via a data property
