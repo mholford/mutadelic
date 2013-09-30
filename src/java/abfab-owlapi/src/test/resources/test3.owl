@@ -1,0 +1,83 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: has_input
+	
+ObjectProperty: has_output
+
+DataProperty: has_cost
+
+DataProperty: has_executable
+	
+Class: Service
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
+	
+Class: Mutation
+
+Class: GeneAnnotatedMutation
+	
+Class: SiftValueAnnotatedMutation
+	
+Class: ProteinAnnotatedMutation
+	
+Class: FullyAnnotatedMutation
+    EquivalentTo: SiftValueAnnotatedMutation and GeneAnnotatedMutation and ProteinAnnotatedMutation
+	
+Class: FinishedMutation
+	
+Class: FinishedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some FullyAnnotatedMutation) and (has_output some FinishedMutation)
+	
+Class: GeneAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some GeneAnnotatedMutation)
+	
+Class: SiftValueAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some SiftValueAnnotatedMutation)
+	
+Class: ProteinAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some ProteinAnnotatedMutation)
+	
+Individual: FMI
+    Types: FullyAnnotatedMutation
+	
+Individual: FMO
+    Types: FinishedMutation
+	
+Individual: GMI
+    Types: Mutation
+
+Individual: GMO
+    Types: GeneAnnotatedMutation
+	
+Individual: SVI
+    Types: Mutation
+	
+Individual: SVO
+    Types: SiftValueAnnotatedMutation
+	
+Individual: PMI
+    Types: Mutation
+	
+Individual: PMO
+    Types: ProteinAnnotatedMutation
+
+Individual: FMS
+    Types: FinishedMutationService
+    Facts: has_input FMI, has_output FMO, has_cost 1.0, has_executable "edu.yale.abfab.TestFinishedMutationService"
+	
+Individual: GMS
+    Types: GeneAnnotatedMutationService
+    Facts: has_input GMI, has_output GMO, has_cost 1.0, has_executable "edu.yale.abfab.TestGeneAnnotatedMutationService"
+	
+Individual: PMS
+    Types: ProteinAnnotatedMutationService
+    Facts: has_input PMI, has_output PMO, has_cost 1.0, has_executable "edu.yale.abfab.TestProteinAnnotatedMutationService"
+	
+Individual: SVS
+    Types: SiftValueAnnotatedMutationService
+    Facts: has_input SVI, has_output SVO, has_cost 1.0, has_executable "edu.yale.abfab.TestSiftValueAnnotatedMutationService"

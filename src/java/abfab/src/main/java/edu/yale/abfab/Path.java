@@ -14,7 +14,7 @@ import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
-public class Path {
+public class Path implements Comparable<Path> {
 
 	private List<Step> steps;
 	private DLController dl;
@@ -199,11 +199,37 @@ public class Path {
 		return null;
 	}
 
+	public List<Step> getSteps() {
+		return steps;
+	}
+
 	public Collection<IndividualPlus> getLastOutput() {
 		return steps.get(0).getOutput();
 	}
 
 	public Collection<IndividualPlus> getLastInput() {
 		return steps.get(0).getInput();
+	}
+
+	@Override
+	public int compareTo(Path other) {
+		Iterator<Step> stepsIter = steps.iterator();
+		Iterator<Step> otherStepsIter = other.getSteps().iterator();
+		while (stepsIter.hasNext()) {
+			if (otherStepsIter.hasNext()) {
+				Step otherStep = otherStepsIter.next();
+				int compare = stepsIter.next().compareTo(otherStep);
+				if (compare != 0) {
+					return compare;
+				}
+			} else {
+				return 1;
+			}
+		}
+		if (otherStepsIter.hasNext()) {
+			return -1;
+		} else {
+			return 0;
+		}
 	}
 }

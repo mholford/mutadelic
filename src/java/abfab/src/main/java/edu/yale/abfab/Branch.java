@@ -46,6 +46,32 @@ public class Branch extends Step {
 		}
 		return out;
 	}
+	
+	
+
+	@Override
+	public int compareTo(Object o) {
+		Branch bo = (Branch) o;
+		Iterator<Path> pathIterator = paths.iterator();
+		Iterator<Path> otherPathIterator = bo.getPaths().iterator();
+		while (pathIterator.hasNext()) {
+			if (otherPathIterator.hasNext()) {
+				Path p = pathIterator.next();
+				Path op = otherPathIterator.next();
+				int c = p.compareTo(op);
+				if (c != 0) {
+					return c;
+				}
+			} else {
+				return 1;
+			}
+		}
+		if (otherPathIterator.hasNext()) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
 
 	@Override
 	public double getCost() {
@@ -219,9 +245,11 @@ public class Branch extends Step {
 
 	@Override
 	public String toString() {
+		List<Path> sortedPaths = new ArrayList<>(paths);
+		Collections.sort(sortedPaths);
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");
-		Iterator<Path> piter = paths.iterator();
+		Iterator<Path> piter = sortedPaths.iterator();
 		while (piter.hasNext()) {
 			Path p = piter.next();
 			sb.append(p.toString());

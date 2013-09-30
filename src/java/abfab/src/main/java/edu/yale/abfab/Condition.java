@@ -66,6 +66,34 @@ public class Condition extends Step {
 		return out;
 	}
 
+	public Set<Path> getPaths() {
+		return paths;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		Condition co = (Condition) o;
+		Iterator<Path> pathIterator = paths.iterator();
+		Iterator<Path> otherPathIterator = co.getPaths().iterator();
+		while (pathIterator.hasNext()) {
+			if (otherPathIterator.hasNext()) {
+				Path p = pathIterator.next();
+				Path op = otherPathIterator.next();
+				int c = p.compareTo(op);
+				if (c != 0) {
+					return c;
+				}
+			} else {
+				return 1;
+			}
+		}
+		if (otherPathIterator.hasNext()) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+
 	@Override
 	public double getCost() {
 		// Return lowest cost

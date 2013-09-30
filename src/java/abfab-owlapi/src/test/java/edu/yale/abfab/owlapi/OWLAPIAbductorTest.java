@@ -4,6 +4,8 @@ import static edu.yale.abfab.NS.*;
 import static org.junit.Assert.*;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +18,7 @@ import org.junit.Test;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
 import edu.yale.abfab.TestVals;
+import edu.yale.abfab.Utils;
 import edu.yale.abfab.mazes.MazeGenerator;
 import edu.yale.abfab.mazes.MazeGenerator.Maze;
 import edu.yale.abfab.mazes.MazeGenerator.Node;
@@ -77,11 +80,34 @@ public class OWLAPIAbductorTest {
 			System.out.println(p.toString());
 
 			boolean matches = p.toString().equals(
-					String.format("[([%s%s] & [%s%s]) -> %s%s]", NS, "SVS", NS,
-							"GMS", NS, "FMS"))
-					|| p.toString().equals(
-							String.format("[([%s%s] & [%s%s]) -> %s%s]", NS,
-									"GMS", NS, "SVS", NS, "FMS"));
+					String.format("[([%s%s] & [%s%s]) -> %s%s]", NS, "GMS", NS,
+							"SVS", NS, "FMS"));
+			assertEquals(true, matches);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void test3WayBranchedStaging() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("test3.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path p = abductor
+					.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
+
+			System.out.println(p.toString());
+
+			boolean matches = p.toString().equals(
+					String.format("[([%s%s] & [%s%s] & [%s%s]) -> %s%s]", NS,
+							"GMS", NS, "PMS", NS, "SVS", NS, "FMS"));
+
 			assertEquals(true, matches);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -305,6 +331,18 @@ public class OWLAPIAbductorTest {
 	}
 
 	@Test
+	public void testPermute() {
+		String[] s = new String[] { "1", "2", "3", "4", "5" };
+
+		Set<Set<String>> setPermutations = Utils.getNTuplePermutations(
+				Arrays.asList(s), 4);
+		// for (Set<String> p : setPermutations) {
+		// System.out.println(p);
+		// }
+		assertEquals(5, setPermutations.size());
+	}
+
+	@Test
 	public void testMazeStaging() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
@@ -315,7 +353,7 @@ public class OWLAPIAbductorTest {
 			MazeTransformer mt = new MazeTransformer();
 			Set<DLAxiom<?>> ax = mt.transform(m);
 			dl.addAxioms(ax);
-			
+
 			abductor.debug();
 
 			DLIndividual<?> test = dl.individual(NS + "test");

@@ -54,6 +54,12 @@ public class SimpleStep extends Step {
 	}
 
 	@Override
+	public int compareTo(Object o) {
+		SimpleStep sso = (SimpleStep) o;
+		return dl.getIRI(service).compareTo(dl.getIRI(sso.getService()));
+	}
+
+	@Override
 	public Collection<IndividualPlus> getInput() {
 		return Arrays.asList(new IndividualPlus[] { input });
 	}

@@ -15,7 +15,7 @@ import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
 
-public abstract class Step {
+public abstract class Step implements Comparable {
 
 	private Abductor abductor;
 

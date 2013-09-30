@@ -82,8 +82,9 @@ public abstract class Abductor {
 	//
 	// return p;
 	// }
-	
-	public Set<Path> getAllPaths(IndividualPlus origInput, DLClassExpression<?> goalClass) {
+
+	public Set<Path> getAllPaths(IndividualPlus origInput,
+			DLClassExpression<?> goalClass) {
 		Set<Path> completedPaths = new HashSet<>();
 
 		// Set<Path> paths = extendPath(null, origInput, goalI);
@@ -301,122 +302,122 @@ public abstract class Abductor {
 				Collection<DLAxiom> axioms = dl.getAxioms();
 				List<DLClassExpression> serviceClasses = new ArrayList<>(
 						dl.getSubclasses(dl.clazz(NS + "Service")));
-				List<List<DLClassExpression<?>>> serviceClassPairs = new ArrayList<>();
-				for (int j = 0; j < serviceClasses.size(); j++) {
-					for (int k = j + 1; k < serviceClasses.size(); k++) {
-						serviceClassPairs.add(Arrays
-								.asList(new DLClassExpression<?>[] {
-										serviceClasses.get(j),
-										serviceClasses.get(k) }));
-					}
-				}
+				for (int n = 2; n <= serviceClasses.size(); n++) {
+					Set<Set<DLClassExpression>> serviceClassTuples = Utils
+							.getNTuplePermutations(serviceClasses, n);
 
-				for (List<DLClassExpression<?>> serviceClassPair : serviceClassPairs) {
-					IndividualPlus serviceI = new IndividualPlus(
-							dl.individual(NS + "testService"));
+					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
+						IndividualPlus serviceI = new IndividualPlus(
+								dl.individual(NS + "testService"));
 
-					// Get distinct n-tuples of service class instances where n
-					// is size of "pair"
-					Map<Integer, Collection<DLIndividual>> serviceClassMap = new HashMap<>();
-					int cnt = 0;
-					for (DLClassExpression<?> serviceClass : serviceClassPair) {
-						Collection<DLIndividual> serviceClassIList = dl
-								.getInstances(serviceClass);
-						serviceClassMap.put(cnt, serviceClassIList);
-						cnt++;
-					}
-					cnt = 0;
-					List<List<IndividualPlus>> prevLists = new ArrayList<>();
-					for (Integer c : serviceClassMap.keySet()) {
-						List<List<IndividualPlus>> newLists = new ArrayList<>();
-						Collection<DLIndividual> serviceClassIList = serviceClassMap
-								.get(c);
-						if (prevLists.size() == 0) {
-							for (DLIndividual serviceClassI : serviceClassIList) {
-								List<IndividualPlus> newIList = new ArrayList<>();
-								newIList.add(new IndividualPlus(serviceClassI));
-								newLists.add(newIList);
-							}
-						} else {
-							for (List<IndividualPlus> prevList : prevLists) {
+						// Get distinct n-tuples of service class instances
+						// where n
+						// is size of "pair"
+						Map<Integer, Collection<DLIndividual>> serviceClassMap = new HashMap<>();
+						int cnt = 0;
+						for (DLClassExpression<?> serviceClass : serviceClassTuple) {
+							Collection<DLIndividual> serviceClassIList = dl
+									.getInstances(serviceClass);
+							serviceClassMap.put(cnt, serviceClassIList);
+							cnt++;
+						}
+						cnt = 0;
+						List<List<IndividualPlus>> prevLists = new ArrayList<>();
+						for (Integer c : serviceClassMap.keySet()) {
+							List<List<IndividualPlus>> newLists = new ArrayList<>();
+							Collection<DLIndividual> serviceClassIList = serviceClassMap
+									.get(c);
+							if (prevLists.size() == 0) {
 								for (DLIndividual serviceClassI : serviceClassIList) {
 									List<IndividualPlus> newIList = new ArrayList<>();
-									newIList.addAll(prevList);
 									newIList.add(new IndividualPlus(
 											serviceClassI));
 									newLists.add(newIList);
 								}
-							}
-						}
-						prevLists = newLists;
-					}
-					List<List<IndividualPlus>> serviceClassIPairs = prevLists;
-
-					for (List<IndividualPlus> serviceClassIPair : serviceClassIPairs) {
-
-						// Get distinct n-tuples of serviceClassInputs where n
-						// is size of "pair"
-						Map<Integer, Collection<DLIndividual>> serviceClassInputMap = new HashMap<>();
-						cnt = 0;
-						for (IndividualPlus serviceClassI : serviceClassIPair) {
-							Collection<DLIndividual> serviceClassInputList = dl
-									.getObjectPropertyValues(
-											serviceClassI.getIndividual(),
-											dl.objectProp(NS + "has_input"));
-							serviceClassInputMap
-									.put(cnt, serviceClassInputList);
-							cnt++;
-						}
-						cnt = 0;
-						List<List<DLIndividual>> prevLists2 = new ArrayList<>();
-						for (Integer c : serviceClassInputMap.keySet()) {
-							List<List<DLIndividual>> newLists = new ArrayList<>();
-							Collection<DLIndividual> serviceClassInputList = serviceClassInputMap
-									.get(c);
-							if (prevLists2.size() == 0) {
-								for (DLIndividual serviceClassInput : serviceClassInputList) {
-									List<DLIndividual> newInputList = new ArrayList<>();
-									newInputList.add(serviceClassInput);
-									newLists.add(newInputList);
-								}
 							} else {
-								for (List<DLIndividual> prevList : prevLists2) {
+								for (List<IndividualPlus> prevList : prevLists) {
+									for (DLIndividual serviceClassI : serviceClassIList) {
+										List<IndividualPlus> newIList = new ArrayList<>();
+										newIList.addAll(prevList);
+										newIList.add(new IndividualPlus(
+												serviceClassI));
+										newLists.add(newIList);
+									}
+								}
+							}
+							prevLists = newLists;
+						}
+						List<List<IndividualPlus>> serviceClassIPairs = prevLists;
+
+						for (List<IndividualPlus> serviceClassIPair : serviceClassIPairs) {
+
+							// Get distinct n-tuples of serviceClassInputs where
+							// n
+							// is size of "pair"
+							Map<Integer, Collection<DLIndividual>> serviceClassInputMap = new HashMap<>();
+							cnt = 0;
+							for (IndividualPlus serviceClassI : serviceClassIPair) {
+								Collection<DLIndividual> serviceClassInputList = dl
+										.getObjectPropertyValues(
+												serviceClassI.getIndividual(),
+												dl.objectProp(NS + "has_input"));
+								serviceClassInputMap.put(cnt,
+										serviceClassInputList);
+								cnt++;
+							}
+							cnt = 0;
+							List<List<DLIndividual>> prevLists2 = new ArrayList<>();
+							for (Integer c : serviceClassInputMap.keySet()) {
+								List<List<DLIndividual>> newLists = new ArrayList<>();
+								Collection<DLIndividual> serviceClassInputList = serviceClassInputMap
+										.get(c);
+								if (prevLists2.size() == 0) {
 									for (DLIndividual serviceClassInput : serviceClassInputList) {
 										List<DLIndividual> newInputList = new ArrayList<>();
-										newInputList.addAll(prevList);
 										newInputList.add(serviceClassInput);
 										newLists.add(newInputList);
 									}
-								}
-							}
-							prevLists2 = newLists;
-						}
-
-						List<List<DLIndividual>> serviceClassInputPairs = prevLists2;
-
-						for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
-							debug();
-							boolean add = serviceClassMatches(i,
-									serviceClassPair, targetServiceClasses,
-									serviceI, serviceClassInputPair,
-									dl.objectProp(NS + "has_input"),
-									dl.objectProp(NS + "has_output"));
-							if (add) {
-								List<IndividualPlus> outputsToAdd = new ArrayList<>();
-								for (IndividualPlus s : serviceClassIPair) {
-									for (DLIndividual<?> soutput : dl
-											.getObjectPropertyValues(
-													s.getIndividual(),
-													dl.objectProp(NS
-															+ "has_output"))) {
-										outputsToAdd.add(new IndividualPlus(
-												soutput));
+								} else {
+									for (List<DLIndividual> prevList : prevLists2) {
+										for (DLIndividual serviceClassInput : serviceClassInputList) {
+											List<DLIndividual> newInputList = new ArrayList<>();
+											newInputList.addAll(prevList);
+											newInputList.add(serviceClassInput);
+											newLists.add(newInputList);
+										}
 									}
 								}
-								// output.add(serviceClassIPair);
-								output.add(outputsToAdd);
+								prevLists2 = newLists;
+							}
+
+							List<List<DLIndividual>> serviceClassInputPairs = prevLists2;
+
+							for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
+								debug();
+								boolean add = serviceClassMatches(i,
+										serviceClassTuple, targetServiceClasses,
+										serviceI, serviceClassInputPair,
+										dl.objectProp(NS + "has_input"),
+										dl.objectProp(NS + "has_output"));
+								if (add) {
+									List<IndividualPlus> outputsToAdd = new ArrayList<>();
+									for (IndividualPlus s : serviceClassIPair) {
+										for (DLIndividual<?> soutput : dl
+												.getObjectPropertyValues(
+														s.getIndividual(),
+														dl.objectProp(NS
+																+ "has_output"))) {
+											outputsToAdd
+													.add(new IndividualPlus(
+															soutput));
+										}
+									}
+									// output.add(serviceClassIPair);
+									output.add(outputsToAdd);
+								}
 							}
 						}
+
 					}
 				}
 			}
@@ -427,20 +428,20 @@ public abstract class Abductor {
 	}
 
 	private boolean serviceClassMatches(IndividualPlus testI,
-			DLClassExpression<?> serviceClass,
+			DLClassExpression serviceClass,
 			Collection<DLClassExpression> nextServiceClass,
 			IndividualPlus serviceClassI, DLIndividual<?> serviceClassIFiller,
 			DLObjectPropertyExpression<?> propToKeep,
 			DLObjectPropertyExpression<?> propToReplace) {
 		return serviceClassMatches(testI,
-				Arrays.asList(new DLClassExpression<?>[] { serviceClass }),
+				Arrays.asList(new DLClassExpression[] { serviceClass }),
 				nextServiceClass, serviceClassI,
 				Arrays.asList(new DLIndividual[] { serviceClassIFiller }),
 				propToKeep, propToReplace);
 	}
 
 	private boolean serviceClassMatches(IndividualPlus testI,
-			Collection<DLClassExpression<?>> serviceClasses,
+			Collection<DLClassExpression> serviceClasses,
 			Collection<DLClassExpression> nextServiceClasses,
 			IndividualPlus serviceClassI,
 			Collection<DLIndividual> serviceClassIFillers,
