@@ -24,6 +24,7 @@ public class Branch extends Step {
 
 	public Branch(Abductor abductor) {
 		super(abductor);
+		dl = abductor.getDLController();
 	}
 
 	public Branch(Collection<DLIndividual<?>> services,
@@ -44,6 +45,7 @@ public class Branch extends Step {
 		for (Path p : paths) {
 			newPaths.add(p.copy());
 		}
+		out.setPaths(newPaths);
 		return out;
 	}
 	

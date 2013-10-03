@@ -27,6 +27,10 @@ public class Condition extends Step {
 
 	public Condition(Abductor abductor) {
 		super(abductor);
+		dl = abductor.getDLController();
+
+		HAS_INPUT = dl.objectProp(NS + "has_input");
+		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 	}
 
 	public Condition(Collection<Step> steps, IndividualPlus initialInput,
@@ -63,11 +67,16 @@ public class Condition extends Step {
 		for (Path p : paths) {
 			newPaths.add(p.copy());
 		}
+		out.setPaths(newPaths);
 		return out;
 	}
 
 	public Set<Path> getPaths() {
 		return paths;
+	}
+
+	public void setPaths(Set<Path> paths) {
+		this.paths = paths;
 	}
 
 	@Override

@@ -91,6 +91,22 @@ public class Path implements Comparable<Path> {
 		return sum;
 	}
 
+	public Abductor getAbductor() {
+		return abductor;
+	}
+
+	public void setAbductor(Abductor abductor) {
+		this.abductor = abductor;
+	}
+
+	public IndividualPlus getInitialInput() {
+		return initialInput;
+	}
+
+	public void setInitialInput(IndividualPlus initialInput) {
+		this.initialInput = initialInput;
+	}
+
 	public Step nextStep() {
 		if (steps.size() > execStep + 1) {
 			return steps.get(execStep + 1);

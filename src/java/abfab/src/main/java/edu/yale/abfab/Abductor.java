@@ -8,19 +8,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import sun.security.jca.ServiceId;
-
 import edu.yale.abfab.Path;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
-
 import static edu.yale.abfab.NS.*;
 
 public abstract class Abductor {
@@ -31,6 +30,7 @@ public abstract class Abductor {
 	private Path executingPath;
 	private DLObjectPropertyExpression<?> HAS_INPUT;
 	private DLObjectPropertyExpression<?> HAS_OUTPUT;
+	private boolean debugFine = true;
 
 	public Abductor() {
 		dl = initDLController();
@@ -66,38 +66,35 @@ public abstract class Abductor {
 		return goalPath.exec(input);
 	}
 
-	// public Path getBestPath(IndividualPlus input, DLClassExpression<?>
-	// goalClass) {
-	// if (goalPathCache.containsKey(goalClass)) {
-	// return goalPathCache.get(goalClass);
-	// }
-	//
-	// Set<DLAxiom<?>> ax = new HashSet<>();
-	// ax.add(dl.individualType(dl.individual(NS + "Test"), goalClass));
-	// IndividualPlus i = new IndividualPlus(dl.individual(NS + "Test"), ax);
-	//
-	// Path p = getBestPath(input, i);
-	//
-	// goalPathCache.put(goalClass, p);
-	//
-	// return p;
-	// }
+	private void dbg(String s, Object... args) {
+		if (debugFine) {
+			System.out.println(String.format(s, args));
+		}
+	}
 
 	public Set<Path> getAllPaths(IndividualPlus origInput,
 			DLClassExpression<?> goalClass) {
+		dbg("Get All Paths: %s, %s", origInput, goalClass);
 		Set<Path> completedPaths = new HashSet<>();
 
 		// Set<Path> paths = extendPath(null, origInput, goalI);
 		Set<Path> paths = initializePaths(origInput, goalClass);
+		dbg("Initial Paths: %s", paths);
 
 		for (;;) {
 			Set<Path> nextPaths = new HashSet<>();
 			for (Path p : paths) {
 				if (matchesInput(origInput, p)) {
-					completedPaths.add(p);
+					Path merged = mergeBranches(p);
+					completedPaths.add(merged);
+					dbg("Path %d(%s) complete", p.hashCode(), merged.toString());
 				} else {
-					nextPaths
-							.addAll(extendPath(p, origInput, p.getLastInput()));
+					Set<Path> eps = extendPath(p, origInput, p.getLastInput());
+					for (Path ep : eps) {
+						dbg("Extend Path %d to %d(%s)", p.hashCode(),
+								ep.hashCode(), ep.toString());
+					}
+					nextPaths.addAll(eps);
 				}
 			}
 			if (nextPaths.size() == 0) {
@@ -105,7 +102,72 @@ public abstract class Abductor {
 			}
 			paths = nextPaths;
 		}
+
 		return completedPaths;
+	}
+
+	public Path mergeBranches(Path input) {
+		Path output = new Path(input.getInitialInput(), input.getAbductor());
+		List<Step> reverseSteps = new ArrayList<>();
+		for (Step s : input.getSteps()) {
+			reverseSteps.add(s.copy());
+		}
+		Collections.reverse(reverseSteps);
+		Iterator<Step> mainIter = reverseSteps.iterator();
+		while (mainIter.hasNext()) {
+			Step s = mainIter.next();
+			if (!(s instanceof Branch)) {
+				output.getSteps().add(0, s);
+			} else {
+				Branch b = (Branch) s;
+				List<Iterator<Step>> piters = new ArrayList<>();
+				List<Path> newPaths = new ArrayList<>();
+				for (Path p : b.getPaths()) {
+					piters.add(p.getSteps().iterator());
+					newPaths.add(p.copy());
+				}
+				boolean done = false;
+				DLIndividual<?> serviceToAdd = null;
+				int addPos = 0;
+				while (!done) {
+					for (Iterator<Step> piter : piters) {
+						if (piter.hasNext()) {
+							Step step = piter.next();
+							if (step instanceof SimpleStep) {
+								DLIndividual<?> service = ((SimpleStep) step)
+										.getService();
+								if (serviceToAdd == null) {
+									serviceToAdd = service;
+								}
+								if (!serviceToAdd.equals(service)) {
+									done = true;
+									break;
+								} else {
+									serviceToAdd = service;
+								}
+
+							}
+						} else {
+							done = true;
+							break;
+						}
+					}
+					if (!done && serviceToAdd != null) {
+						output.getSteps().add(addPos,
+								new SimpleStep(serviceToAdd, this));
+						for (Path np : newPaths) {
+							np.getSteps().remove(0);
+						}
+						addPos++;
+						serviceToAdd = null;
+					}
+				}
+				Branch newBranch = new Branch(this);
+				newBranch.setPaths(new HashSet<>(newPaths));
+				output.getSteps().add(addPos, newBranch);
+			}
+		}
+		return output;
 	}
 
 	public Path getBestPath(IndividualPlus origInput,
@@ -216,52 +278,6 @@ public abstract class Abductor {
 		}
 	}
 
-	// public boolean matchesInput(IndividualPlus i, Path p) {
-	// boolean matches = false;
-	// try {
-	// dl.addAxioms(i.getAxioms());
-	// // Get Class representing top step of the Path
-	// Collection<DLClassExpression> pathTopClasses = p
-	// .getTopStepDLClasses();
-	//
-	// Collection<DLClassExpression> pathNextClasses = p
-	// .getNextStepDLClasses();
-	// // Cast a new individual as a member of that class
-	//
-	// // Set the output of the new individual to existing output for
-	// // instance
-	// // of the class
-	// for (DLClassExpression<?> pathTopClass : pathTopClasses) {
-	// matches = matchInputToPathClass(i, pathTopClass,
-	// pathNextClasses);
-	// }
-	// } finally {
-	// dl.removeAxioms(i.getAxioms());
-	// }
-	//
-	// return matches;
-	// }
-
-	// public boolean matchInputToPathClass(IndividualPlus i,
-	// DLClassExpression<?> pathTopClass,
-	// Collection<DLClassExpression> targetServiceClasses) {
-	// boolean matches = false;
-	// IndividualPlus testServiceI = new IndividualPlus(dl.individual(NS
-	// + "testService"));
-	// for (DLIndividual<?> pathTopClassI : dl.getInstances(pathTopClass)) {
-	// Collection<DLIndividual> pathTopClassOutputs = dl
-	// .getObjectPropertyValues(pathTopClassI,
-	// dl.objectProp(NS + "has_output"));
-	// for (DLIndividual<?> pathTopClassOutput : pathTopClassOutputs) {
-	// matches = serviceClassMatches(i, pathTopClass,
-	// targetServiceClasses, testServiceI, pathTopClassOutput,
-	// dl.objectProp(NS + "has_output"),
-	// dl.objectProp(NS + "has_input"));
-	// }
-	// }
-	// return matches;
-	// }
-
 	public Collection<Collection<IndividualPlus>> findServiceOutputMatch(
 			IndividualPlus i, Collection<DLClassExpression> targetServiceClasses) {
 		Set<Collection<IndividualPlus>> output = new HashSet<>();
@@ -271,6 +287,7 @@ public abstract class Abductor {
 
 			for (DLClassExpression<?> serviceClass : dl.getSubclasses(dl
 					.clazz(NS + "Service"))) {
+				// dbg("Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -302,11 +319,16 @@ public abstract class Abductor {
 				Collection<DLAxiom> axioms = dl.getAxioms();
 				List<DLClassExpression> serviceClasses = new ArrayList<>(
 						dl.getSubclasses(dl.clazz(NS + "Service")));
+				boolean matchFound = false;
 				for (int n = 2; n <= serviceClasses.size(); n++) {
+					if (matchFound) {
+						break;
+					}
 					Set<Set<DLClassExpression>> serviceClassTuples = Utils
 							.getNTuplePermutations(serviceClasses, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
+						// dbg("Try services: %s", serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -395,8 +417,9 @@ public abstract class Abductor {
 							for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
 								debug();
 								boolean add = serviceClassMatches(i,
-										serviceClassTuple, targetServiceClasses,
-										serviceI, serviceClassInputPair,
+										serviceClassTuple,
+										targetServiceClasses, serviceI,
+										serviceClassInputPair,
 										dl.objectProp(NS + "has_input"),
 										dl.objectProp(NS + "has_output"));
 								if (add) {
@@ -414,6 +437,7 @@ public abstract class Abductor {
 									}
 									// output.add(serviceClassIPair);
 									output.add(outputsToAdd);
+									matchFound = true;
 								}
 							}
 						}
@@ -537,32 +561,6 @@ public abstract class Abductor {
 				}
 			}
 		}
-		// if (add && serviceClasses.size() == 1) {
-		// ax = new HashSet<>();
-		// for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
-		// for (DLClassExpression<?> serviceClassInputClass : dl
-		// .getTypes(serviceClassIFiller)) {
-		// for (DLClassExpression<?> iClass : dl.getTypes(testI
-		// .getIndividual())) {
-		// ax.add(dl.newClazz(dl.clazz(NS + "TestC")));
-		// ax.add(dl.equiv(dl.clazz(NS + "TestC"), dl.andClass(
-		// dl.some(propToKeep, serviceClassInputClass),
-		// dl.some(propToReplace, iClass))));
-		// }
-		// }
-		// }
-		// for (DLClassExpression<?> serviceClass : serviceClasses) {
-		// ax.add(dl.individualType(dl.individual(NS + "testI"),
-		// serviceClass));
-		// }
-		// ax.add(dl.individualType(dl.individual(NS + "testI"),
-		// dl.notClass(dl.clazz(NS + "TestC"))));
-		// dl.addAxioms(ax);
-		//
-		// add = !dl.checkConsistency();
-		// debug();
-		// dl.removeAxioms(ax);
-		// }
 		return add;
 	}
 

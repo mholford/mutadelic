@@ -79,10 +79,30 @@ public class OWLAPIAbductorTest {
 
 			System.out.println(p.toString());
 
-			boolean matches = p.toString().equals(
-					String.format("[([%s%s] & [%s%s]) -> %s%s]", NS, "GMS", NS,
-							"SVS", NS, "FMS"));
-			assertEquals(true, matches);
+			assertEquals(String.format("[([%s%s] & [%s%s]) -> %s%s]", NS,
+					"GMS", NS, "SVS", NS, "FMS"), p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testBranchedStaging2() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("test4.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"), dl.thing()));
+			Path p = abductor
+					.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
+
+			System.out.println(p.toString());
+
+			assertEquals(String.format("[%s%s -> ([%s%s] & [%s%s]) -> %s%s]",
+					NS, "MS", NS, "GMS", NS, "SVS", NS, "FMS"), p.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -348,8 +368,17 @@ public class OWLAPIAbductorTest {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("skel.owl")), "Manchester");
 			int numNodes = 20;
+			List<String> mazeNodes = new ArrayList<>();
+			int i = 0;
+			while (i <= numNodes) {
+				mazeNodes.add(String.format("%sT%S", NS, String.valueOf(++i)));
+			}
+			int randomOut = new Random().nextInt(numNodes) + 1;
+			Object randomNode = mazeNodes.get(randomOut);
+
 			MazeGenerator mg = new MazeGenerator();
-			Maze m = mg.createDAG(numNodes);
+			mg.setNodePool(mazeNodes);
+			Maze m = mg.createDAG(mazeNodes, 0.0, 0.0, -1);
 			MazeTransformer mt = new MazeTransformer();
 			Set<DLAxiom<?>> ax = mt.transform(m);
 			dl.addAxioms(ax);
@@ -358,29 +387,66 @@ public class OWLAPIAbductorTest {
 
 			DLIndividual<?> test = dl.individual(NS + "test");
 			IndividualPlus ip = new IndividualPlus(test);
-			DLClassExpression<?> ipType = dl.clazz(String.format(
-					"%sType%sInput", NS, m.getRoot().getName()));
+			DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
+					+ "Input");
 			ip.getAxioms().add(dl.individualType(test, ipType));
 
-			int randomOut = new Random().nextInt(numNodes) + 1;
-			DLClassExpression<?> goalClass = dl.clazz(String.format(
-					"%sType%sOutput", NS, String.valueOf(randomOut)));
+			DLClassExpression<?> goalClass = dl.clazz(String
+					.valueOf(randomNode) + "Output");
 			Path p = abductor.getBestPath(ip, goalClass);
 
-			List<Node> solution = mg.solveRandomDAG(m,
-					String.valueOf(randomOut));
-			StringBuilder sb = new StringBuilder();
-			Iterator<Node> solIter = solution.iterator();
-			sb.append("[");
-			while (solIter.hasNext()) {
-				sb.append(String.format("%sT%sS", NS, solIter.next()));
-				if (solIter.hasNext()) {
-					sb.append(" -> ");
-				}
-			}
-			sb.append("]");
+			String solution = mg.solveRandomDAG(m, String.valueOf(randomNode));
 
-			assertEquals(sb.toString(), p.toString());
+			assertEquals(solution, p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testMazeStaging2() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("skel.owl")), "Manchester");
+			int numNodes = 10;
+			List<String> mazeNodes = new ArrayList<>();
+			int i = 0;
+			while (i <= numNodes) {
+				mazeNodes.add(String.format("%sT%S", NS, String.valueOf(++i)));
+			}
+			int randomOut = new Random().nextInt(numNodes) + 1;
+			Object randomNode = mazeNodes.get(randomOut);
+
+			MazeGenerator mg = new MazeGenerator();
+			mg.setNodePool(mazeNodes);
+			Maze m = mg.createDAG(mazeNodes, 0.2, 0.0, -1);
+			MazeTransformer mt = new MazeTransformer();
+			Set<DLAxiom<?>> ax = mt.transform(m);
+			dl.addAxioms(ax);
+			String mdump = m.dump();
+
+			System.out.println(mdump);
+			String solution = mg.solveRandomDAG(m, String.valueOf(randomNode));
+
+			System.out.println("SOLUTION");
+			System.out.println(solution);
+
+			abductor.debug();
+			System.out.println("ABFAB Solution");
+
+			DLIndividual<?> test = dl.individual(NS + "test");
+			IndividualPlus ip = new IndividualPlus(test);
+			DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
+					+ "Input");
+			ip.getAxioms().add(dl.individualType(test, ipType));
+
+			DLClassExpression<?> goalClass = dl.clazz(String
+					.valueOf(randomNode) + "Output");
+			Path p = abductor.getBestPath(ip, goalClass);
+			System.out.println(p);
+
+			assertEquals(solution, p.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
