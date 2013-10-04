@@ -1,6 +1,6 @@
 package edu.yale.abfab.pellet3;
 
-import edu.yale.abfab.old.Abductor;
+import edu.yale.abfab.Abductor;
 import edu.yale.dlgen.controller.DLController;
 import edu.yale.dlgen.owl.pellet3.Pellet3DLController;
 
