@@ -167,7 +167,7 @@ public class Branch extends Step {
 							ax2.add(dl.individualType(testI, dl.notClass(nc)));
 							dl.addAxioms(ax2);
 							boolean fail = false;
-							ab.debug();
+							//ab.debug();
 							if (dl.checkConsistency()) {
 								fail = true;
 							}

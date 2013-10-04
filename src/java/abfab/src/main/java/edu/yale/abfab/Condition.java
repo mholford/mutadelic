@@ -183,7 +183,7 @@ public class Condition extends Step {
 								ax2.add(dl.individualType(testI,
 										dl.notClass(nc)));
 								dl.addAxioms(ax2);
-								ab.debug();
+								//ab.debug();
 								if (dl.checkConsistency()) {
 									fail = true;
 								}
