@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class MazeGenerator {
 
-	public class Maze implements Comparable<Maze> {
+	public static class Maze implements Comparable<Maze> {
 		private Node root;
 		private Map<String, Node> allNodes;
 		private double branchProb;
@@ -100,7 +100,7 @@ public class MazeGenerator {
 
 	}
 
-	public class Node {
+	public static class Node {
 		private String name;
 		private Set<Node> branches;
 		private Node parent;
@@ -164,7 +164,6 @@ public class MazeGenerator {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + getOuterType().hashCode();
 			result = prime * result + ((name == null) ? 0 : name.hashCode());
 			return result;
 		}
@@ -178,8 +177,6 @@ public class MazeGenerator {
 			if (getClass() != obj.getClass())
 				return false;
 			Node other = (Node) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
 			if (name == null) {
 				if (other.name != null)
 					return false;
@@ -187,14 +184,15 @@ public class MazeGenerator {
 				return false;
 			return true;
 		}
-
-		private MazeGenerator getOuterType() {
-			return MazeGenerator.this;
-		}
 	}
 
-	public class Branch extends Node {
+	public static class Branch extends Node {
 		private List<Maze> forks;
+		
+		public Branch(String name, Node parent, List<Maze> forks) {
+			super(name, parent);
+			this.forks = forks;
+		}
 
 		public Branch(String name, Node parent, double branchProb,
 				List<String> nodePool, Maze rootMaze) {
@@ -337,9 +335,9 @@ public class MazeGenerator {
 		return getDAGSolver(m, new Node(goal)).solution();
 	}
 
-	public Maze createDAG(List<String> nodePool, double initialBranchProb,
+	public static Maze createDAG(List<String> nodePool, double initialBranchProb,
 			double subsequentBranchProb, int currBranch) {
-		this.nodePool = nodePool;
+		//this.nodePool = nodePool;
 		List<String> origNodePool = new ArrayList<>();
 		for (String np : nodePool) {
 			origNodePool.add(np);

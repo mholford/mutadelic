@@ -20,6 +20,7 @@ import edu.yale.abfab.Path;
 import edu.yale.abfab.TestVals;
 import edu.yale.abfab.Utils;
 import edu.yale.abfab.mazes.MazeGenerator;
+import edu.yale.abfab.mazes.MazeGenerator.Branch;
 import edu.yale.abfab.mazes.MazeGenerator.Maze;
 import edu.yale.abfab.mazes.MazeGenerator.Node;
 import edu.yale.abfab.mazes.MazeTransformer;
@@ -447,6 +448,25 @@ public class OWLAPIAbductorTest {
 			System.out.println(p);
 
 			assertEquals(solution, p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testMazeStaging3() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("skel.owl")), "Manchester");
+			MazeGenerator mg = new MazeGenerator();
+			Node n1 = new Node("1");
+			Maze m = new Maze(n1);
+			Maze m1 = new Maze(new Node("1-1"));
+			m1.addNode(new Node("2-1"));
+			Maze m2 = new Maze(new Node("1-2"));
+			m2.addNode(new Node("2-2"));
+			m.addNode(new Branch("2", n1, Arrays.asList(new Maze[] { m1, m2 })));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
