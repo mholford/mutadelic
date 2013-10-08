@@ -39,6 +39,10 @@ public abstract class Abductor {
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 	}
 
+	public enum MatchStatus {
+		FULL, PARTIAL, NONE
+	}
+
 	public abstract DLController initDLController();
 
 	public DLController getDLController() {
@@ -281,13 +285,14 @@ public abstract class Abductor {
 	public Collection<Collection<IndividualPlus>> findServiceOutputMatch(
 			IndividualPlus i, Collection<DLClassExpression> targetServiceClasses) {
 		Set<Collection<IndividualPlus>> output = new HashSet<>();
+		Set<DLClassExpression> servicePartials = new HashSet<>();
 
 		try {
 			dl.addAxioms(i.getAxioms());
 
-			for (DLClassExpression<?> serviceClass : dl.getSubclasses(dl
-					.clazz(NS + "Service"))) {
-				// dbg("Try service: %s", serviceClass);
+			for (DLClassExpression serviceClass : dl.getSubclasses(dl.clazz(NS
+					+ "Service"))) {
+				//dbg("Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -299,16 +304,23 @@ public abstract class Abductor {
 							.getObjectPropertyValues(serviceClassI,
 									dl.objectProp(NS + "has_input"));
 					for (DLIndividual<?> serviceClassInput : serviceClassInputs) {
-						boolean add = serviceClassMatches(i, serviceClass,
-								targetServiceClasses, serviceI,
+						MatchStatus match = serviceClassMatches(i,
+								serviceClass, targetServiceClasses, serviceI,
 								serviceClassInput,
 								dl.objectProp(NS + "has_input"),
 								dl.objectProp(NS + "has_output"));
 
-						if (add) {
+						switch (match) {
+						case FULL:
 							output.add(Arrays
 									.asList(new IndividualPlus[] { new IndividualPlus(
 											serviceClassI) }));
+							break;
+						case PARTIAL:
+							servicePartials.add(serviceClass);
+							break;
+						default:
+							break;
 						}
 					}
 				}
@@ -317,18 +329,18 @@ public abstract class Abductor {
 			if (output.size() == 0) {
 				// debug();
 				Collection<DLAxiom> axioms = dl.getAxioms();
-				List<DLClassExpression> serviceClasses = new ArrayList<>(
-						dl.getSubclasses(dl.clazz(NS + "Service")));
+//				List<DLClassExpression> serviceClasses = new ArrayList<>(
+//						dl.getSubclasses(dl.clazz(NS + "Service")));
 				boolean matchFound = false;
-				for (int n = 2; n <= serviceClasses.size(); n++) {
+				for (int n = 2; n <= servicePartials.size(); n++) {
 					if (matchFound) {
 						break;
 					}
 					Set<Set<DLClassExpression>> serviceClassTuples = Utils
-							.getNTuplePermutations(serviceClasses, n);
+							.getNTuplePermutations(servicePartials, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
-						// dbg("Try services: %s", serviceClassTuple);
+						//dbg("Try services: %s", serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -416,13 +428,15 @@ public abstract class Abductor {
 
 							for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
 								// debug();
-								boolean add = serviceClassMatches(i,
+								MatchStatus match = serviceClassMatches(i,
 										serviceClassTuple,
 										targetServiceClasses, serviceI,
 										serviceClassInputPair,
 										dl.objectProp(NS + "has_input"),
 										dl.objectProp(NS + "has_output"));
-								if (add) {
+
+								switch (match) {
+								case FULL:
 									List<IndividualPlus> outputsToAdd = new ArrayList<>();
 									for (IndividualPlus s : serviceClassIPair) {
 										for (DLIndividual<?> soutput : dl
@@ -438,6 +452,10 @@ public abstract class Abductor {
 									// output.add(serviceClassIPair);
 									output.add(outputsToAdd);
 									matchFound = true;
+									break;
+									
+								default:
+									break;
 								}
 							}
 						}
@@ -451,7 +469,7 @@ public abstract class Abductor {
 		return output;
 	}
 
-	private boolean serviceClassMatches(IndividualPlus testI,
+	private MatchStatus serviceClassMatches(IndividualPlus testI,
 			DLClassExpression serviceClass,
 			Collection<DLClassExpression> nextServiceClass,
 			IndividualPlus serviceClassI, DLIndividual<?> serviceClassIFiller,
@@ -464,13 +482,14 @@ public abstract class Abductor {
 				propToKeep, propToReplace);
 	}
 
-	private boolean serviceClassMatches(IndividualPlus testI,
+	private MatchStatus serviceClassMatches(IndividualPlus testI,
 			Collection<DLClassExpression> serviceClasses,
 			Collection<DLClassExpression> nextServiceClasses,
 			IndividualPlus serviceClassI,
 			Collection<DLIndividual> serviceClassIFillers,
 			DLObjectPropertyExpression<?> propToKeep,
 			DLObjectPropertyExpression<?> propToReplace) {
+		MatchStatus output = MatchStatus.NONE;
 		Set<DLAxiom<?>> ax = new HashSet<>();
 		for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
 			ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToKeep,
@@ -493,6 +512,7 @@ public abstract class Abductor {
 		boolean add = false;
 		if (!dl.checkConsistency()) {
 			add = true;
+			output = MatchStatus.PARTIAL;
 		}
 		dl.removeAxioms(ax);
 
@@ -561,7 +581,10 @@ public abstract class Abductor {
 				}
 			}
 		}
-		return add;
+		if (add) {
+			output = MatchStatus.FULL;
+		}
+		return output;
 	}
 
 	public Set<Path> extendPath(Path p, IndividualPlus origInput,

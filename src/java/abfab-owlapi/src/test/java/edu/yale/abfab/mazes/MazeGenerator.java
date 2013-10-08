@@ -201,8 +201,8 @@ public class MazeGenerator {
 
 			// 2 or 3 forks
 			double p = new Random().nextDouble();
-			//int numForks = (p <= 0.5) ? 2 : 3;
-			int numForks = 2;
+			int numForks = (p <= 0.5) ? 2 : 3;
+			//int numForks = 2;
 			for (int i = 0; i < numForks; i++) {
 				int bn = rootMaze.getBranchCount();
 				List<String> newNodePool = new ArrayList<>();
