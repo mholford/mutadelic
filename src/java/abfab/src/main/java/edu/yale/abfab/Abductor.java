@@ -216,7 +216,7 @@ public abstract class Abductor {
 
 				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
 				dl.addAxioms(ax);
-				//debug();
+				// debug();
 				if (!dl.checkConsistency()) {
 					add = true;
 				}
@@ -234,7 +234,7 @@ public abstract class Abductor {
 						ax.add(dl.individualType(testI, scioType));
 						ax.add(dl.individualType(testI, dl.notClass(goalClass)));
 						dl.addAxioms(ax);
-						//debug();
+						// debug();
 						add = !dl.checkConsistency();
 						dl.removeAxioms(ax);
 					}
@@ -268,7 +268,7 @@ public abstract class Abductor {
 					input.getIndividual()));
 			ax.add(dl.individualType(testService, dl.notClass(topClass)));
 			dl.addAxioms(ax);
-			//debug();
+			// debug();
 			if (!dl.checkConsistency()) {
 				return true;
 			}
@@ -315,7 +315,7 @@ public abstract class Abductor {
 			}
 
 			if (output.size() == 0) {
-				//debug();
+				// debug();
 				Collection<DLAxiom> axioms = dl.getAxioms();
 				List<DLClassExpression> serviceClasses = new ArrayList<>(
 						dl.getSubclasses(dl.clazz(NS + "Service")));
@@ -415,7 +415,7 @@ public abstract class Abductor {
 							List<List<DLIndividual>> serviceClassInputPairs = prevLists2;
 
 							for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
-								//debug();
+								// debug();
 								boolean add = serviceClassMatches(i,
 										serviceClassTuple,
 										targetServiceClasses, serviceI,
@@ -489,7 +489,7 @@ public abstract class Abductor {
 		ax.add(dl.individualType(serviceClassI.getIndividual(),
 				dl.notClass(serv)));
 		dl.addAxioms(ax);
-		//debug();
+		// debug();
 		boolean add = false;
 		if (!dl.checkConsistency()) {
 			add = true;
@@ -548,7 +548,7 @@ public abstract class Abductor {
 								serviceClassI.getIndividual(),
 								dl.notClass(serv)));
 						dl.addAxioms(ax2);
-						//debug();
+						// debug();
 						if (dl.checkConsistency()) {
 							add = false;
 						}
@@ -603,8 +603,8 @@ public abstract class Abductor {
 
 	public void debug() {
 		try {
-			dl.setOutputFile(new File(
-					"/home/matt/sw/abfab-integration-output.owl"));
+			dl.setOutputFile(new File(System.getProperty("user.home")
+					+ "/sw/abfab-integration-output.owl"));
 			dl.saveOntology();
 		} catch (IOException e) {
 			e.printStackTrace();

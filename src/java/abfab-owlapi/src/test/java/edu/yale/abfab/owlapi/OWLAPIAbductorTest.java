@@ -462,11 +462,86 @@ public class OWLAPIAbductorTest {
 			MazeGenerator mg = new MazeGenerator();
 			Node n1 = new Node("1");
 			Maze m = new Maze(n1);
-			Maze m1 = new Maze(new Node("1-1"));
-			m1.addNode(new Node("2-1"));
-			Maze m2 = new Maze(new Node("1-2"));
-			m2.addNode(new Node("2-2"));
-			m.addNode(new Branch("2", n1, Arrays.asList(new Maze[] { m1, m2 })));
+
+			Node n11 = new Node("1-1");
+			Maze m1 = new Maze(n11, 0d, 1);
+			Node n21 = new Node("2-1", n11);
+			m1.addNode(n21);
+			n11.getBranches().add(n21);
+
+			Node n12 = new Node("1-2");
+			Maze m2 = new Maze(n12, 0d , 2);
+			Node n22 = new Node("2-2", n12);
+			m2.addNode(n22);
+			n12.getBranches().add(n22);
+
+			Branch n2 = new Branch("2", n1,
+					Arrays.asList(new Maze[] { m1, m2 }));
+			m.addNode(n2);
+			n1.getBranches().add(n2);
+			
+			Node n3 = new Node("3", n2);
+			m.addNode(n3);
+			n2.getBranches().add(n3);
+
+			Node n13 = new Node("1-3");
+			Maze m3 = new Maze(n13, 0d, 3);
+			Node n23 = new Node("2-3", n13);
+			m3.addNode(n23);
+			n13.getBranches().add(n23);
+			Node n33 = new Node("3-3", n23);
+			m3.addNode(n33);
+			n23.getBranches().add(n33);
+			Node n43 = new Node("4-3", n33);
+			m3.addNode(n43);
+			n33.getBranches().add(n43);
+
+			Node n14 = new Node("1-4");
+			Maze m4 = new Maze(n14, 0d, 4);
+			Node n24 = new Node("2-4", n14);
+			m4.addNode(n24);
+			n14.getBranches().add(n24);
+			Node n34 = new Node("3-4", n24);
+			m4.addNode(n34);
+			n24.getBranches().add(n34);
+			Node n44 = new Node("4-4", n34);
+			m4.addNode(n44);
+			n34.getBranches().add(n44);
+
+			Branch n4 = new Branch("4", n3,
+					Arrays.asList(new Maze[] { m3, m4 }));
+			m.addNode(n4);
+			n3.getBranches().add(n4);
+			
+			Node n5 = new Node("5", n4);
+			m.addNode(n5);
+			n4.getBranches().add(n5);
+
+			MazeTransformer mt = new MazeTransformer();
+			Set<DLAxiom<?>> ax = mt.transform(m);
+			dl.addAxioms(ax);
+			String mdump = m.dump();
+
+			System.out.println(mdump);
+			String solution = mg.solveRandomDAG(m, "5");
+
+			System.out.println("SOLUTION");
+			System.out.println(solution);
+
+			abductor.debug();
+			System.out.println("ABFAB Solution");
+
+			DLIndividual<?> test = dl.individual(NS + "test");
+			IndividualPlus ip = new IndividualPlus(test);
+			DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
+					+ "Input");
+			ip.getAxioms().add(dl.individualType(test, ipType));
+
+			DLClassExpression<?> goalClass = dl.clazz("5Output");
+			Path p = abductor.getBestPath(ip, goalClass);
+			System.out.println(p);
+
+			assertEquals(solution, p.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
