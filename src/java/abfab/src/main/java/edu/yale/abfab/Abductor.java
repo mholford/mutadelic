@@ -31,16 +31,68 @@ public abstract class Abductor {
 	private DLObjectPropertyExpression<?> HAS_INPUT;
 	private DLObjectPropertyExpression<?> HAS_OUTPUT;
 	private boolean debugFine = true;
+	private Map<ServiceOutputMatchCacheKey, Collection<Collection<IndividualPlus>>> serviceOutputMatchCache;
 
 	public Abductor() {
 		dl = initDLController();
 		goalPathCache = new HashMap<>();
 		HAS_INPUT = dl.objectProp(NS + "has_input");
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
+		serviceOutputMatchCache = new HashMap<>();
 	}
 
 	public enum MatchStatus {
 		FULL, PARTIAL, NONE
+	}
+
+	class ServiceOutputMatchCacheKey {
+		IndividualPlus indiv;
+		Collection<DLClassExpression> targetClasses;
+
+		public ServiceOutputMatchCacheKey(IndividualPlus indiv,
+				Collection<DLClassExpression> targetClasses) {
+			this.indiv = indiv;
+			this.targetClasses = targetClasses;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((indiv == null) ? 0 : indiv.hashCode());
+			result = prime * result
+					+ ((targetClasses == null) ? 0 : targetClasses.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ServiceOutputMatchCacheKey other = (ServiceOutputMatchCacheKey) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (indiv == null) {
+				if (other.indiv != null)
+					return false;
+			} else if (!indiv.equals(other.indiv))
+				return false;
+			if (targetClasses == null) {
+				if (other.targetClasses != null)
+					return false;
+			} else if (!targetClasses.equals(other.targetClasses))
+				return false;
+			return true;
+		}
+
+		private Abductor getOuterType() {
+			return Abductor.this;
+		}
 	}
 
 	public abstract DLController initDLController();
@@ -284,6 +336,10 @@ public abstract class Abductor {
 
 	public Collection<Collection<IndividualPlus>> findServiceOutputMatch(
 			IndividualPlus i, Collection<DLClassExpression> targetServiceClasses) {
+		ServiceOutputMatchCacheKey k = new ServiceOutputMatchCacheKey(i, targetServiceClasses);
+		if (serviceOutputMatchCache.containsKey(k)) {
+			return serviceOutputMatchCache.get(k);
+		}
 		Set<Collection<IndividualPlus>> output = new HashSet<>();
 		Set<DLClassExpression> servicePartials = new HashSet<>();
 
@@ -292,7 +348,7 @@ public abstract class Abductor {
 
 			for (DLClassExpression serviceClass : dl.getSubclasses(dl.clazz(NS
 					+ "Service"))) {
-				//dbg("Try service: %s", serviceClass);
+				// dbg("Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -329,8 +385,8 @@ public abstract class Abductor {
 			if (output.size() == 0) {
 				// debug();
 				Collection<DLAxiom> axioms = dl.getAxioms();
-//				List<DLClassExpression> serviceClasses = new ArrayList<>(
-//						dl.getSubclasses(dl.clazz(NS + "Service")));
+				// List<DLClassExpression> serviceClasses = new ArrayList<>(
+				// dl.getSubclasses(dl.clazz(NS + "Service")));
 				boolean matchFound = false;
 				for (int n = 2; n <= servicePartials.size(); n++) {
 					if (matchFound) {
@@ -340,7 +396,7 @@ public abstract class Abductor {
 							.getNTuplePermutations(servicePartials, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
-						//dbg("Try services: %s", serviceClassTuple);
+						// dbg("Try services: %s", serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -453,7 +509,7 @@ public abstract class Abductor {
 									output.add(outputsToAdd);
 									matchFound = true;
 									break;
-									
+
 								default:
 									break;
 								}
@@ -466,6 +522,7 @@ public abstract class Abductor {
 		} finally {
 			dl.removeAxioms(i.getAxioms());
 		}
+		serviceOutputMatchCache.put(k, output);
 		return output;
 	}
 

@@ -42,4 +42,36 @@ public class IndividualPlus {
 				axioms.toString());
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((axioms == null) ? 0 : axioms.hashCode());
+		result = prime * result
+				+ ((individual == null) ? 0 : individual.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IndividualPlus other = (IndividualPlus) obj;
+		if (axioms == null) {
+			if (other.axioms != null)
+				return false;
+		} else if (!axioms.equals(other.axioms))
+			return false;
+		if (individual == null) {
+			if (other.individual != null)
+				return false;
+		} else if (!individual.equals(other.individual))
+			return false;
+		return true;
+	}
+
 }
