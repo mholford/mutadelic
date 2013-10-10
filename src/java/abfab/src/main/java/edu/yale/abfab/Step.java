@@ -49,9 +49,11 @@ public abstract class Step implements Comparable {
 		String name = "merge" + UUID.randomUUID().toString();
 		IndividualPlus output = null;
 		if (inds.size() > 1) {
+			
 			try {
 				for (IndividualPlus ind : inds) {
 					oldAx.addAll(ind.getAxioms());
+					newAx.addAll(ind.getAxioms());
 					dl.addAxioms(ind.getAxioms());
 				}
 				Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dpvs = new HashMap<>();

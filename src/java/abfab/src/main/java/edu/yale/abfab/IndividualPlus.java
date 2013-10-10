@@ -19,6 +19,17 @@ public class IndividualPlus {
 	public IndividualPlus(DLIndividual<?> individual) {
 		this(individual, new HashSet<DLAxiom<?>>());
 	}
+	
+	public IndividualPlus copy(IndividualPlus orig) {
+		DLIndividual<?> origIndiv = orig.getIndividual();
+		Set<DLAxiom<?>> axioms = new HashSet<>();
+		for (DLAxiom<?> ax : orig.getAxioms()) {
+			axioms.add(ax);
+		}
+		IndividualPlus output = new IndividualPlus(origIndiv, axioms);
+		
+		return output;
+	}
 
 	public DLIndividual<?> getIndividual() {
 		return individual;

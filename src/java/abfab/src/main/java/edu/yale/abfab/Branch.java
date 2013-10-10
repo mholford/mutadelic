@@ -110,7 +110,7 @@ public class Branch extends Step {
 			IndividualPlus currentEx = null;
 			for (Path p : costSortedPaths) {
 				unexecutedPaths.remove(p);
-				IndividualPlus latestOutcome = p.exec(input);
+				IndividualPlus latestOutcome = p.exec(input.copy(input));
 				outcomes.add(latestOutcome);
 				for (IndividualPlus outcome : outcomes) {
 					currentEx = mergeIndividuals(outcomes);
