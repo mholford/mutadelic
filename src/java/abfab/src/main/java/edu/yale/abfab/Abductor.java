@@ -183,24 +183,21 @@ public abstract class Abductor {
 					newPaths.add(p.copy());
 				}
 				boolean done = false;
-				DLIndividual<?> serviceToAdd = null;
+				Step stepToAdd = null;
 				int addPos = 0;
 				while (!done) {
 					for (Iterator<Step> piter : piters) {
 						if (piter.hasNext()) {
 							Step step = piter.next();
-							if (step instanceof SimpleStep) {
-								DLIndividual<?> service = ((SimpleStep) step)
-										.getService();
-								if (serviceToAdd == null) {
-									serviceToAdd = service;
-								}
-								if (!serviceToAdd.equals(service)) {
-									done = true;
-									break;
-								} else {
-									serviceToAdd = service;
-								}
+
+							if (stepToAdd == null) {
+								stepToAdd = step;
+							}
+							if (!stepToAdd.equals(step)) {
+								done = true;
+								break;
+							} else {
+								stepToAdd = step;
 
 							}
 						} else {
@@ -208,14 +205,13 @@ public abstract class Abductor {
 							break;
 						}
 					}
-					if (!done && serviceToAdd != null) {
-						output.getSteps().add(addPos,
-								new SimpleStep(serviceToAdd, this));
+					if (!done && stepToAdd != null) {
+						output.getSteps().add(addPos, stepToAdd);
 						for (Path np : newPaths) {
 							np.getSteps().remove(0);
 						}
 						addPos++;
-						serviceToAdd = null;
+						stepToAdd = null;
 					}
 				}
 				Branch newBranch = new Branch(this);
@@ -336,7 +332,8 @@ public abstract class Abductor {
 
 	public Collection<Collection<IndividualPlus>> findServiceOutputMatch(
 			IndividualPlus i, Collection<DLClassExpression> targetServiceClasses) {
-		ServiceOutputMatchCacheKey k = new ServiceOutputMatchCacheKey(i, targetServiceClasses);
+		ServiceOutputMatchCacheKey k = new ServiceOutputMatchCacheKey(i,
+				targetServiceClasses);
 		if (serviceOutputMatchCache.containsKey(k)) {
 			System.out.println("CACHE HIT");
 			return serviceOutputMatchCache.get(k);
