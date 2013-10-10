@@ -31,7 +31,8 @@ public class DLEntity<T> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((impl == null) ? 0 : impl.hashCode());
+		int ihc = impl.hashCode();
+		result = prime * result + ((impl == null) ? 0 : ihc);
 		return result;
 	}
 

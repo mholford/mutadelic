@@ -338,6 +338,7 @@ public abstract class Abductor {
 			IndividualPlus i, Collection<DLClassExpression> targetServiceClasses) {
 		ServiceOutputMatchCacheKey k = new ServiceOutputMatchCacheKey(i, targetServiceClasses);
 		if (serviceOutputMatchCache.containsKey(k)) {
+			System.out.println("CACHE HIT");
 			return serviceOutputMatchCache.get(k);
 		}
 		Set<Collection<IndividualPlus>> output = new HashSet<>();
