@@ -43,6 +43,7 @@ import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
+import edu.yale.dlgen.controller.ElkDLController;
 import edu.yale.dlgen.controller.HermitDLController;
 import edu.yale.dlgen.controller.OWLAPIDLController;
 import edu.yale.dlgen.controller.Pellet2DLController;
@@ -55,8 +56,9 @@ public class Pellet2DLControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// dl = new Pellet2DLController();
-		dl = new HermitDLController();
+		 //dl = new Pellet2DLController();
+		//dl = new HermitDLController();
+		dl = new ElkDLController();
 		dl.load(new InputStreamReader(Pellet2DLControllerTest.class
 				.getClassLoader().getResourceAsStream("test.manchester")),
 				"Manchester");

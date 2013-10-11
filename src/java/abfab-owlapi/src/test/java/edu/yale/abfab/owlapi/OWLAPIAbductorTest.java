@@ -384,7 +384,7 @@ public class OWLAPIAbductorTest {
 			Set<DLAxiom<?>> ax = mt.transform(m);
 			dl.addAxioms(ax);
 
-			abductor.debug();
+			// abductor.debug();
 
 			DLIndividual<?> test = dl.individual(NS + "test");
 			IndividualPlus ip = new IndividualPlus(test);
@@ -421,7 +421,7 @@ public class OWLAPIAbductorTest {
 
 			MazeGenerator mg = new MazeGenerator();
 			mg.setNodePool(mazeNodes);
-			Maze m = mg.createDAG(mazeNodes, 0.2, 0.0, -1);
+			Maze m = mg.createDAG(mazeNodes, 0.3, 0.0, -1);
 			MazeTransformer mt = new MazeTransformer();
 			Set<DLAxiom<?>> ax = mt.transform(m);
 			dl.addAxioms(ax);
@@ -470,7 +470,7 @@ public class OWLAPIAbductorTest {
 			n11.getBranches().add(n21);
 
 			Node n12 = new Node("1-2");
-			Maze m2 = new Maze(n12, 0d , 2);
+			Maze m2 = new Maze(n12, 0d, 2);
 			Node n22 = new Node("2-2", n12);
 			m2.addNode(n22);
 			n12.getBranches().add(n22);
@@ -479,7 +479,7 @@ public class OWLAPIAbductorTest {
 					Arrays.asList(new Maze[] { m1, m2 }));
 			m.addNode(n2);
 			n1.getBranches().add(n2);
-			
+
 			Node n3 = new Node("3", n2);
 			m.addNode(n3);
 			n2.getBranches().add(n3);
@@ -512,7 +512,7 @@ public class OWLAPIAbductorTest {
 					Arrays.asList(new Maze[] { m3, m4 }));
 			m.addNode(n4);
 			n3.getBranches().add(n4);
-			
+
 			Node n5 = new Node("5", n4);
 			m.addNode(n5);
 			n4.getBranches().add(n5);
@@ -528,7 +528,7 @@ public class OWLAPIAbductorTest {
 			System.out.println("SOLUTION");
 			System.out.println(solution);
 
-			abductor.debug();
+			// abductor.debug();
 			System.out.println("ABFAB Solution");
 
 			DLIndividual<?> test = dl.individual(NS + "test");
