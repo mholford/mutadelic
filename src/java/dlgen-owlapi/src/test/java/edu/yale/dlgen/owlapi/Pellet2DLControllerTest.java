@@ -1,13 +1,12 @@
 package edu.yale.dlgen.owlapi;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,18 +20,10 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
@@ -42,11 +33,8 @@ import edu.yale.dlgen.DLEntity;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.DLObjectPropertyExpression;
-import edu.yale.dlgen.controller.DLController;
-import edu.yale.dlgen.controller.ElkDLController;
 import edu.yale.dlgen.controller.HermitDLController;
 import edu.yale.dlgen.controller.OWLAPIDLController;
-import edu.yale.dlgen.controller.Pellet2DLController;
 
 public class Pellet2DLControllerTest {
 
@@ -57,8 +45,8 @@ public class Pellet2DLControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		 //dl = new Pellet2DLController();
-		//dl = new HermitDLController();
-		dl = new ElkDLController();
+		dl = new HermitDLController();
+		//dl = new ElkDLController();
 		dl.load(new InputStreamReader(Pellet2DLControllerTest.class
 				.getClassLoader().getResourceAsStream("test.manchester")),
 				"Manchester");
