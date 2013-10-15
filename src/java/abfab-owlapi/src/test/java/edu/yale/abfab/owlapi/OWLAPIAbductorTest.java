@@ -15,6 +15,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
 import edu.yale.abfab.TestVals;
@@ -41,6 +42,8 @@ public class OWLAPIAbductorTest {
 	@Before
 	public void setUp() throws Exception {
 		abductor = new HermitAbductor("");
+		// abductor= new FactPPAbductor("");
+		// abductor = new Pellet2Abductor();
 		abductor.setNamespace(NS);
 		dl = abductor.getDLController();
 	}
@@ -131,6 +134,26 @@ public class OWLAPIAbductorTest {
 
 			assertEquals(true, matches);
 		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testPipelineStaging() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor
+					.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+
+			System.out.println(p.toString());
+		} catch (Exception e){
 			e.printStackTrace();
 			fail();
 		}
@@ -433,7 +456,7 @@ public class OWLAPIAbductorTest {
 			System.out.println("SOLUTION");
 			System.out.println(solution);
 
-			abductor.debug();
+			// abductor.debug();
 			System.out.println("ABFAB Solution");
 
 			DLIndividual<?> test = dl.individual(NS + "test");
@@ -444,6 +467,49 @@ public class OWLAPIAbductorTest {
 
 			DLClassExpression<?> goalClass = dl.clazz(String
 					.valueOf(randomNode) + "Output");
+
+			// Try each of 3 reasoners
+			// List<Abductor> abductors = new ArrayList<>();
+			// abductors.add(new FactPPAbductor(""));
+			// abductors.add(new HermitAbductor(""));
+			// //abductors.add(new Pellet2Abductor());
+			// Random rand = new Random();
+			//
+			// while (abductors.size() > 0) {
+			//
+			// long start = System.currentTimeMillis();
+			//
+			// int r = rand.nextInt(abductors.size());
+			// Abductor ab = abductors.get(r);
+			// ab.setNamespace(NS);
+			// System.out.println(String.format("Using %s", ab.getClass()));
+			// dl = ab.getDLController();
+			// dl.load(new InputStreamReader(OWLAPIAbductor.class
+			// .getClassLoader().getResourceAsStream("skel.owl")),
+			// "Manchester");
+			//
+			// dl.addAxioms(ax);
+			//
+			// DLIndividual<?> test = dl.individual(NS + "test");
+			// IndividualPlus ip = new IndividualPlus(test);
+			// DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
+			// + "Input");
+			// ip.getAxioms().add(dl.individualType(test, ipType));
+			//
+			// DLClassExpression<?> goalClass = dl.clazz(String
+			// .valueOf(randomNode) + "Output");
+			//
+			// Path p = ab.getBestPath(ip, goalClass);
+			// System.out.println(p);
+			//
+			// assertEquals(solution, p.toString());
+			// long now = System.currentTimeMillis();
+			// double seconds = ((double) (now - start)) / 1000d;
+			// System.out
+			// .println(String.format("Done in %f seconds", seconds));
+			// abductors.remove(r);
+			// }
+
 			Path p = abductor.getBestPath(ip, goalClass);
 			System.out.println(p);
 

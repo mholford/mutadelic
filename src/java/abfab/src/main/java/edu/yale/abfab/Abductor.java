@@ -132,7 +132,7 @@ public abstract class Abductor {
 			DLClassExpression<?> goalClass) {
 		dbg("Get All Paths: %s, %s", origInput, goalClass);
 		Set<Path> completedPaths = new HashSet<>();
-
+		
 		// Set<Path> paths = extendPath(null, origInput, goalI);
 		Set<Path> paths = initializePaths(origInput, goalClass);
 		dbg("Initial Paths: %s", paths);
@@ -346,7 +346,7 @@ public abstract class Abductor {
 
 			for (DLClassExpression serviceClass : dl.getSubclasses(dl.clazz(NS
 					+ "Service"))) {
-				// dbg("Try service: %s", serviceClass);
+				dbg("Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -366,14 +366,17 @@ public abstract class Abductor {
 
 						switch (match) {
 						case FULL:
+							dbg("Full Match");
 							output.add(Arrays
 									.asList(new IndividualPlus[] { new IndividualPlus(
 											serviceClassI) }));
 							break;
 						case PARTIAL:
+							dbg("Partial Match");
 							servicePartials.add(serviceClass);
 							break;
 						default:
+							dbg("No Match");
 							break;
 						}
 					}
@@ -394,7 +397,7 @@ public abstract class Abductor {
 							.getNTuplePermutations(servicePartials, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
-						// dbg("Try services: %s", serviceClassTuple);
+						dbg("Try services: %s", serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -491,6 +494,7 @@ public abstract class Abductor {
 
 								switch (match) {
 								case FULL:
+									dbg("Full Match");
 									List<IndividualPlus> outputsToAdd = new ArrayList<>();
 									for (IndividualPlus s : serviceClassIPair) {
 										for (DLIndividual<?> soutput : dl
@@ -509,6 +513,7 @@ public abstract class Abductor {
 									break;
 
 								default:
+									dbg("No Match");
 									break;
 								}
 							}
@@ -563,7 +568,7 @@ public abstract class Abductor {
 		ax.add(dl.individualType(serviceClassI.getIndividual(),
 				dl.notClass(serv)));
 		dl.addAxioms(ax);
-		// debug();
+		debug();
 		boolean add = false;
 		if (!dl.checkConsistency()) {
 			add = true;
@@ -571,7 +576,7 @@ public abstract class Abductor {
 		}
 		dl.removeAxioms(ax);
 
-		if (add && nextServiceClasses != null) {
+		if (/*add && */nextServiceClasses != null) {
 			Set<DLIndividual<?>> keepers = new HashSet<>();
 			for (DLClassExpression<?> serviceClass : serviceClasses) {
 				for (DLIndividual<?> sci : dl.getInstances(serviceClass)) {
@@ -626,6 +631,8 @@ public abstract class Abductor {
 						// debug();
 						if (dl.checkConsistency()) {
 							add = false;
+						} else {
+							add = true;
 						}
 						dl.removeAxioms(ax2);
 						if (!add) {

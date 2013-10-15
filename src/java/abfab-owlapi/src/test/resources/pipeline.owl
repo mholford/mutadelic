@@ -1,0 +1,352 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: has_input
+    
+ObjectProperty: has_output
+
+DataProperty: has_cost
+
+DataProperty: has_executable
+    
+Class: Service
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
+	
+Class: Variant
+	
+Class: AlignedVariant
+	
+Class: FrequencyAnnotatedVariant
+	
+Class: RareVariant
+    SubClassOf: FrequencyAnnotatedVariant
+	
+Class: CommonVariant
+    SubClassOf: FrequencyAnnotatedVariant
+	
+Class: DBKnownMutationAnnotatedVariant
+	
+Class: DBKnownMutationVariant
+    SubClassOf: DBKnownMutationAnnotatedVariant
+	
+Class: DBUnknownMutationVariant
+    SubClassOf: DBKnownMutationAnnotatedVariant
+	
+Class: IndelOrPointVariant
+	
+Class: IndelVariant
+    SubClassOf: IndelOrPointVariant
+	
+Class: PointVariant
+    SubClassOf: IndelOrPointVariant
+	
+Class: TranscriptLocatedVariant
+	
+Class: SpliceSiteVariant
+    SubClassOf: TranscriptLocatedVariant
+	
+Class: ProteinCodingVariant
+    SubClassOf: TranscriptLocatedVariant
+	
+Class: IntronicVariant
+    SubClassOf: TranscriptLocatedVariant
+	
+Class: AAChangedAnnotatedVariant
+	
+Class: SynonymousVariant
+    SubClassOf: AAChangedAnnotatedVariant
+	
+Class: NonSynonymousVariant
+    SubClassOf: AAChangedAnnotatedVariant
+	
+Class: PhylopAnnotatedVariant
+	
+Class: ConservedVariant
+    SubClassOf: PhylopAnnotatedVariant
+	
+Class: NonConservedVariant
+    SubClassOf: PhylopAnnotatedVariant
+	
+Class: SiftAnnotatedVariant
+	
+Class: NonSevereVariant
+    SubClassOf: SiftAnnotatedVariant
+	
+Class: SevereVariant
+    SubClassOf: SiftAnnotatedVariant
+	
+Class: CriticalDomainAnnotatedVariant
+	
+Class: InCriticalDomainVariant
+    SubClassOf: CriticalDomainAnnotatedVariant
+	
+Class: NotInCriticalDomainVariant
+    SubClassOf: CriticalDomainAnnotatedVariant
+	
+Class: CriticalDomainMissingAnnotatedVariant
+	
+Class: CriticalDomainMissingVariant
+    SubClassOf: CriticalDomainMissingVariant
+	
+Class: CriticalDomainNotMissingVariant
+    SubClassOf: CriticalDomainNotMissingVariant
+	
+Class: InterestingVariant
+    EquivalentTo: DBKnownMutationVariant or (RareVariant and (SpliceSiteVariant or ConservedVariant or SevereVariant or CriticalDomainMissingVariant or InCriticalDomainVariant))
+	
+Class: FinishedVariant
+	
+Class: AlignVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some AlignedVariant)
+	
+Class: VariantFrequencyService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some (RareVariant or CommonVariant))
+	
+Class: DBKnownMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some (DBKnownMutationVariant or DBUnknownMutationVariant))
+	
+Class: IndelOrPointService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some (IndelVariant or PointVariant))
+	
+Class: TranscriptLocaleService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some (SpliceSiteVariant or ProteinCodingVariant or IntronicVariant))
+	
+Class: AAChangeService
+    SubClassOf: Service
+    EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some (SynonymousVariant or NonSynonymousVariant))
+	
+Class: PhylopService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some (ConservedVariant or NonConservedVariant))
+	
+Class: SiftService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some (SevereVariant or NonSevereVariant))
+	
+Class: CriticalDomainService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some (InCriticalDomainVariant or NotInCriticalDomainVariant))
+	
+Class: CriticalDomainMissingService
+    SubClassOf: Service
+    EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant) and (has_output some (CriticalDomainNotMissingVariant or CriticalDomainMissingVariant)))
+	
+Class: FinishedVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some InterestingVariant) and (has_output some FinishedVariant)
+	
+Individual: AVS
+    Types: AlignVariantService
+    Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable ""
+	
+Individual: CVFS
+    Types: VariantFrequencyService
+    Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable ""
+	
+Individual: RVFS
+    Types: VariantFrequencyService
+    Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable ""
+	
+Individual: DBKS
+    Types: DBKnownMutationService
+    Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable ""
+	
+Individual: DBUS
+    Types: DBKnownMutationService
+    Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable ""
+	
+Individual: IPIS
+    Types: IndelOrPointService
+    Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable ""
+
+Individual: IPPS
+    Types: IndelOrPointService
+    Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable ""
+	
+Individual: TLSS
+    Types: TranscriptLocaleService
+    Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable ""
+	
+Individual: TLPS
+    Types: TranscriptLocaleService
+    Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable ""
+	
+Individual: TLIS
+    Types: TranscriptLocaleService
+    Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable ""
+	
+Individual: AASS
+    Types: AAChangeService
+    Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable ""
+	
+Individual: AANS
+    Types: AAChangeService
+    Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable ""
+	
+Individual: PPNS
+    Types: PhylopService
+    Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable ""
+	
+Individual: PPCS
+    Types: PhylopService
+    Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable ""
+	
+Individual: SNS
+    Types: SiftService
+    Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable ""
+	
+Individual: SSS
+    Types: SiftService
+    Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable ""
+	
+Individual: ICDS
+    Types: CriticalDomainService
+    Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable ""
+	
+Individual: NCDS
+    Types: CriticalDomainService
+    Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable ""
+	
+Individual: CDNS
+    Types: CriticalDomainMissingService
+    Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable ""
+	
+Individual: CDMS
+    Types: CriticalDomainMissingService
+    Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable ""
+	
+Individual: FS
+    Types: FinishedVariantService
+    Facts: has_input FSI, has_output FSO, has_cost 1.0, has_executable ""
+
+Individual: AVSI
+    Types: Variant
+	
+Individual: CVFSI
+    Types: AlignedVariant
+	
+Individual: RVFSI
+    Types: AlignedVariant
+	
+Individual: DBKSI
+    Types: AlignedVariant
+
+Individual: DBUSI
+    Types: AlignedVariant
+	
+Individual: IPISI
+    Types: Variant
+	
+Individual: IPPSI
+    Types: Variant
+	
+Individual: TLSSI
+    Types: AlignedVariant
+	
+Individual: TLPSI
+    Types: AlignedVariant
+	
+Individual: TLISI
+    Types: AlignedVariant
+
+Individual: AASSI
+    Types: ProteinCodingVariant
+	
+Individual: AANSI
+    Types: ProteinCodingVariant	
+	
+Individual: PPCSI
+    Types: NonSynonymousVariant
+	
+Individual: PPNSI
+    Types: NonSynonymousVariant
+	
+Individual: SSSI
+    Types: NonSynonymousVariant
+	
+Individual: SNSI
+    Types: NonSynonymousVariant
+	
+Individual: ICDSI
+    Types: NonSynonymousVariant
+	
+Individual: NCDSI
+    Types: NonSynonymousVariant
+	
+Individual: CDNSI
+    Types: ProteinCodingVariant and IndelVariant
+
+Individual: CDMSI
+    Types: ProteinCodingVariant and IndelVariant
+	
+Individual: FSI
+    Types: InterestingVariant
+
+Individual: AVSO
+    Types: AlignedVariant
+	
+Individual: CVFSO
+    Types: CommonVariant
+	
+Individual: RVFSO
+    Types: RareVariant
+	
+Individual: DBUSO
+    Types: DBUnknownMutationVariant
+	
+Individual: DBKSO
+    Types: DBKnownMutationVariant
+	
+Individual: IPISO
+    Types: IndelVariant
+	
+Individual: IPPSO
+    Types: PointVariant
+	
+Individual: TLSSO
+    Types: SpliceSiteVariant
+	
+Individual: TLISO
+    Types: IntronicVariant
+	
+Individual: TLPSO
+    Types: ProteinCodingVariant
+	
+Individual: AASSO
+    Types: SynonymousVariant
+	
+Individual: AANSO
+    Types: NonSynonymousVariant
+	
+Individual: PPCSO
+    Types: ConservedVariant
+	
+Individual: PPNSO
+    Types: NonConservedVariant
+	
+Individual: SSSO
+    Types: SevereVariant
+	
+Individual: SNSO
+    Types: NonSevereVariant
+	
+Individual: ICDSO
+    Types: InCriticalDomainVariant
+	
+Individual: NCDSO
+    Types: NotInCriticalDomainVariant
+	
+Individual: CDNSO
+    Types: CriticalDomainNotMissingVariant
+	
+Individual: CDMSO
+    Types: CriticalDomainMissingVariant
+	
+Individual: FSO
+    Types: FinishedVariant

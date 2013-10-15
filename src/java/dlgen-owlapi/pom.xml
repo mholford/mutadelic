@@ -38,5 +38,10 @@
 			<artifactId>org.semanticweb.hermit</artifactId>
 			<version>1.3.8.1</version>
 		</dependency>
+		<dependency>
+			<groupId>uk.ac.manchester</groupId>
+			<artifactId>factplusplus</artifactId>
+			<version>1.6.2</version>
+		</dependency>
 	</dependencies>
 </project>
