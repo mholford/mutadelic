@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import sun.security.jca.ServiceId;
 import edu.yale.abfab.Path;
@@ -132,7 +133,7 @@ public abstract class Abductor {
 			DLClassExpression<?> goalClass) {
 		dbg("Get All Paths: %s, %s", origInput, goalClass);
 		Set<Path> completedPaths = new HashSet<>();
-		
+
 		// Set<Path> paths = extendPath(null, origInput, goalI);
 		Set<Path> paths = initializePaths(origInput, goalClass);
 		dbg("Initial Paths: %s", paths);
@@ -346,7 +347,7 @@ public abstract class Abductor {
 
 			for (DLClassExpression serviceClass : dl.getSubclasses(dl.clazz(NS
 					+ "Service"))) {
-				dbg("Try service: %s", serviceClass);
+				//dbg("Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -359,45 +360,65 @@ public abstract class Abductor {
 									dl.objectProp(NS + "has_input"));
 					for (DLIndividual<?> serviceClassInput : serviceClassInputs) {
 						MatchStatus match = serviceClassMatches(i,
-								serviceClass, targetServiceClasses, serviceI,
+								serviceClassI, serviceClass,
+								targetServiceClasses, serviceI,
 								serviceClassInput,
 								dl.objectProp(NS + "has_input"),
 								dl.objectProp(NS + "has_output"));
 
 						switch (match) {
 						case FULL:
-							dbg("Full Match");
+							// dbg("Full Match");
 							output.add(Arrays
 									.asList(new IndividualPlus[] { new IndividualPlus(
 											serviceClassI) }));
 							break;
 						case PARTIAL:
-							dbg("Partial Match");
+							// dbg("Partial Match");
 							servicePartials.add(serviceClass);
 							break;
 						default:
-							dbg("No Match");
+							// dbg("No Match");
 							break;
 						}
 					}
 				}
 			}
 
-			if (output.size() == 0) {
+			boolean dontStop = true;
+
+			if (output.size() == 0 || dontStop) {
 				// debug();
 				Collection<DLAxiom> axioms = dl.getAxioms();
 				// List<DLClassExpression> serviceClasses = new ArrayList<>(
 				// dl.getSubclasses(dl.clazz(NS + "Service")));
 				boolean matchFound = false;
-				for (int n = 2; n <= servicePartials.size(); n++) {
-					if (matchFound) {
+
+				Collection<DLClassExpression> servicesToSearch;
+				if (dontStop) {
+					servicesToSearch = dl.getSubclasses(dl
+							.clazz(NS + "Service"));
+					// Remove service classes we are already returning
+					for (Collection<IndividualPlus> currOutputs : output) {
+						for (IndividualPlus currOutput : currOutputs) {
+							Collection<DLClassExpression> currOutputTypes = dl
+									.getTypes(currOutput.getIndividual());
+							servicesToSearch.removeAll(currOutputTypes);
+						}
+					}
+				} else {
+					servicesToSearch = servicePartials;
+				}
+
+				for (int n = 2; n <= servicesToSearch.size(); n++) {
+					if (matchFound || !dontStop) {
 						break;
 					}
 					Set<Set<DLClassExpression>> serviceClassTuples = Utils
-							.getNTuplePermutations(servicePartials, n);
+							.getNTuplePermutations(servicesToSearch, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
-						dbg("Try services: %s", serviceClassTuple);
+						//dbg("Try services: %s", serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -485,7 +506,13 @@ public abstract class Abductor {
 
 							for (List<DLIndividual> serviceClassInputPair : serviceClassInputPairs) {
 								// debug();
+								List<DLIndividual> serviceClassIPairIndivs = new ArrayList<>();
+								for (IndividualPlus ip : serviceClassIPair) {
+									serviceClassIPairIndivs.add(ip
+											.getIndividual());
+								}
 								MatchStatus match = serviceClassMatches(i,
+										serviceClassIPairIndivs,
 										serviceClassTuple,
 										targetServiceClasses, serviceI,
 										serviceClassInputPair,
@@ -494,7 +521,7 @@ public abstract class Abductor {
 
 								switch (match) {
 								case FULL:
-									dbg("Full Match");
+									// dbg("Full Match");
 									List<IndividualPlus> outputsToAdd = new ArrayList<>();
 									for (IndividualPlus s : serviceClassIPair) {
 										for (DLIndividual<?> soutput : dl
@@ -513,14 +540,16 @@ public abstract class Abductor {
 									break;
 
 								default:
-									dbg("No Match");
+									// dbg("No Match");
 									break;
 								}
 							}
 						}
 
 					}
+					dontStop = false;
 				}
+				
 			}
 		} finally {
 			dl.removeAxioms(i.getAxioms());
@@ -530,12 +559,14 @@ public abstract class Abductor {
 	}
 
 	private MatchStatus serviceClassMatches(IndividualPlus testI,
+			DLIndividual<?> serviceClassInstance,
 			DLClassExpression serviceClass,
 			Collection<DLClassExpression> nextServiceClass,
 			IndividualPlus serviceClassI, DLIndividual<?> serviceClassIFiller,
 			DLObjectPropertyExpression<?> propToKeep,
 			DLObjectPropertyExpression<?> propToReplace) {
 		return serviceClassMatches(testI,
+				Arrays.asList(new DLIndividual[] { serviceClassInstance }),
 				Arrays.asList(new DLClassExpression[] { serviceClass }),
 				nextServiceClass, serviceClassI,
 				Arrays.asList(new DLIndividual[] { serviceClassIFiller }),
@@ -543,6 +574,7 @@ public abstract class Abductor {
 	}
 
 	private MatchStatus serviceClassMatches(IndividualPlus testI,
+			Collection<DLIndividual> serviceClassInstance,
 			Collection<DLClassExpression> serviceClasses,
 			Collection<DLClassExpression> nextServiceClasses,
 			IndividualPlus serviceClassI,
@@ -576,7 +608,7 @@ public abstract class Abductor {
 		}
 		dl.removeAxioms(ax);
 
-		if (/*add && */nextServiceClasses != null) {
+		if (/* add && */nextServiceClasses != null) {
 			Set<DLIndividual<?>> keepers = new HashSet<>();
 			for (DLClassExpression<?> serviceClass : serviceClasses) {
 				for (DLIndividual<?> sci : dl.getInstances(serviceClass)) {
@@ -592,51 +624,92 @@ public abstract class Abductor {
 						.getInstances(nextServiceClass)) {
 					for (DLIndividual<?> replacer : dl.getObjectPropertyValues(
 							nextServiceClassI, propToReplace)) {
+						Set<DLIndividual<?>> distinctKeepers = new HashSet<>();
+
 						if (keepers.size() > 1) {
 							Set<DLClassExpression> keeperClasses = new HashSet<>();
 							for (DLIndividual<?> keeper : keepers) {
 								keeperClasses.addAll(dl.getTypes(keeper));
 							}
-							DLClassExpression keeperClass = dl
-									.andClass(keeperClasses
-											.toArray(new DLClassExpression[keeperClasses
-													.size()]));
-							DLIndividual<?> keeperI = dl.individual(NS
-									+ "keeperI");
-							ax2.add(dl.individualType(keeperI, keeperClass));
-							ax2.add(dl.newObjectFact(
-									serviceClassI.getIndividual(), propToKeep,
-									keeperI));
+
+							// Get groups of classes which are not disjoint from
+							// one another and match the type of the
+							// serviceClassInstance
+							Set<Set<DLClassExpression<?>>> joinGroups = new HashSet<>();
+							List<DLClassExpression> siFillers = new ArrayList<>();
+							for (DLIndividual<?> scii : serviceClassInstance) {
+								Collection<DLIndividual> siReplaces = dl
+										.getObjectPropertyValues(scii,
+												propToReplace);
+								for (DLIndividual sik : siReplaces) {
+									siFillers.addAll(dl.getTypes(sik));
+								}
+							}
+
+							for (DLClassExpression<?> x : keeperClasses) {
+								if (siFillers.contains(x)) {
+									Set<DLClassExpression<?>> xset = new HashSet<>();
+									xset.add(x);
+									for (DLClassExpression<?> y : keeperClasses) {
+										if (y.equals(x)) {
+											continue;
+										}
+										if (!(dl.isDisjoint(x, y))
+												&& !(dl.isDisjoint(y, x))
+												&& siFillers.contains(y)) {
+											xset.add(y);
+										}
+									}
+									joinGroups.add(xset);
+								}
+							}
+
+							for (Set<DLClassExpression<?>> joinSet : joinGroups) {
+								DLClassExpression keeperClass = dl
+										.andClass(joinSet
+												.toArray(new DLClassExpression[joinSet
+														.size()]));
+								DLIndividual<?> keeperI = dl.individual(NS
+										+ UUID.randomUUID().toString());
+								ax2.add(dl.individualType(keeperI, keeperClass));
+								distinctKeepers.add(keeperI);
+							}
 
 						} else {
-							ax2.add(dl.newObjectFact(
-									serviceClassI.getIndividual(), propToKeep,
-									keepers.iterator().next()));
+							distinctKeepers.add(keepers.iterator().next());
 						}
 
-						ax2.add(dl.newObjectFact(serviceClassI.getIndividual(),
-								propToReplace, replacer));
-						if (nextServiceClasses.size() > 1) {
-							serv = dl
-									.andClass(nextServiceClasses
-											.toArray(new DLClassExpression<?>[nextServiceClasses
-													.size()]));
-						} else {
-							serv = nextServiceClasses.iterator().next();
-						}
-						ax2.add(dl.individualType(
-								serviceClassI.getIndividual(),
-								dl.notClass(serv)));
-						dl.addAxioms(ax2);
-						// debug();
-						if (dl.checkConsistency()) {
-							add = false;
-						} else {
-							add = true;
-						}
-						dl.removeAxioms(ax2);
-						if (!add) {
-							break;
+						for (DLIndividual<?> dk : distinctKeepers) {
+
+							ax2.add(dl.newObjectFact(
+									serviceClassI.getIndividual(), propToKeep,
+									dk));
+
+							ax2.add(dl.newObjectFact(
+									serviceClassI.getIndividual(),
+									propToReplace, replacer));
+							if (nextServiceClasses.size() > 1) {
+								serv = dl
+										.andClass(nextServiceClasses
+												.toArray(new DLClassExpression<?>[nextServiceClasses
+														.size()]));
+							} else {
+								serv = nextServiceClasses.iterator().next();
+							}
+							ax2.add(dl.individualType(
+									serviceClassI.getIndividual(),
+									dl.notClass(serv)));
+							dl.addAxioms(ax2);
+							debug();
+							if (dl.checkConsistency()) {
+								add = false;
+							} else {
+								add = true;
+							}
+							dl.removeAxioms(ax2);
+							if (!add) {
+								break;
+							}
 						}
 
 					}

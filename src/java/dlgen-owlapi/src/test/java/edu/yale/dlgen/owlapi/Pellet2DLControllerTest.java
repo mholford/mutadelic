@@ -46,9 +46,9 @@ public class Pellet2DLControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		 dl = new Pellet2DLController();
-//		dl = new HermitDLController();
-		//dl = new FactPPDLController();
+		dl = new Pellet2DLController();
+		// dl = new HermitDLController();
+		// dl = new FactPPDLController();
 		dl.load(new InputStreamReader(Pellet2DLControllerTest.class
 				.getClassLoader().getResourceAsStream("test.manchester")),
 				"Manchester");
@@ -61,7 +61,7 @@ public class Pellet2DLControllerTest {
 				df.getOWLClass(IRI.create(NS + "Sitar")),
 				df.getOWLClass(IRI.create(NS + "Instrument")))));
 		Collection<DLAxiom> axioms = dl.getAxioms();
-		assertEquals(27, axioms.size());
+		assertEquals(28, axioms.size());
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class Pellet2DLControllerTest {
 				df.getOWLClass(IRI.create(NS + "Drums")),
 				df.getOWLClass(IRI.create(NS + "Instrument")))));
 		dl.addAxioms(ax);
-		assertEquals(28, dl.getAxioms().size());
+		assertEquals(29, dl.getAxioms().size());
 	}
 
 	@Test
@@ -87,10 +87,10 @@ public class Pellet2DLControllerTest {
 				df.getOWLClass(IRI.create(NS + "Drums")),
 				df.getOWLClass(IRI.create(NS + "Instrument")))));
 		dl.addAxioms(ax);
-		assertEquals(28, dl.getAxioms().size());
+		assertEquals(29, dl.getAxioms().size());
 
 		dl.removeAxioms(ax);
-		assertEquals(26, dl.getAxioms().size());
+		assertEquals(27, dl.getAxioms().size());
 	}
 
 	@Test
@@ -406,6 +406,14 @@ public class Pellet2DLControllerTest {
 		sub = dl.isSubclass(dl.clazz(NS + "Guitarist"),
 				dl.clazz(NS + "Guitarist"));
 		assertEquals(false, sub);
+	}
+
+	@Test
+	public void testIsDijoint() {
+		boolean dj = dl.isDisjoint(dl.clazz(NS + "Person"), dl.clazz(NS + "Guitar"));
+		assertEquals(true, dj);
+		dj = dl.isDisjoint(dl.clazz(NS + "Person"), dl.clazz(NS + "Guitarist"));
+		assertEquals(false, dj);
 	}
 
 	@Test

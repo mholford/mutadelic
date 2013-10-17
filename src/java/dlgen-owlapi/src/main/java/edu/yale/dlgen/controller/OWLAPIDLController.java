@@ -41,6 +41,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLPropertyRange;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import edu.yale.dlgen.DLAxiom;
@@ -453,6 +454,18 @@ public abstract class OWLAPIDLController implements DLController {
 		Set<OWLClass> ocset = reasoner.getSubClasses(osup, false)
 				.getFlattened();
 		return ocset.contains(osub);
+	}
+
+	@Override
+	public boolean isDisjoint(DLClassExpression<?> c1, DLClassExpression<?> c2) {
+		OWLClassExpression oc1 = (OWLClassExpression) c1.get();
+		OWLClassExpression oc2 = (OWLClassExpression) c2.get();
+		NodeSet<OWLClass> disjointClasses = reasoner.getDisjointClasses(oc1);
+		Set<OWLClass> flattened = disjointClasses.getFlattened();
+		if (flattened.contains(oc2)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
