@@ -215,7 +215,7 @@ public abstract class Abductor {
 				Branch newBranch = new Branch(this);
 				newBranch.setPaths(new HashSet<>(newPaths));
 				output.getSteps().add(addPos, newBranch);
-			} else if (s instanceof Condition) {
+			} /*else if (s instanceof Condition) {
 				Condition b = (Condition) s;
 				List<Iterator<Step>> piters = new ArrayList<>();
 				List<Path> newPaths = new ArrayList<>();
@@ -258,7 +258,7 @@ public abstract class Abductor {
 				Condition newBranch = new Condition(this);
 				newBranch.setPaths(new HashSet<>(newPaths));
 				output.getSteps().add(addPos, newBranch);
-			} else {
+			}*/ else {
 				output.getSteps().add(0, s);
 			}
 			if (!(output.equals(input))) {

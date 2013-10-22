@@ -1,96 +1,254 @@
 Ontology: <http://krauthammerlab.med.yale.edu/test#>
 
+Prefix: GELO: <http://krauthammerlab.med.yale.edu/ontologies/gelo#>
+Prefix: SIO: <http://semanticscience.org/ontologi/sio.owl#>
+Prefix: SO: <http://purl.org/obo/owl/SO#>
 Prefix: : <http://krauthammerlab.med.yale.edu/test#>
 
 ObjectProperty: has_input
     
 ObjectProperty: has_output
 
+ObjectProperty: GELO:has_locus
+	
+ObjectProperty: GELO:on_chromosome
+	
+ObjectProperty: SIO:cites
+	
+ObjectProperty: SIO:is_described_by
+	
+ObjectProperty: SIO:is_modelled_by
+	
+ObjectProperty: SIO:refers_to
+
 DataProperty: has_cost
 
 DataProperty: has_executable
     
+DataProperty: GELO:locus_end
+
+DataProperty: GELO:locus_start
+	
+DataProperty: GELO:sequence
+
+DataProperty: GELO:strand
+	
+DataProperty: SIO:has_value
+	
 Class: Service
     EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
 	
+Class: GELO:GenomicElement
+	
+Class: SIO:InformationContentEntity
+	
+Class: SO:Chromosome
+	
+Class: SIO:Description
+
+Class: SO:SequenceVariant
+
+Class: Annotation
+    EquivalentTo: SIO:Description that SIO:cites some SIO:InformationContentEntity
+	
+Class: CompletionStatus
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: StatusMarker
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: SIO:BioinformaticData
+	
+Class: HGVSNotation
+    SubClassOf: SIO:BioinformaticData
+	
+Class: SIO:Probability
+	
+Class: AlleleFrequency
+    SubClassOf: SIO:Probability
+	
+Class: DatabasePresence
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: RCMDBPresence
+    SubClassOf: DatabasePresence
+	
+Class: VariationType
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: VariationLocation
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: VariationOutcome
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: VariationDomainColocation
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: VariationDomainsMissingStatus
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: PhylopScore
+    SubClassOf: SIO:BioinformaticData
+	
+Class: SiftScore
+    SubClassOf: SIO:BioinformaticData
+	
+Class: RCMDBVariant
+    SubClassOf: SO:SequenceVariant
+
 Class: Variant
+    SubClassOf: GELO:GenomicElement, SO:SequenceVariant
+    EquivalentTo: (GELO:has_locus some 
+	(GELO:on_chromosome some SO:Chromosome 
+	and (GELO:locus_start min 1 xsd:integer)
+	and (GELO:locus_end min 1 xsd:integer)
+	and (GELO:strand min 1 xsd:string)
+	and (GELO:sequence min 1 xsd:string)))
+	and (SIO:is_modelled_by some (SIO:has_value min 1 xsd:string))
 	
 Class: AlignedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(HGVSNotation that SIO:has_value min 1 xsd:string))
 	
 Class: FrequencyAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(AlleleFrequency that SIO:has_value min 1 xsd:double))
 	
 Class: RareVariant
-    SubClassOf: FrequencyAnnotatedVariant
+    EquivalentTo: FrequencyAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(AlleleFrequency that SIO:has_value min 1 xsd:double[<= 0.01]))
 	
 Class: CommonVariant
-    SubClassOf: FrequencyAnnotatedVariant
+    EquivalentTo: FrequencyAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(AlleleFrequency that SIO:has_value min 1 xsd:double[> 0.01]))
 	
 Class: DBKnownMutationAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some 
+	(DatabasePresence that SIO:has_value min 1 xsd:string))
 	
 Class: DBKnownMutationVariant
-    SubClassOf: DBKnownMutationAnnotatedVariant
+    EquivalentTo: DBKnownMutationAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(DatabasePresence that SIO:has_value value "true"))
 	
 Class: DBUnknownMutationVariant
-    SubClassOf: DBKnownMutationAnnotatedVariant
+    EquivalentTo: DBKnownMutationAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(DatabasePresence that SIO:has_value value "false"))
 	
 Class: IndelOrPointVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationType that SIO:has_value min 1 xsd:string))
 	
 Class: IndelVariant
-    SubClassOf: IndelOrPointVariant
+    EquivalentTo: IndelOrPointVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationType that SIO:has_value value "Indel"))
 	
 Class: PointVariant
-    SubClassOf: IndelOrPointVariant
+    EquivalentTo: IndelOrPointVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationType that SIO:has_value value "Point"))
 	
 Class: TranscriptLocatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationLocation that SIO:has_value min 1 xsd:string))
 	
 Class: SpliceSiteVariant
-    SubClassOf: TranscriptLocatedVariant
+    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationLocation that SIO:has_value value "SpliceSite"))
 	
 Class: ProteinCodingVariant
-    SubClassOf: TranscriptLocatedVariant
+    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationLocation that SIO:has_value value "CDS"))
 	
 Class: IntronicVariant
-    SubClassOf: TranscriptLocatedVariant
+    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationLocation that SIO:has_value value "Intron"))
 	
 Class: AAChangedAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationOutcome that SIO:has_value min 1 xsd:string))
 	
 Class: SynonymousVariant
-    SubClassOf: AAChangedAnnotatedVariant
+    EquivalentTo: AAChangedAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationOutcome that SIO:has_value value "Synonymous"))
 	
 Class: NonSynonymousVariant
-    SubClassOf: AAChangedAnnotatedVariant
+    EquivalentTo: AAChangedAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationOutcome that SIO:has_value value "NonSynonymous"))
 	
 Class: PhylopAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(PhylopScore that SIO:has_value min 1 xsd:double))
 	
 Class: ConservedVariant
-    SubClassOf: PhylopAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(PhylopScore that SIO:has_value min 1 xsd:double[>=1.0]))
 	
 Class: NonConservedVariant
-    SubClassOf: PhylopAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(PhylopScore that SIO:has_value min 1 xsd:double[<1.0]))
 	
 Class: SiftAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(SiftScore that SIO:has_value min 1 xsd:double))
 	
 Class: NonSevereVariant
-    SubClassOf: SiftAnnotatedVariant
+    EquivalentTo: SiftAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(SiftScore that SIO:has_value min 1 xsd:double[>0.05]))
 	
 Class: SevereVariant
-    SubClassOf: SiftAnnotatedVariant
+    EquivalentTo: SiftAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(SiftScore that SIO:has_value min 1 xsd:double[<=0.05]))
 	
 Class: CriticalDomainAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationDomainColocation that SIO:has_value min 1 xsd:string))
 	
 Class: InCriticalDomainVariant
-    SubClassOf: CriticalDomainAnnotatedVariant
+    EquivalentTo: CriticalDomainAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationDomainColocation that SIO:has_value value "true"))
 	
 Class: NotInCriticalDomainVariant
-    SubClassOf: CriticalDomainAnnotatedVariant
+    EquivalentTo: CriticalDomainAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationDomainColocation that SIO:has_value value "false"))
 	
 Class: CriticalDomainMissingAnnotatedVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationDomainsMissingStatus that SIO:has_value min 1 xsd:string))
 	
 Class: CriticalDomainMissingVariant
-    SubClassOf: CriticalDomainMissingVariant
+    EquivalentTo: CriticalDomainMissingAnnotatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationDomainsMissingStatus that SIO:has_value value "true"))
 	
 Class: CriticalDomainNotMissingVariant
-    SubClassOf: CriticalDomainNotMissingVariant
+    EquivalentTo: CriticalDomainMissingAnnotatedVariant and not CriticalDomainMissingVariant
 	
 Class: InterestingVariant
     EquivalentTo: DBKnownMutationVariant or MarkedRareAndUnusualVariant
@@ -102,10 +260,19 @@ Class: RareAndUnusualVariant
     EquivalentTo: RareVariant and MarkedUnusualVariant
 
 Class: FinishedVariant
+    EquivalentTo: Variant that SIO:is_described_by some 
+	(Annotation that SIO:refers_to some
+	(CompletionStatus that SIO:has_value value "true"))
 
 Class: MarkedUnusualVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(StatusMarker that SIO:has_value value "Unusual"))
 
 Class: MarkedRareAndUnusualVariant
+    EquivalentTo: Variant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(StatusMarker that SIO:has_value value "RareAndUnusual"))
 	
 Class: MarkedUnusualVariantService
     SubClassOf: Service
@@ -201,95 +368,95 @@ Class: FinishedVariantService
 	
 Individual: AVS
     Types: AlignVariantService
-    Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable ""
+    Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable "edu.yale.abfab.pipeline.AlignVariantService"
 	
 Individual: CVFS
     Types: VariantFrequencyCommonService
-    Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable ""
+    Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.AlleleFrequencyService"
 	
 Individual: RVFS
     Types: VariantFrequencyRareService
-    Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable ""
+    Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.AlleleFrequencyService"
 	
 Individual: DBKS
     Types: DBKnownMutationKnownService
-    Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable ""
+    Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.RCMDBKnownMutationService"
 	
 Individual: DBUS
     Types: DBKnownMutationUnknownService
-    Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable ""
+    Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.RCMDBKnownMutationService"
 	
 Individual: IPIS
     Types: IndelOrPointIndelService
-    Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable ""
+    Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.IndelOrPointService"
 
 Individual: IPPS
     Types: IndelOrPointPointService
-    Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable ""
+    Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.IndelOrPointService"
 	
 Individual: TLSS
     Types: TranscriptLocaleSpliceService
-    Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable ""
+    Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.TranscriptLocaleService"
 	
 Individual: TLPS
     Types: TranscriptLocaleProteinCodingService
-    Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable ""
+    Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.TranscriptLocaleService"
 	
 Individual: TLIS
     Types: TranscriptLocaleIntronService
-    Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable ""
+    Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.TranscriptLocaleService"
 	
 Individual: AASS
     Types: AAChangeSynonymousService
-    Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable ""
+    Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.AAChangedService"
 	
 Individual: AANS
     Types: AAChangeNonSynonymousService
-    Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable ""
+    Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.AAChangedService"
 	
 Individual: PPNS
     Types: PhylopNonConservedService
-    Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable ""
+    Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.PhylopService"
 	
 Individual: PPCS
     Types: PhylopConservedService
-    Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable ""
+    Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.PhylopService"
 	
 Individual: SNS
     Types: SiftNonSevereService
-    Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable ""
+    Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.SiftService"
 	
 Individual: SSS
     Types: SiftSevereService
-    Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable ""
+    Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.SiftService"
 	
 Individual: ICDS
     Types: CriticalDomainInService
-    Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable ""
+    Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainService"
 	
 Individual: NCDS
     Types: CriticalDomainNotInService
-    Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable ""
+    Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainService"
 	
 Individual: CDNS
     Types: CriticalDomainMissingNotService
-    Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable ""
+    Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainMissingService"
 	
 Individual: CDMS
     Types: CriticalDomainMissingIsService
-    Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable ""
+    Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainMissingService"
 
 Individual: MUVS
     Types: MarkedUnusualVariantService
-    Facts: has_input MUVSI, has_output MUVSO, has_cost 1.0, has_executable ""
+    Facts: has_input MUVSI, has_output MUVSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.MarkUnusualService"
 
 Individual: MRUVS
     Types: MarkedRareAndUnusualVariantService
-    Facts: has_input MRUVSI, has_output MRUVSO, has_cost 1.0, has_executable ""
+    Facts: has_input MRUVSI, has_output MRUVSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.MarkRareUnusualService"
 	
 Individual: FS
     Types: FinishedVariantService
-    Facts: has_input FSI, has_output FSO, has_cost 1.0, has_executable ""
+    Facts: has_input FSI, has_output FSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.FinishedVariantService"
 
 Individual: AVSI
     Types: Variant
