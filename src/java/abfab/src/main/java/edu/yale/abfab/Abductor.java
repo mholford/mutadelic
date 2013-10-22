@@ -132,7 +132,7 @@ public abstract class Abductor {
 			DLClassExpression<?> goalClass) {
 		dbg("Get All Paths: %s, %s", origInput, goalClass);
 		Set<Path> completedPaths = new HashSet<>();
-		
+
 		// Set<Path> paths = extendPath(null, origInput, goalI);
 		Set<Path> paths = initializePaths(origInput, goalClass);
 		dbg("Initial Paths: %s", paths);
@@ -172,9 +172,7 @@ public abstract class Abductor {
 		Iterator<Step> mainIter = reverseSteps.iterator();
 		while (mainIter.hasNext()) {
 			Step s = mainIter.next();
-			if (!(s instanceof Branch)) {
-				output.getSteps().add(0, s);
-			} else {
+			if (s instanceof Branch) {
 				Branch b = (Branch) s;
 				List<Iterator<Step>> piters = new ArrayList<>();
 				List<Path> newPaths = new ArrayList<>();
@@ -217,6 +215,54 @@ public abstract class Abductor {
 				Branch newBranch = new Branch(this);
 				newBranch.setPaths(new HashSet<>(newPaths));
 				output.getSteps().add(addPos, newBranch);
+			} else if (s instanceof Condition) {
+				Condition b = (Condition) s;
+				List<Iterator<Step>> piters = new ArrayList<>();
+				List<Path> newPaths = new ArrayList<>();
+				for (Path p : b.getPaths()) {
+					piters.add(p.getSteps().iterator());
+					newPaths.add(p.copy());
+				}
+				boolean done = false;
+				Step stepToAdd = null;
+				int addPos = 0;
+				while (!done) {
+					for (Iterator<Step> piter : piters) {
+						if (piter.hasNext()) {
+							Step step = piter.next();
+
+							if (stepToAdd == null) {
+								stepToAdd = step;
+							}
+							if (!stepToAdd.equals(step)) {
+								done = true;
+								break;
+							} else {
+								stepToAdd = step;
+
+							}
+						} else {
+							done = true;
+							break;
+						}
+					}
+					if (!done && stepToAdd != null) {
+						output.getSteps().add(addPos, stepToAdd);
+						for (Path np : newPaths) {
+							np.getSteps().remove(0);
+						}
+						addPos++;
+						stepToAdd = null;
+					}
+				}
+				Condition newBranch = new Condition(this);
+				newBranch.setPaths(new HashSet<>(newPaths));
+				output.getSteps().add(addPos, newBranch);
+			} else {
+				output.getSteps().add(0, s);
+			}
+			if (!(output.equals(input))) {
+				output = mergeBranches(output);
 			}
 		}
 		return output;
@@ -268,7 +314,7 @@ public abstract class Abductor {
 
 				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
 				dl.addAxioms(ax);
-				// debug();
+				debug();
 				if (!dl.checkConsistency()) {
 					add = true;
 				}
@@ -286,7 +332,7 @@ public abstract class Abductor {
 						ax.add(dl.individualType(testI, scioType));
 						ax.add(dl.individualType(testI, dl.notClass(goalClass)));
 						dl.addAxioms(ax);
-						// debug();
+						debug();
 						add = !dl.checkConsistency();
 						dl.removeAxioms(ax);
 					}
@@ -576,7 +622,7 @@ public abstract class Abductor {
 		}
 		dl.removeAxioms(ax);
 
-		if (/*add && */nextServiceClasses != null) {
+		if (/* add && */nextServiceClasses != null) {
 			Set<DLIndividual<?>> keepers = new HashSet<>();
 			for (DLClassExpression<?> serviceClass : serviceClasses) {
 				for (DLIndividual<?> sci : dl.getInstances(serviceClass)) {
@@ -628,7 +674,7 @@ public abstract class Abductor {
 								serviceClassI.getIndividual(),
 								dl.notClass(serv)));
 						dl.addAxioms(ax2);
-						// debug();
+						debug();
 						if (dl.checkConsistency()) {
 							add = false;
 						} else {

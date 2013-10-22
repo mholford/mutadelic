@@ -93,49 +93,107 @@ Class: CriticalDomainNotMissingVariant
     SubClassOf: CriticalDomainNotMissingVariant
 	
 Class: InterestingVariant
-    EquivalentTo: DBKnownMutationVariant or (RareVariant and (SpliceSiteVariant or ConservedVariant or SevereVariant or CriticalDomainMissingVariant or InCriticalDomainVariant))
+    EquivalentTo: DBKnownMutationVariant or MarkedRareAndUnusualVariant
 	
+Class: UnusualVariant
+    EquivalentTo: CriticalDomainMissingVariant or SevereVariant or SpliceSiteVariant or ConservedVariant or InCriticalDomainVariant
+
+Class: RareAndUnusualVariant
+    EquivalentTo: RareVariant and MarkedUnusualVariant
+
 Class: FinishedVariant
+
+Class: MarkedUnusualVariant
+
+Class: MarkedRareAndUnusualVariant
 	
+Class: MarkedUnusualVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some UnusualVariant) and (has_output some MarkedUnusualVariant)
+
+Class: MarkedRareAndUnusualVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some RareAndUnusualVariant) and (has_output some MarkedRareAndUnusualVariant)
+
 Class: AlignVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some Variant) and (has_output some AlignedVariant)
 	
-Class: VariantFrequencyService
+Class: VariantFrequencyCommonService
     SubClassOf: Service
-    EquivalentTo: (has_input some AlignedVariant) and (has_output some (RareVariant or CommonVariant))
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some CommonVariant)
+
+Class: VariantFrequencyRareService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some RareVariant)
 	
-Class: DBKnownMutationService
+Class: DBKnownMutationKnownService
     SubClassOf: Service
-    EquivalentTo: (has_input some AlignedVariant) and (has_output some (DBKnownMutationVariant or DBUnknownMutationVariant))
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some DBKnownMutationVariant)
 	
-Class: IndelOrPointService
+Class: DBKnownMutationUnknownService
     SubClassOf: Service
-    EquivalentTo: (has_input some Variant) and (has_output some (IndelVariant or PointVariant))
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some DBUnknownMutationVariant)
+
+Class: IndelOrPointIndelService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some IndelVariant)
+
+Class: IndelOrPointPointService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some PointVariant)
 	
-Class: TranscriptLocaleService
+Class: TranscriptLocaleSpliceService
     SubClassOf: Service
-    EquivalentTo: (has_input some Variant) and (has_output some (SpliceSiteVariant or ProteinCodingVariant or IntronicVariant))
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some SpliceSiteVariant)
+
+Class: TranscriptLocaleProteinCodingService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some ProteinCodingVariant)
+
+Class: TranscriptLocaleIntronService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some IntronicVariant)
 	
-Class: AAChangeService
+Class: AAChangeSynonymousService
     SubClassOf: Service
-    EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some (SynonymousVariant or NonSynonymousVariant))
+    EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some SynonymousVariant)
 	
-Class: PhylopService
+Class: AAChangeNonSynonymousService
     SubClassOf: Service
-    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some (ConservedVariant or NonConservedVariant))
+    EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some NonSynonymousVariant)
+
+Class: PhylopConservedService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some ConservedVariant)
 	
-Class: SiftService
+Class: PhylopNonConservedService
     SubClassOf: Service
-    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some (SevereVariant or NonSevereVariant))
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NonConservedVariant)
+
+Class: SiftNonSevereService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NonSevereVariant)
+
+Class: SiftSevereService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some SevereVariant)
 	
-Class: CriticalDomainService
+Class: CriticalDomainInService
     SubClassOf: Service
-    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some (InCriticalDomainVariant or NotInCriticalDomainVariant))
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some InCriticalDomainVariant)
 	
-Class: CriticalDomainMissingService
+Class: CriticalDomainNotInService
     SubClassOf: Service
-    EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant) and (has_output some (CriticalDomainNotMissingVariant or CriticalDomainMissingVariant)))
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NotInCriticalDomainVariant)
+
+Class: CriticalDomainMissingNotService
+    SubClassOf: Service
+    EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant)) and (has_output some CriticalDomainNotMissingVariant)
+
+Class: CriticalDomainMissingIsService
+    SubClassOf: Service
+    EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant)) and (has_output some CriticalDomainMissingVariant)
 	
 Class: FinishedVariantService
     SubClassOf: Service
@@ -146,80 +204,88 @@ Individual: AVS
     Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable ""
 	
 Individual: CVFS
-    Types: VariantFrequencyService
+    Types: VariantFrequencyCommonService
     Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable ""
 	
 Individual: RVFS
-    Types: VariantFrequencyService
+    Types: VariantFrequencyRareService
     Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable ""
 	
 Individual: DBKS
-    Types: DBKnownMutationService
+    Types: DBKnownMutationKnownService
     Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable ""
 	
 Individual: DBUS
-    Types: DBKnownMutationService
+    Types: DBKnownMutationUnknownService
     Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable ""
 	
 Individual: IPIS
-    Types: IndelOrPointService
+    Types: IndelOrPointIndelService
     Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable ""
 
 Individual: IPPS
-    Types: IndelOrPointService
+    Types: IndelOrPointPointService
     Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable ""
 	
 Individual: TLSS
-    Types: TranscriptLocaleService
+    Types: TranscriptLocaleSpliceService
     Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable ""
 	
 Individual: TLPS
-    Types: TranscriptLocaleService
+    Types: TranscriptLocaleProteinCodingService
     Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable ""
 	
 Individual: TLIS
-    Types: TranscriptLocaleService
+    Types: TranscriptLocaleIntronService
     Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable ""
 	
 Individual: AASS
-    Types: AAChangeService
+    Types: AAChangeSynonymousService
     Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable ""
 	
 Individual: AANS
-    Types: AAChangeService
+    Types: AAChangeNonSynonymousService
     Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable ""
 	
 Individual: PPNS
-    Types: PhylopService
+    Types: PhylopNonConservedService
     Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable ""
 	
 Individual: PPCS
-    Types: PhylopService
+    Types: PhylopConservedService
     Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable ""
 	
 Individual: SNS
-    Types: SiftService
+    Types: SiftNonSevereService
     Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable ""
 	
 Individual: SSS
-    Types: SiftService
+    Types: SiftSevereService
     Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable ""
 	
 Individual: ICDS
-    Types: CriticalDomainService
+    Types: CriticalDomainInService
     Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable ""
 	
 Individual: NCDS
-    Types: CriticalDomainService
+    Types: CriticalDomainNotInService
     Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable ""
 	
 Individual: CDNS
-    Types: CriticalDomainMissingService
+    Types: CriticalDomainMissingNotService
     Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable ""
 	
 Individual: CDMS
-    Types: CriticalDomainMissingService
+    Types: CriticalDomainMissingIsService
     Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable ""
+
+Individual: MUVS
+    Types: MarkedUnusualVariantService
+    Facts: has_input MUVSI, has_output MUVSO, has_cost 1.0, has_executable ""
+
+Individual: MRUVS
+    Types: MarkedRareAndUnusualVariantService
+    Facts: has_input MRUVSI, has_output MRUVSO, has_cost 1.0, has_executable ""
 	
 Individual: FS
     Types: FinishedVariantService
@@ -284,6 +350,12 @@ Individual: CDNSI
 
 Individual: CDMSI
     Types: ProteinCodingVariant and IndelVariant
+
+Individual: MUVSI
+    Types: UnusualVariant
+
+Individual: MRUVSI
+    Types: RareAndUnusualVariant
 	
 Individual: FSI
     Types: InterestingVariant
@@ -347,6 +419,12 @@ Individual: CDNSO
 	
 Individual: CDMSO
     Types: CriticalDomainMissingVariant
+
+Individual: MUVSO
+    Types: MarkedUnusualVariant
+
+Individual: MRUVSO
+    Types: MarkedRareAndUnusualVariant
 	
 Individual: FSO
     Types: FinishedVariant
