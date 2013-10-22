@@ -33,7 +33,7 @@ import edu.yale.dlgen.DLEntity;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.DLObjectPropertyExpression;
-import edu.yale.dlgen.controller.FactPPDLController;
+//import edu.yale.dlgen.controller.FactPPDLController;
 import edu.yale.dlgen.controller.HermitDLController;
 import edu.yale.dlgen.controller.OWLAPIDLController;
 import edu.yale.dlgen.controller.Pellet2DLController;
