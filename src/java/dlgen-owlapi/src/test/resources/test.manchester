@@ -4,6 +4,7 @@ Prefix: owl: <http://www.w3.org/2002/07/owl#>
 Prefix: : <http://krauthammerlab.med.yale.edu/test#>
 
 Class: Person
+	DisjointWith: Guitar
 
 Class: Musician
   SubClassOf: Person
@@ -13,6 +14,7 @@ Class: Guitarist
   EquivalentTo: plays some Guitar
   
 Class: Guitar
+	DisjointWith: Person
   
 DataProperty: hasAge
 

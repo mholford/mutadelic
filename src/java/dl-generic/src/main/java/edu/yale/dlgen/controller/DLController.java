@@ -280,7 +280,7 @@ public interface DLController {
 	 * @return The Conjunction class
 	 */
 	DLClassExpression<?> orClass(DLClassExpression<?>... clz);
-	
+
 	/**
 	 * Return the conjunction (AND) of the given class expression.
 	 * 
@@ -340,7 +340,7 @@ public interface DLController {
 	DLAxiom<?> newClazz(DLClassExpression<?> c);
 
 	DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2);
-	
+
 	DLAxiom<?> subClass(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**
@@ -381,6 +381,17 @@ public interface DLController {
 	 * @return All subclasses
 	 */
 	Collection<DLClassExpression> getSubclasses(DLClass<?> clz);
+
+	/**
+	 * See if the two classes have been declared disjoint from one another
+	 * 
+	 * @param c1
+	 *            - One {@link DLClassExpression}
+	 * @param c2
+	 *            - The other {@link DLClassExpression}
+	 * @return
+	 */
+	boolean isDisjoint(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**
 	 * Answer whether a given class is a subclass of another. Returns false if

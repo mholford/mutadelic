@@ -21,76 +21,95 @@ Class: FrequencyAnnotatedVariant
 	
 Class: RareVariant
     SubClassOf: FrequencyAnnotatedVariant
+    DisjointWith: CommonVariant
 	
 Class: CommonVariant
     SubClassOf: FrequencyAnnotatedVariant
+    DisjointWith: RareVariant
 	
 Class: DBKnownMutationAnnotatedVariant
 	
 Class: DBKnownMutationVariant
     SubClassOf: DBKnownMutationAnnotatedVariant
+    DisjointWith: DBUnknownMutationVariant
 	
 Class: DBUnknownMutationVariant
     SubClassOf: DBKnownMutationAnnotatedVariant
+    DisjointWith: DBKnownMutationVariant
 	
 Class: IndelOrPointVariant
 	
 Class: IndelVariant
     SubClassOf: IndelOrPointVariant
+    DisjointWith: PointVariant
 	
 Class: PointVariant
     SubClassOf: IndelOrPointVariant
+    DisjointWith: IndelVariant
 	
 Class: TranscriptLocatedVariant
 	
 Class: SpliceSiteVariant
     SubClassOf: TranscriptLocatedVariant
+    DisjointWith: ProteinCodingVariant, IntronicVariant
 	
 Class: ProteinCodingVariant
     SubClassOf: TranscriptLocatedVariant
+    DisjointWith: SpliceSiteVariant, IntronicVariant
 	
 Class: IntronicVariant
     SubClassOf: TranscriptLocatedVariant
+    DisjointWith: ProteinCodingVariant, SpliceSiteVariant
 	
 Class: AAChangedAnnotatedVariant
 	
 Class: SynonymousVariant
     SubClassOf: AAChangedAnnotatedVariant
+    DisjointWith: NonSynonymousVariant
 	
 Class: NonSynonymousVariant
     SubClassOf: AAChangedAnnotatedVariant
+    DisjointWith: SynonymousVariant
 	
 Class: PhylopAnnotatedVariant
 	
 Class: ConservedVariant
     SubClassOf: PhylopAnnotatedVariant
+    DisjointWith: NonConservedVariant
 	
 Class: NonConservedVariant
     SubClassOf: PhylopAnnotatedVariant
+    DisjointWith: ConservedVariant
 	
 Class: SiftAnnotatedVariant
 	
 Class: NonSevereVariant
     SubClassOf: SiftAnnotatedVariant
+    DisjointWith: SevereVariant
 	
 Class: SevereVariant
     SubClassOf: SiftAnnotatedVariant
+    DisjointWith: NonSevereVariant
 	
 Class: CriticalDomainAnnotatedVariant
 	
 Class: InCriticalDomainVariant
     SubClassOf: CriticalDomainAnnotatedVariant
+    DisjointWith: NotInCriticalDomainVariant
 	
 Class: NotInCriticalDomainVariant
     SubClassOf: CriticalDomainAnnotatedVariant
+    DisjointWith: InCriticalDomainVariant
 	
 Class: CriticalDomainMissingAnnotatedVariant
 	
 Class: CriticalDomainMissingVariant
     SubClassOf: CriticalDomainMissingVariant
+    DisjointWith: CriticalDomainNotMissingVariant
 	
 Class: CriticalDomainNotMissingVariant
     SubClassOf: CriticalDomainNotMissingVariant
+    DisjointWith: CriticalDomainMissingVariant
 	
 Class: InterestingVariant
     EquivalentTo: DBKnownMutationVariant or (RareVariant and (SpliceSiteVariant or ConservedVariant or SevereVariant or CriticalDomainMissingVariant or InCriticalDomainVariant))
@@ -115,7 +134,7 @@ Class: IndelOrPointService
 	
 Class: TranscriptLocaleService
     SubClassOf: Service
-    EquivalentTo: (has_input some Variant) and (has_output some (SpliceSiteVariant or ProteinCodingVariant or IntronicVariant))
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some (SpliceSiteVariant or ProteinCodingVariant or IntronicVariant))
 	
 Class: AAChangeService
     SubClassOf: Service
