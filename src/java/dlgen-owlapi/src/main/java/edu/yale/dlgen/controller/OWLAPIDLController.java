@@ -76,6 +76,9 @@ public abstract class OWLAPIDLController implements DLController {
 	@Override
 	public boolean load(Reader reader) {
 		boolean loaded = true;
+		if (ontology != null) {
+			manager.removeOntology(ontology);
+		}
 		try {
 			ontology = manager
 					.loadOntologyFromOntologyDocument(new ReaderDocumentSource(

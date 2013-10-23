@@ -1,254 +1,96 @@
 Ontology: <http://krauthammerlab.med.yale.edu/test#>
 
-Prefix: GELO: <http://krauthammerlab.med.yale.edu/ontologies/gelo#>
-Prefix: SIO: <http://semanticscience.org/ontologi/sio.owl#>
-Prefix: SO: <http://purl.org/obo/owl/SO#>
 Prefix: : <http://krauthammerlab.med.yale.edu/test#>
 
 ObjectProperty: has_input
     
 ObjectProperty: has_output
 
-ObjectProperty: GELO:has_locus
-	
-ObjectProperty: GELO:on_chromosome
-	
-ObjectProperty: SIO:cites
-	
-ObjectProperty: SIO:is_described_by
-	
-ObjectProperty: SIO:is_modelled_by
-	
-ObjectProperty: SIO:refers_to
-
 DataProperty: has_cost
 
 DataProperty: has_executable
     
-DataProperty: GELO:locus_end
-
-DataProperty: GELO:locus_start
-	
-DataProperty: GELO:sequence
-
-DataProperty: GELO:strand
-	
-DataProperty: SIO:has_value
-	
 Class: Service
     EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
 	
-Class: GELO:GenomicElement
-	
-Class: SIO:InformationContentEntity
-	
-Class: SO:Chromosome
-	
-Class: SIO:Description
-
-Class: SO:SequenceVariant
-
-Class: Annotation
-    EquivalentTo: SIO:Description that SIO:cites some SIO:InformationContentEntity
-	
-Class: CompletionStatus
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: StatusMarker
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: SIO:BioinformaticData
-	
-Class: HGVSNotation
-    SubClassOf: SIO:BioinformaticData
-	
-Class: SIO:Probability
-	
-Class: AlleleFrequency
-    SubClassOf: SIO:Probability
-	
-Class: DatabasePresence
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: RCMDBPresence
-    SubClassOf: DatabasePresence
-	
-Class: VariationType
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: VariationLocation
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: VariationOutcome
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: VariationDomainColocation
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: VariationDomainsMissingStatus
-    SubClassOf: SIO:InformationContentEntity
-	
-Class: PhylopScore
-    SubClassOf: SIO:BioinformaticData
-	
-Class: SiftScore
-    SubClassOf: SIO:BioinformaticData
-	
-Class: RCMDBVariant
-    SubClassOf: SO:SequenceVariant
-
 Class: Variant
-    SubClassOf: GELO:GenomicElement, SO:SequenceVariant
-    EquivalentTo: (GELO:has_locus some 
-	(GELO:on_chromosome some SO:Chromosome 
-	and (GELO:locus_start min 1 xsd:integer)
-	and (GELO:locus_end min 1 xsd:integer)
-	and (GELO:strand min 1 xsd:string)
-	and (GELO:sequence min 1 xsd:string)))
-	and (SIO:is_modelled_by some (SIO:has_value min 1 xsd:string))
 	
 Class: AlignedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(HGVSNotation that SIO:has_value min 1 xsd:string))
 	
 Class: FrequencyAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(AlleleFrequency that SIO:has_value min 1 xsd:double))
 	
 Class: RareVariant
-    EquivalentTo: FrequencyAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(AlleleFrequency that SIO:has_value min 1 xsd:double[<= 0.01]))
+    SubClassOf: FrequencyAnnotatedVariant
 	
 Class: CommonVariant
-    EquivalentTo: FrequencyAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(AlleleFrequency that SIO:has_value min 1 xsd:double[> 0.01]))
+    SubClassOf: FrequencyAnnotatedVariant
 	
 Class: DBKnownMutationAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some 
-	(DatabasePresence that SIO:has_value min 1 xsd:string))
 	
 Class: DBKnownMutationVariant
-    EquivalentTo: DBKnownMutationAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(DatabasePresence that SIO:has_value value "true"))
+    SubClassOf: DBKnownMutationAnnotatedVariant
 	
 Class: DBUnknownMutationVariant
-    EquivalentTo: DBKnownMutationAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(DatabasePresence that SIO:has_value value "false"))
+    SubClassOf: DBKnownMutationAnnotatedVariant
 	
 Class: IndelOrPointVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationType that SIO:has_value min 1 xsd:string))
 	
 Class: IndelVariant
-    EquivalentTo: IndelOrPointVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationType that SIO:has_value value "Indel"))
+    SubClassOf: IndelOrPointVariant
 	
 Class: PointVariant
-    EquivalentTo: IndelOrPointVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationType that SIO:has_value value "Point"))
+    SubClassOf: IndelOrPointVariant
 	
 Class: TranscriptLocatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value min 1 xsd:string))
 	
 Class: SpliceSiteVariant
-    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "SpliceSite"))
+    SubClassOf: TranscriptLocatedVariant
 	
 Class: ProteinCodingVariant
-    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "CDS"))
+    SubClassOf: TranscriptLocatedVariant
 	
 Class: IntronicVariant
-    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "Intron"))
+    SubClassOf: TranscriptLocatedVariant
 	
 Class: AAChangedAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationOutcome that SIO:has_value min 1 xsd:string))
 	
 Class: SynonymousVariant
-    EquivalentTo: AAChangedAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationOutcome that SIO:has_value value "Synonymous"))
+    SubClassOf: AAChangedAnnotatedVariant
 	
 Class: NonSynonymousVariant
-    EquivalentTo: AAChangedAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationOutcome that SIO:has_value value "NonSynonymous"))
+    SubClassOf: AAChangedAnnotatedVariant
 	
 Class: PhylopAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(PhylopScore that SIO:has_value min 1 xsd:double))
 	
 Class: ConservedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(PhylopScore that SIO:has_value min 1 xsd:double[>=1.0]))
+    SubClassOf: PhylopAnnotatedVariant
 	
 Class: NonConservedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(PhylopScore that SIO:has_value min 1 xsd:double[<1.0]))
+    SubClassOf: PhylopAnnotatedVariant
 	
 Class: SiftAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(SiftScore that SIO:has_value min 1 xsd:double))
 	
 Class: NonSevereVariant
-    EquivalentTo: SiftAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(SiftScore that SIO:has_value min 1 xsd:double[>0.05]))
+    SubClassOf: SiftAnnotatedVariant
 	
 Class: SevereVariant
-    EquivalentTo: SiftAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(SiftScore that SIO:has_value min 1 xsd:double[<=0.05]))
+    SubClassOf: SiftAnnotatedVariant
 	
 Class: CriticalDomainAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationDomainColocation that SIO:has_value min 1 xsd:string))
 	
 Class: InCriticalDomainVariant
-    EquivalentTo: CriticalDomainAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationDomainColocation that SIO:has_value value "true"))
+    SubClassOf: CriticalDomainAnnotatedVariant
 	
 Class: NotInCriticalDomainVariant
-    EquivalentTo: CriticalDomainAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationDomainColocation that SIO:has_value value "false"))
+    SubClassOf: CriticalDomainAnnotatedVariant
 	
 Class: CriticalDomainMissingAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationDomainsMissingStatus that SIO:has_value min 1 xsd:string))
 	
 Class: CriticalDomainMissingVariant
-    EquivalentTo: CriticalDomainMissingAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationDomainsMissingStatus that SIO:has_value value "true"))
+    SubClassOf: CriticalDomainMissingVariant
 	
 Class: CriticalDomainNotMissingVariant
-    EquivalentTo: CriticalDomainMissingAnnotatedVariant and not CriticalDomainMissingVariant
+    SubClassOf: CriticalDomainNotMissingVariant
 	
 Class: InterestingVariant
     EquivalentTo: DBKnownMutationVariant or MarkedRareAndUnusualVariant
@@ -260,19 +102,10 @@ Class: RareAndUnusualVariant
     EquivalentTo: RareVariant and MarkedUnusualVariant
 
 Class: FinishedVariant
-    EquivalentTo: Variant that SIO:is_described_by some 
-	(Annotation that SIO:refers_to some
-	(CompletionStatus that SIO:has_value value "true"))
 
 Class: MarkedUnusualVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(StatusMarker that SIO:has_value value "Unusual"))
 
 Class: MarkedRareAndUnusualVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(StatusMarker that SIO:has_value value "RareAndUnusual"))
 	
 Class: MarkedUnusualVariantService
     SubClassOf: Service
@@ -366,9 +199,6 @@ Class: FinishedVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some InterestingVariant) and (has_output some FinishedVariant)
 	
-Individual: Mutadelic
-    Types: SIO:InformationContentEntity
-
 Individual: AVS
     Types: AlignVariantService
     Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable "edu.yale.abfab.pipeline.AlignVariantService"

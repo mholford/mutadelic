@@ -113,19 +113,10 @@ Class: AlignedVariant
 	(HGVSNotation that SIO:has_value min 1 xsd:string))
 	
 Class: FrequencyAnnotatedVariant
-    EquivalentTo: Variant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(AlleleFrequency that SIO:has_value min 1 xsd:double))
 	
 Class: RareVariant
-    EquivalentTo: FrequencyAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(AlleleFrequency that SIO:has_value min 1 xsd:double[<= 0.01]))
 	
 Class: CommonVariant
-    EquivalentTo: FrequencyAnnotatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(AlleleFrequency that SIO:has_value min 1 xsd:double[> 0.01]))
 	
 Class: DBKnownMutationAnnotatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
@@ -366,9 +357,6 @@ Class: FinishedVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some InterestingVariant) and (has_output some FinishedVariant)
 	
-Individual: Mutadelic
-    Types: SIO:InformationContentEntity
-
 Individual: AVS
     Types: AlignVariantService
     Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable "edu.yale.abfab.pipeline.AlignVariantService"

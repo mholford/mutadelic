@@ -143,7 +143,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineStaging() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
-					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					.getClassLoader().getResourceAsStream("pipeline-int.owl")),
 					"Manchester");
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
 			ip.getAxioms().add(
@@ -179,6 +179,29 @@ public class OWLAPIAbductorTest {
 					+ "http://krauthammerlab.med.yale.edu/test#FS]";
 			assertEquals(expected, p.toString());
 		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testPipelineExec() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+			
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+			
+			IndividualPlus output = abductor.exec(ip, p);
+		} catch (Exception e){
 			e.printStackTrace();
 			fail();
 		}

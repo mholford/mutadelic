@@ -9,7 +9,7 @@ import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
-public class AlignedVariant extends AbstractPipelineService {
+public class AlignVariantService extends AbstractPipelineService {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)

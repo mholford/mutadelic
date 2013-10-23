@@ -392,7 +392,7 @@ public abstract class Abductor {
 
 			for (DLClassExpression serviceClass : dl.getSubclasses(dl.clazz(NS
 					+ "Service"))) {
-				dbg("Try service: %s", serviceClass);
+				//dbg("Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -412,17 +412,17 @@ public abstract class Abductor {
 
 						switch (match) {
 						case FULL:
-							dbg("Full Match");
+							//dbg("Full Match");
 							output.add(Arrays
 									.asList(new IndividualPlus[] { new IndividualPlus(
 											serviceClassI) }));
 							break;
 						case PARTIAL:
-							dbg("Partial Match");
+							//dbg("Partial Match");
 							servicePartials.add(serviceClass);
 							break;
 						default:
-							dbg("No Match");
+							//dbg("No Match");
 							break;
 						}
 					}
@@ -443,7 +443,7 @@ public abstract class Abductor {
 							.getNTuplePermutations(servicePartials, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
-						dbg("Try services: %s", serviceClassTuple);
+						//dbg("Try services: %s", serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -540,7 +540,7 @@ public abstract class Abductor {
 
 								switch (match) {
 								case FULL:
-									dbg("Full Match");
+									//dbg("Full Match");
 									List<IndividualPlus> outputsToAdd = new ArrayList<>();
 									for (IndividualPlus s : serviceClassIPair) {
 										for (DLIndividual<?> soutput : dl
@@ -559,7 +559,7 @@ public abstract class Abductor {
 									break;
 
 								default:
-									dbg("No Match");
+									//dbg("No Match");
 									break;
 								}
 							}
