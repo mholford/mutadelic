@@ -15,7 +15,7 @@ public class AlleleFrequencyService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		double result = new Random().nextBoolean() ? 0.0001 : 0.4;
+		double result = TestValues.ALLELE_FREQUENCY;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "AlleleFrequency"), dl.individual(NS + "Mutadelic"),

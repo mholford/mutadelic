@@ -15,10 +15,10 @@ public class SiftService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		double result = new Random().nextBoolean() ? 0.04 : 0.4;
+		double result = TestValues.SIFT;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				dl.clazz(NS + "SiftValue"), dl.individual(NS + "Mutadelic"),
+				dl.clazz(NS + "SiftScore"), dl.individual(NS + "Mutadelic"),
 				result);
 		input.getAxioms().addAll(annotation);
 		return input;

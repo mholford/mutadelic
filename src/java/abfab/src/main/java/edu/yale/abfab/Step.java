@@ -30,11 +30,11 @@ public abstract class Step implements Comparable {
 	public abstract Collection<IndividualPlus> getInput();
 
 	public abstract Collection<IndividualPlus> getOutput();
-	
+
 	public abstract Step copy();
-	
+
 	public abstract Collection<DLClassExpression> getDLClasses();
-	
+
 	public abstract DLClassExpression<?> getUnifiedClass();
 
 	public Abductor getAbductor() {
@@ -49,12 +49,14 @@ public abstract class Step implements Comparable {
 		String name = "merge" + UUID.randomUUID().toString();
 		IndividualPlus output = null;
 		if (inds.size() > 1) {
-			
+
 			try {
 				for (IndividualPlus ind : inds) {
-					oldAx.addAll(ind.getAxioms());
-					newAx.addAll(ind.getAxioms());
-					dl.addAxioms(ind.getAxioms());
+					if (ind.getAxioms() != null) {
+						oldAx.addAll(ind.getAxioms());
+						newAx.addAll(ind.getAxioms());
+						dl.addAxioms(ind.getAxioms());
+					}
 				}
 				Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dpvs = new HashMap<>();
 				Map<DLObjectPropertyExpression<?>, Collection<DLIndividual>> opvs = new HashMap<>();
@@ -91,14 +93,14 @@ public abstract class Step implements Comparable {
 				}
 				for (DLDataPropertyExpression<?> odpe : dpvs.keySet()) {
 					for (DLLiteral<?> owls : dpvs.get(odpe)) {
-						newAx.add(dl.newDataFact(dl.individual(NS + name), odpe,
-								owls));
+						newAx.add(dl.newDataFact(dl.individual(NS + name),
+								odpe, owls));
 					}
 				}
 				for (DLObjectPropertyExpression<?> oope : opvs.keySet()) {
 					for (DLIndividual<?> oi : opvs.get(oope)) {
-						newAx.add(dl.newObjectFact(dl.individual(NS + name), oope,
-								oi));
+						newAx.add(dl.newObjectFact(dl.individual(NS + name),
+								oope, oi));
 					}
 				}
 

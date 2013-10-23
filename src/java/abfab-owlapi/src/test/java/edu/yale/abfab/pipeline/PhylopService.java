@@ -15,7 +15,7 @@ public class PhylopService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		double result = new Random().nextBoolean() ? 2 : 0.5;
+		double result = TestValues.PHYLOP;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "PhylopScore"), dl.individual(NS + "Mutadelic"),

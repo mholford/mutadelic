@@ -208,6 +208,10 @@ public class Path implements Comparable<Path> {
 		return steps.get(0).getDLClasses();
 	}
 
+	public Collection<DLClassExpression> getLastStepDLClasses() {
+		return steps.get(steps.size() - 1).getDLClasses();
+	}
+
 	public Collection<DLClassExpression> getNextStepDLClasses() {
 		if (steps.size() > 1) {
 			return steps.get(1).getDLClasses();

@@ -15,7 +15,7 @@ public class AAChangedService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		String result = new Random().nextBoolean() ? "Synonymous" : "NonSynonymous";
+		String result = TestValues.AA_CHANGE;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "VariationOutcome"), dl.individual(NS + "Mutadelic"),

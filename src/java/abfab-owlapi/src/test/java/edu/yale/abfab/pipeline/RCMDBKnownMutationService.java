@@ -15,12 +15,11 @@ public class RCMDBKnownMutationService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		//boolean result = new Random().nextBoolean();
-		boolean result = true;
+		boolean result = TestValues.RCMDB_KNOWN;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				dl.clazz(NS + "DatabasePresence"), dl.individual(NS + "Mutadelic"),
-				String.valueOf(result));
+				dl.clazz(NS + "DatabasePresence"),
+				dl.individual(NS + "Mutadelic"), String.valueOf(result));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

@@ -14,10 +14,11 @@ public class MarkRareUnusualService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
+		String result = TestValues.MARK_RARE_UNUSUAL;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "StatusMarker"),
-				dl.individual(NS + "Mutadelic"), "RareAndUnusual");
+				dl.individual(NS + "Mutadelic"), result);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

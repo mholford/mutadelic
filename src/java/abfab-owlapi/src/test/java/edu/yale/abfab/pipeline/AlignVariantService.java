@@ -14,10 +14,11 @@ public class AlignVariantService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
+		String result = TestValues.ALIGNMENT;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "HGVSNotation"),
-				dl.individual(NS + "Mutadelic"), "123A>C");
+				dl.individual(NS + "Mutadelic"), result);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

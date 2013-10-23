@@ -257,7 +257,7 @@ Class: UnusualVariant
     EquivalentTo: CriticalDomainMissingVariant or SevereVariant or SpliceSiteVariant or ConservedVariant or InCriticalDomainVariant
 
 Class: RareAndUnusualVariant
-    EquivalentTo: RareVariant and MarkedUnusualVariant
+    EquivalentTo: RareVariant and UnusualVariant
 
 Class: FinishedVariant
     EquivalentTo: Variant that SIO:is_described_by some 
@@ -265,12 +265,12 @@ Class: FinishedVariant
 	(CompletionStatus that SIO:has_value value "true"))
 
 Class: MarkedUnusualVariant
-    EquivalentTo: Variant that SIO:is_described_by some
+    EquivalentTo: UnusualVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
 	(StatusMarker that SIO:has_value value "Unusual"))
 
 Class: MarkedRareAndUnusualVariant
-    EquivalentTo: Variant that SIO:is_described_by some
+    EquivalentTo: RareAndUnusualVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
 	(StatusMarker that SIO:has_value value "RareAndUnusual"))
 	
@@ -427,11 +427,11 @@ Individual: PPCS
 	
 Individual: SNS
     Types: SiftNonSevereService
-    Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.SiftService"
+    Facts: has_input SNSI, has_output SNSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.SiftService"
 	
 Individual: SSS
     Types: SiftSevereService
-    Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.SiftService"
+    Facts: has_input SSSI, has_output SSSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.SiftService"
 	
 Individual: ICDS
     Types: CriticalDomainInService

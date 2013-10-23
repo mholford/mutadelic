@@ -15,15 +15,8 @@ public class TranscriptLocaleService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		String result = "Intron";
-		Random r = new Random();
-		if (r.nextBoolean()) {
-			result = "SpliceSite";
-		} else {
-			if (r.nextBoolean()) {
-				result = "ProteinCoding";
-			}
-		}
+		String result = TestValues.TRANSCRIPT_LOCALE;
+
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "VariationLocation"), dl.individual(NS + "Mutadelic"),

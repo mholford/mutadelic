@@ -15,11 +15,11 @@ public class CriticalDomainService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		boolean result = new Random().nextBoolean();
+		boolean result = TestValues.CRITICAL_DOMAIN;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "VariationDomainColocation"),
-				dl.individual(NS + "Mutadelic"), result);
+				dl.individual(NS + "Mutadelic"), String.valueOf(result));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

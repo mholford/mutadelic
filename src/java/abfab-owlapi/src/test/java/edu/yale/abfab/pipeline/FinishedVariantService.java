@@ -14,10 +14,11 @@ public class FinishedVariantService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
+		boolean result = TestValues.CRITICAL_DOMAIN;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "CompletionStatus"),
-				dl.individual(NS + "Mutadelic"), true);
+				dl.individual(NS + "Mutadelic"), String.valueOf(result));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

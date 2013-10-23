@@ -27,7 +27,9 @@ import edu.yale.abfab.mazes.MazeGenerator.Node;
 import edu.yale.abfab.mazes.MazeTransformer;
 import edu.yale.abfab.owlapi.HermitAbductor;
 import edu.yale.abfab.owlapi.OWLAPIAbductor;
+import edu.yale.abfab.pipeline.TestValues;
 import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLDataPropertyExpression;
 import edu.yale.dlgen.DLIndividual;
@@ -46,6 +48,7 @@ public class OWLAPIAbductorTest {
 		// abductor = new Pellet2Abductor();
 		abductor.setNamespace(NS);
 		dl = abductor.getDLController();
+		TestValues.revert();
 	}
 
 	@Test
@@ -143,7 +146,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineStaging() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
-					.getClassLoader().getResourceAsStream("pipeline-int.owl")),
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
 			ip.getAxioms().add(
@@ -183,9 +186,9 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-	
+
 	@Test
-	public void testPipelineExec() {
+	public void testPipelineExec1() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -195,13 +198,183 @@ public class OWLAPIAbductorTest {
 					dl.individualType(dl.individual(NS + "test"),
 							dl.clazz(NS + "Variant")));
 			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
-			
+
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline.owl")),
 					"Manchester");
-			
-			IndividualPlus output = abductor.exec(ip, p);
-		} catch (Exception e){
+
+			IndividualPlus output;
+
+			TestValues.RCMDB_KNOWN = true;
+			output = abductor.exec(ip.copy(ip), p.copy());
+			String known = getLiteralResult(output,
+					dl.clazz(NS + "DatabasePresence"));
+			assertEquals(known, "true");
+
+			// Assure that other condition does not execute
+			String prefreq = getLiteralResult(output,
+					dl.clazz(NS + "AlleleFrequency"));
+			assertNull(prefreq);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testPipelineExec2() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.TRANSCRIPT_LOCALE = "SpliceSite";
+			output = abductor.exec(ip.copy(ip), p.copy());
+			String locale = getLiteralResult(output,
+					dl.clazz(NS + "VariationLocation"));
+			assertEquals(locale, "SpliceSite");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testPipelineExec3() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.SIFT = 0.01d;
+			output = abductor.exec(ip.copy(ip), p.copy());
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftScore"));
+			Double sift = Double.parseDouble(preSift);
+			assertEquals(sift, new Double(0.01));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testPipelineExec4() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.PHYLOP = 2.0d;
+			output = abductor.exec(ip.copy(ip), p.copy());
+			String prePhylop = getLiteralResult(output,
+					dl.clazz(NS + "PhylopScore"));
+			Double phylop = Double.parseDouble(prePhylop);
+			assertEquals(phylop, new Double(2.0));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testPipelineExec5() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.CRITICAL_DOMAIN = true;
+			output = abductor.exec(ip.copy(ip), p.copy());
+			String criticalDomain = getLiteralResult(output,
+					dl.clazz(NS + "VariationDomainColocation"));
+			assertEquals(criticalDomain, "true");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testPipelineExec6() {
+		try {
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.INDEL_OR_POINT = "Indel";
+			TestValues.CRITICAL_DOMAIN_MISSING = true;
+			output = abductor.exec(ip.copy(ip), p.copy());
+			String criticalDomain = getLiteralResult(output,
+					dl.clazz(NS + "VariationDomainsMissingStatus"));
+			assertEquals(criticalDomain, "true");
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -224,31 +397,59 @@ public class OWLAPIAbductorTest {
 			IndividualPlus output = abductor.exec(ip, p);
 
 			// Test results
-			dl.addAxioms(output.getAxioms());
-			String gene = null;
-			Collection<DLIndividual> descs = dl.getObjectPropertyValues(
-					output.getIndividual(),
-					dl.objectProp(SIO + "is_described_by"));
-			for (DLIndividual<?> desc : descs) {
-				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
-						desc, dl.objectProp(SIO + "refers_to"));
-				for (DLIndividual<?> ref : refs) {
-					if (dl.getTypes(ref).contains(dl.clazz(SO + "Gene"))) {
-						if (gene != null) {
-							System.out.println("Oops; more than one gene");
-							fail();
-						}
-						gene = dl.getIRI(ref);
-					}
-				}
-			}
-
+			String gene = getResult(output, dl.clazz(SO + "Gene"));
 			assertEquals(NS + "Gene123", gene);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}
+	}
+
+	private String getResult(IndividualPlus ip, DLClass<?> outputType) {
+		dl.addAxioms(ip.getAxioms());
+		String output = null;
+		Collection<DLIndividual> descs = dl.getObjectPropertyValues(
+				ip.getIndividual(), dl.objectProp(SIO + "is_described_by"));
+		for (DLIndividual<?> desc : descs) {
+			Collection<DLIndividual> refs = dl.getObjectPropertyValues(desc,
+					dl.objectProp(SIO + "refers_to"));
+			for (DLIndividual<?> ref : refs) {
+				if (dl.getTypes(ref).contains(outputType)) {
+					if (output != null) {
+						System.out.println("Oops; more than one result");
+						fail();
+					}
+					output = dl.getIRI(ref);
+				}
+			}
+		}
+		return output;
+	}
+
+	private String getLiteralResult(IndividualPlus ip, DLClass<?> outputType) {
+		dl.addAxioms(ip.getAxioms());
+		String output = null;
+		Collection<DLIndividual> descs = dl.getObjectPropertyValues(
+				ip.getIndividual(), dl.objectProp(SIO + "is_described_by"));
+		for (DLIndividual<?> desc : descs) {
+			Collection<DLIndividual> refs = dl.getObjectPropertyValues(desc,
+					dl.objectProp(SIO + "refers_to"));
+			for (DLIndividual<?> ref : refs) {
+				if (dl.getTypes(ref).contains(outputType)) {
+					Collection<DLLiteral> vals = dl.getDataPropertyValues(ref,
+							dl.dataProp(SIO + "has_value"));
+					for (DLLiteral<?> val : vals) {
+						if (output != null) {
+							System.out.println("Oops; more than one result");
+							fail();
+						}
+						output = dl.getLiteralValue(val);
+					}
+				}
+			}
+		}
+		return output;
 	}
 
 	@Test
@@ -268,30 +469,9 @@ public class OWLAPIAbductorTest {
 			IndividualPlus output = abductor.exec(ip, p);
 
 			// Test results
-			dl.addAxioms(output.getAxioms());
-			Double sift = null;
-			Collection<DLIndividual> descs = dl.getObjectPropertyValues(
-					output.getIndividual(),
-					dl.objectProp(SIO + "is_described_by"));
-			for (DLIndividual<?> desc : descs) {
-				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
-						desc, dl.objectProp(SIO + "refers_to"));
-				for (DLIndividual<?> ref : refs) {
-					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
-						Collection<DLLiteral> vals = dl.getDataPropertyValues(
-								ref, dl.dataProp(SIO + "has_value"));
-						for (DLLiteral<?> val : vals) {
-							if (sift != null) {
-								System.out
-										.println("Oops; more than one sift value");
-								fail();
-							}
-							String preSift = dl.getLiteralValue(val);
-							sift = Double.parseDouble(preSift);
-						}
-					}
-				}
-			}
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
 			dl.removeAxioms(output.getAxioms());
 
 			assertEquals(new Double(0.5), sift);
@@ -319,48 +499,12 @@ public class OWLAPIAbductorTest {
 			IndividualPlus output = abductor.exec(ip, p);
 
 			// Test results
-			dl.addAxioms(output.getAxioms());
-			Double sift = null;
-			Collection<DLIndividual> descs = dl.getObjectPropertyValues(
-					output.getIndividual(),
-					dl.objectProp(SIO + "is_described_by"));
-			for (DLIndividual<?> desc : descs) {
-				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
-						desc, dl.objectProp(SIO + "refers_to"));
-				for (DLIndividual<?> ref : refs) {
-					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
-						Collection<DLLiteral> vals = dl.getDataPropertyValues(
-								ref, dl.dataProp(SIO + "has_value"));
-						for (DLLiteral<?> val : vals) {
-							if (sift != null) {
-								System.out.println("Oops; more than one gene");
-								fail();
-							}
-							String preSift = dl.getLiteralValue(val);
-							sift = Double.parseDouble(preSift);
-						}
-					}
-				}
-			}
-
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
 			assertEquals(new Double(0.5), sift);
 
-			String gene = null;
-			descs = dl.getObjectPropertyValues(output.getIndividual(),
-					dl.objectProp(SIO + "is_described_by"));
-			for (DLIndividual<?> desc : descs) {
-				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
-						desc, dl.objectProp(SIO + "refers_to"));
-				for (DLIndividual<?> ref : refs) {
-					if (dl.getTypes(ref).contains(dl.clazz(SO + "Gene"))) {
-						if (gene != null) {
-							System.out.println("Oops; more than one gene");
-							fail();
-						}
-						gene = dl.getIRI(ref);
-					}
-				}
-			}
+			String gene = getResult(output, dl.clazz(SO + "Gene"));
 
 			dl.removeAxioms(output.getAxioms());
 			assertEquals(NS + "Gene123", gene);
@@ -388,30 +532,10 @@ public class OWLAPIAbductorTest {
 			IndividualPlus output = abductor.exec(ip, p);
 
 			// Test results
-			dl.addAxioms(output.getAxioms());
-			Double sift = null;
-			Collection<DLIndividual> descs = dl.getObjectPropertyValues(
-					output.getIndividual(),
-					dl.objectProp(SIO + "is_described_by"));
-			for (DLIndividual<?> desc : descs) {
-				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
-						desc, dl.objectProp(SIO + "refers_to"));
-				for (DLIndividual<?> ref : refs) {
-					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
-						Collection<DLLiteral> vals = dl.getDataPropertyValues(
-								ref, dl.dataProp(SIO + "has_value"));
-						for (DLLiteral<?> val : vals) {
-							if (sift != null) {
-								System.out
-										.println("Oops; more than one sift value");
-								fail();
-							}
-							String preSift = dl.getLiteralValue(val);
-							sift = Double.parseDouble(preSift);
-						}
-					}
-				}
-			}
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
+
 			dl.removeAxioms(output.getAxioms());
 
 			assertEquals(new Double(0.5), sift);

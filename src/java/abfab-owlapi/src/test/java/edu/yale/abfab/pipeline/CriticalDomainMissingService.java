@@ -15,11 +15,11 @@ public class CriticalDomainMissingService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		boolean result = new Random().nextBoolean();
+		boolean result = TestValues.CRITICAL_DOMAIN_MISSING;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "VariationDomainsMissingStatus"),
-				dl.individual(NS + "Mutadelic"), result);
+				dl.individual(NS + "Mutadelic"), String.valueOf(result));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

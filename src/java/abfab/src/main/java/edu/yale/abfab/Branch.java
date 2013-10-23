@@ -111,11 +111,15 @@ public class Branch extends Step {
 			for (Path p : costSortedPaths) {
 				unexecutedPaths.remove(p);
 				IndividualPlus latestOutcome = p.exec(input.copy(input));
-				outcomes.add(latestOutcome);
-				for (IndividualPlus outcome : outcomes) {
-					currentEx = mergeIndividuals(outcomes);
-				}
 
+				// If Path failed, quit here
+				if (latestOutcome == null) {
+					return null;
+				}
+				
+				outcomes.add(latestOutcome);
+				currentEx = mergeIndividuals(outcomes);
+				
 				// peek and check if passes next step
 				Set<DLAxiom<?>> ax2 = new HashSet<>();
 
@@ -130,7 +134,7 @@ public class Branch extends Step {
 				// Get classes of outputs of unexecutedPaths
 				Set<DLClassExpression<?>> otherPathOutputClasses = new HashSet<>();
 				for (Path up : unexecutedPaths) {
-					for (DLClassExpression<?> tc : up.getTopStepDLClasses()) {
+					for (DLClassExpression<?> tc : up.getLastStepDLClasses()) {
 						for (DLIndividual<?> tci : dl.getInstances(tc)) {
 							for (DLIndividual<?> tcOut : dl
 									.getObjectPropertyValues(tci,

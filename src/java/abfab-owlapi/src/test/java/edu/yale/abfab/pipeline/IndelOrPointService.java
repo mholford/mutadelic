@@ -15,7 +15,7 @@ public class IndelOrPointService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		String result = new Random().nextBoolean() ? "Indel" : "Point";
+		String result = TestValues.INDEL_OR_POINT;
 		DLController dl = abductor.getDLController();
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(NS + "VariationType"), dl.individual(NS + "Mutadelic"),
