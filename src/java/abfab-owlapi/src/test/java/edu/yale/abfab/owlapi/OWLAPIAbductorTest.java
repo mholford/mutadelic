@@ -138,7 +138,7 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-	
+
 	@Test
 	public void testPipelineStaging() {
 		try {
@@ -149,11 +149,36 @@ public class OWLAPIAbductorTest {
 			ip.getAxioms().add(
 					dl.individualType(dl.individual(NS + "test"),
 							dl.clazz(NS + "Variant")));
-			Path p = abductor
-					.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
+			Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
 
 			System.out.println(p.toString());
-		} catch (Exception e){
+			String expected = "[([http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#DBKS] || "
+					+ "[([http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#RVFS] & "
+					+ "[([http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#TLSS] || "
+					+ "[http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#TLPS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#AANS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#PPCS] || "
+					+ "[([http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#TLPS] & "
+					+ "[http://krauthammerlab.med.yale.edu/test#IPIS]) -> "
+					+ "http://krauthammerlab.med.yale.edu/test#CDMS] || "
+					+ "[http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#TLPS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#AANS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#SSS] || "
+					+ "[http://krauthammerlab.med.yale.edu/test#AVS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#TLPS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#AANS -> "
+					+ "http://krauthammerlab.med.yale.edu/test#ICDS]) -> "
+					+ "http://krauthammerlab.med.yale.edu/test#MUVS]) -> "
+					+ "http://krauthammerlab.med.yale.edu/test#MRUVS]) -> "
+					+ "http://krauthammerlab.med.yale.edu/test#FS]";
+			assertEquals(expected, p.toString());
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}

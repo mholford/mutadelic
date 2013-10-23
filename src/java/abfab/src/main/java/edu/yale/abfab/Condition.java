@@ -81,6 +81,9 @@ public class Condition extends Step {
 
 	@Override
 	public int compareTo(Object o) {
+		if (!(o instanceof Condition)) {
+			return 1;
+		}
 		Condition co = (Condition) o;
 		Iterator<Path> pathIterator = paths.iterator();
 		Iterator<Path> otherPathIterator = co.getPaths().iterator();
