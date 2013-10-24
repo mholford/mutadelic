@@ -7,6 +7,7 @@ import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
@@ -17,9 +18,13 @@ public class RCMDBKnownMutationService extends AbstractPipelineService {
 			throws AbfabServiceException {
 		boolean result = TestValues.RCMDB_KNOWN;
 		DLController dl = abductor.getDLController();
+		DLClass<?> databasePresence = dl.clazz(DATABASE_PRESENCE);
+		if (valueFilled(dl, input.getIndividual(), databasePresence)) {
+			return input;
+		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				dl.clazz(NS + "DatabasePresence"),
-				dl.individual(NS + "Mutadelic"), String.valueOf(result));
+				databasePresence, dl.individual(MUTADELIC),
+				String.valueOf(result));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

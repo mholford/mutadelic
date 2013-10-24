@@ -135,12 +135,12 @@ Class: DBKnownMutationAnnotatedVariant
 Class: DBKnownMutationVariant
     EquivalentTo: DBKnownMutationAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(DatabasePresence that SIO:has_value value "true"))
+	(DatabasePresence that SIO:has_value value "true"^^xsd:string))
 	
 Class: DBUnknownMutationVariant
     EquivalentTo: DBKnownMutationAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(DatabasePresence that SIO:has_value value "false"))
+	(DatabasePresence that SIO:has_value value "false"^^xsd:string))
 	
 Class: IndelOrPointVariant
     EquivalentTo: Variant that SIO:is_described_by some
@@ -150,12 +150,12 @@ Class: IndelOrPointVariant
 Class: IndelVariant
     EquivalentTo: IndelOrPointVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationType that SIO:has_value value "Indel"))
+	(VariationType that SIO:has_value value "Indel"^^xsd:string))
 	
 Class: PointVariant
     EquivalentTo: IndelOrPointVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationType that SIO:has_value value "Point"))
+	(VariationType that SIO:has_value value "Point"^^xsd:string))
 	
 Class: TranscriptLocatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
@@ -165,17 +165,17 @@ Class: TranscriptLocatedVariant
 Class: SpliceSiteVariant
     EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "SpliceSite"))
+	(VariationLocation that SIO:has_value value "SpliceSite"^^xsd:string))
 	
 Class: ProteinCodingVariant
     EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "CDS"))
+	(VariationLocation that SIO:has_value value "CDS"^^xsd:string))
 	
 Class: IntronicVariant
     EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "Intron"))
+	(VariationLocation that SIO:has_value value "Intron"^^xsd:string))
 	
 Class: AAChangedAnnotatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
@@ -185,12 +185,12 @@ Class: AAChangedAnnotatedVariant
 Class: SynonymousVariant
     EquivalentTo: AAChangedAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationOutcome that SIO:has_value value "Synonymous"))
+	(VariationOutcome that SIO:has_value value "Synonymous"^^xsd:string))
 	
 Class: NonSynonymousVariant
     EquivalentTo: AAChangedAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationOutcome that SIO:has_value value "NonSynonymous"))
+	(VariationOutcome that SIO:has_value value "NonSynonymous"^^xsd:string))
 	
 Class: PhylopAnnotatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
@@ -230,12 +230,12 @@ Class: CriticalDomainAnnotatedVariant
 Class: InCriticalDomainVariant
     EquivalentTo: CriticalDomainAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationDomainColocation that SIO:has_value value "true"))
+	(VariationDomainColocation that SIO:has_value value "true"^^xsd:string))
 	
 Class: NotInCriticalDomainVariant
     EquivalentTo: CriticalDomainAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationDomainColocation that SIO:has_value value "false"))
+	(VariationDomainColocation that SIO:has_value value "false"^^xsd:string))
 	
 Class: CriticalDomainMissingAnnotatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
@@ -245,7 +245,7 @@ Class: CriticalDomainMissingAnnotatedVariant
 Class: CriticalDomainMissingVariant
     EquivalentTo: CriticalDomainMissingAnnotatedVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(VariationDomainsMissingStatus that SIO:has_value value "true"))
+	(VariationDomainsMissingStatus that SIO:has_value value "true"^^xsd:string))
 	
 Class: CriticalDomainNotMissingVariant
     EquivalentTo: CriticalDomainMissingAnnotatedVariant and not CriticalDomainMissingVariant
@@ -262,17 +262,17 @@ Class: RareAndUnusualVariant
 Class: FinishedVariant
     EquivalentTo: Variant that SIO:is_described_by some 
 	(Annotation that SIO:refers_to some
-	(CompletionStatus that SIO:has_value value "true"))
+	(CompletionStatus that SIO:has_value value "true"^^xsd:string))
 
 Class: MarkedUnusualVariant
     EquivalentTo: UnusualVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(StatusMarker that SIO:has_value value "Unusual"))
+	(StatusMarker that SIO:has_value value "Unusual"^^xsd:string))
 
 Class: MarkedRareAndUnusualVariant
     EquivalentTo: RareAndUnusualVariant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
-	(StatusMarker that SIO:has_value value "RareAndUnusual"))
+	(StatusMarker that SIO:has_value value "RareAndUnusual"^^xsd:string))
 	
 Class: MarkedUnusualVariantService
     SubClassOf: Service

@@ -48,8 +48,6 @@ public class Branch extends Step {
 		out.setPaths(newPaths);
 		return out;
 	}
-	
-	
 
 	@Override
 	public int compareTo(Object o) {
@@ -116,10 +114,10 @@ public class Branch extends Step {
 				if (latestOutcome == null) {
 					return null;
 				}
-				
+
 				outcomes.add(latestOutcome);
 				currentEx = mergeIndividuals(outcomes);
-				
+
 				// peek and check if passes next step
 				Set<DLAxiom<?>> ax2 = new HashSet<>();
 
@@ -129,7 +127,7 @@ public class Branch extends Step {
 				} else {
 					nextStep = ab.getExecutingPath().nextStep();
 				}
-//				Step nextStep = ab.getExecutingPath().nextStep();
+				// Step nextStep = ab.getExecutingPath().nextStep();
 
 				// Get classes of outputs of unexecutedPaths
 				Set<DLClassExpression<?>> otherPathOutputClasses = new HashSet<>();
@@ -156,18 +154,29 @@ public class Branch extends Step {
 							DLIndividual<?> testI = dl.individual(NS + "testI");
 							ax2.add(dl.newObjectFact(testI,
 									dl.objectProp(NS + "has_output"), ncOut));
-							for (IndividualPlus outcome : outcomes) {
-								ax2.addAll(outcome.getAxioms());
-								ax2.add(dl.newObjectFact(testI,
-										dl.objectProp(NS + "has_input"),
-										outcome.getIndividual()));
-
-								for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
-									ax2.add(dl.individualType(
-											outcome.getIndividual(),
-											otherPathOutputClass));
-								}
+							IndividualPlus mergedOutcomes = mergeIndividuals(outcomes);
+							ax2.addAll(mergedOutcomes.getAxioms());
+							ax2.add(dl.newObjectFact(testI,
+									dl.objectProp(NS + "has_input"),
+									mergedOutcomes.getIndividual()));
+							for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
+								ax2.add(dl.individualType(
+										mergedOutcomes.getIndividual(),
+										otherPathOutputClass));
 							}
+							// for (IndividualPlus outcome : outcomes) {
+							// ax2.addAll(outcome.getAxioms());
+							// ax2.add(dl.newObjectFact(testI,
+							// dl.objectProp(NS + "has_input"),
+							// outcome.getIndividual()));
+							//
+							// for (DLClassExpression<?> otherPathOutputClass :
+							// otherPathOutputClasses) {
+							// ax2.add(dl.individualType(
+							// outcome.getIndividual(),
+							// otherPathOutputClass));
+							// }
+							// }
 							ax2.add(dl.individualType(testI, dl.notClass(nc)));
 							dl.addAxioms(ax2);
 							boolean fail = false;

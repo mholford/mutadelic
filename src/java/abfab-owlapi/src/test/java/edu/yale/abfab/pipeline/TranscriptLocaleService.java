@@ -7,6 +7,7 @@ import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
@@ -18,9 +19,12 @@ public class TranscriptLocaleService extends AbstractPipelineService {
 		String result = TestValues.TRANSCRIPT_LOCALE;
 
 		DLController dl = abductor.getDLController();
+		DLClass<?> variationLocation = dl.clazz(VARIATION_LOCATION);
+		if (valueFilled(dl, input.getIndividual(), variationLocation)) {
+			return input;
+		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				dl.clazz(NS + "VariationLocation"), dl.individual(NS + "Mutadelic"),
-				result);
+				variationLocation, dl.individual(MUTADELIC), result);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

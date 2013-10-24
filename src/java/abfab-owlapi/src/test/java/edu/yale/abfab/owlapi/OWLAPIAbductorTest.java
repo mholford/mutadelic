@@ -600,7 +600,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	/*@Test
 	public void testMazeStaging2() {
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
@@ -690,7 +690,7 @@ public class OWLAPIAbductorTest {
 			e.printStackTrace();
 			fail();
 		}
-	}
+	}*/
 
 	@Test
 	public void testMazeStaging3() {

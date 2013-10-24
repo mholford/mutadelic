@@ -7,6 +7,7 @@ import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
@@ -17,9 +18,12 @@ public class AlleleFrequencyService extends AbstractPipelineService {
 			throws AbfabServiceException {
 		double result = TestValues.ALLELE_FREQUENCY;
 		DLController dl = abductor.getDLController();
+		DLClass<?> frequency = dl.clazz(ALLELE_FREQUENCY);
+		if (valueFilled(dl, input.getIndividual(), frequency)) {
+			return input;
+		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				dl.clazz(NS + "AlleleFrequency"), dl.individual(NS + "Mutadelic"),
-				result);
+				frequency, dl.individual(MUTADELIC), result);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

@@ -68,11 +68,19 @@ public abstract class Step implements Comparable {
 					DLIndividual<?> i = ip.getIndividual();
 					for (DLDataPropertyExpression<?> odpe : dl
 							.getDataProperties(i)) {
-						dpvs.put(odpe, dl.getDataPropertyValues(i, odpe));
+						if (!dpvs.containsKey(odpe)) {
+							dpvs.put(odpe, new HashSet<DLLiteral>());
+						}
+						dpvs.get(odpe)
+								.addAll(dl.getDataPropertyValues(i, odpe));
 					}
 					for (DLObjectPropertyExpression<?> oope : dl
 							.getObjectProperties(i)) {
-						opvs.put(oope, dl.getObjectPropertyValues(i, oope));
+						if (!opvs.containsKey(oope)) {
+							opvs.put(oope, new HashSet<DLIndividual>());
+						}
+						opvs.get(oope).addAll(
+								dl.getObjectPropertyValues(i, oope));
 					}
 					for (DLClassExpression<?> oce : dl.getTypes(i)) {
 						types.add(oce);
