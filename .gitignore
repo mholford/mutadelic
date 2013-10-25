@@ -9,3 +9,4 @@ target
 *-input
 *-output
 *.#*
+catalog-v*.xml
