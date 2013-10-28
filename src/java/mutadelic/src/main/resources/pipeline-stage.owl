@@ -95,6 +95,8 @@ Class: CriticalDomainNotMissingVariant
 Class: InterestingVariant
     EquivalentTo: DBKnownMutationVariant or MarkedRareAndUnusualVariant
 	
+Class: NotInterestingVariant
+	
 Class: UnusualVariant
     EquivalentTo: CriticalDomainMissingVariant or SevereVariant or SpliceSiteVariant or ConservedVariant or InCriticalDomainVariant
 
@@ -201,95 +203,95 @@ Class: FinishedVariantService
 	
 Individual: AVS
     Types: AlignVariantService
-    Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable "edu.yale.abfab.pipeline.AlignVariantService"
+    Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable "edu.yale.mutadelic.pipeline.service.AlignVariantService"
 	
 Individual: CVFS
     Types: VariantFrequencyCommonService
-    Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.AlleleFrequencyService"
+    Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.AlleleFrequencyService"
 	
 Individual: RVFS
     Types: VariantFrequencyRareService
-    Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.AlleleFrequencyService"
+    Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.AlleleFrequencyService"
 	
 Individual: DBKS
     Types: DBKnownMutationKnownService
-    Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.RCMDBKnownMutationService"
+    Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.RCMDBKnownMutationService"
 	
 Individual: DBUS
     Types: DBKnownMutationUnknownService
-    Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable "edu.yale.abfab.pipeline.RCMDBKnownMutationService"
+    Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.RCMDBKnownMutationService"
 	
 Individual: IPIS
     Types: IndelOrPointIndelService
-    Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.IndelOrPointService"
+    Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.IndelOrPointService"
 
 Individual: IPPS
     Types: IndelOrPointPointService
-    Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.IndelOrPointService"
+    Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.IndelOrPointService"
 	
 Individual: TLSS
     Types: TranscriptLocaleSpliceService
-    Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.TranscriptLocaleService"
+    Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService"
 	
 Individual: TLPS
     Types: TranscriptLocaleProteinCodingService
-    Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.TranscriptLocaleService"
+    Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService"
 	
 Individual: TLIS
     Types: TranscriptLocaleIntronService
-    Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.TranscriptLocaleService"
+    Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService"
 	
 Individual: AASS
     Types: AAChangeSynonymousService
-    Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.AAChangedService"
+    Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.AAChangedService"
 	
 Individual: AANS
     Types: AAChangeNonSynonymousService
-    Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.AAChangedService"
+    Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.AAChangedService"
 	
 Individual: PPNS
     Types: PhylopNonConservedService
-    Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.PhylopService"
+    Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.PhylopService"
 	
 Individual: PPCS
     Types: PhylopConservedService
-    Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.PhylopService"
+    Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.PhylopService"
 	
 Individual: SNS
     Types: SiftNonSevereService
-    Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.SiftService"
+    Facts: has_input SNSI, has_output SNSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.SiftService"
 	
 Individual: SSS
     Types: SiftSevereService
-    Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.SiftService"
+    Facts: has_input SSSI, has_output SSSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.SiftService"
 	
 Individual: ICDS
     Types: CriticalDomainInService
-    Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainService"
+    Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainService"
 	
 Individual: NCDS
     Types: CriticalDomainNotInService
-    Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainService"
+    Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainService"
 	
 Individual: CDNS
     Types: CriticalDomainMissingNotService
-    Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainMissingService"
+    Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainMissingService"
 	
 Individual: CDMS
     Types: CriticalDomainMissingIsService
-    Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable "edu.yale.abfab.pipeline.CriticalDomainMissingService"
+    Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainMissingService"
 
 Individual: MUVS
     Types: MarkedUnusualVariantService
-    Facts: has_input MUVSI, has_output MUVSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.MarkUnusualService"
+    Facts: has_input MUVSI, has_output MUVSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.MarkUnusualService"
 
 Individual: MRUVS
     Types: MarkedRareAndUnusualVariantService
-    Facts: has_input MRUVSI, has_output MRUVSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.MarkRareUnusualService"
+    Facts: has_input MRUVSI, has_output MRUVSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.MarkRareUnusualService"
 	
 Individual: FS
     Types: FinishedVariantService
-    Facts: has_input FSI, has_output FSO, has_cost 1.0, has_executable "edu.yale.abfab.pipeline.FinishedVariantService"
+    Facts: has_input FSI, has_output FSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.FinishedVariantService"
 
 Individual: AVSI
     Types: Variant

@@ -46,7 +46,9 @@ public class SimpleStep extends Step {
 		IndividualPlus output = null;
 		try {
 			Service service = (Service) Class.forName(executable).newInstance();
+			input.setStop(false);
 			output = service.exec(input, getAbductor());
+			output.setStop(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

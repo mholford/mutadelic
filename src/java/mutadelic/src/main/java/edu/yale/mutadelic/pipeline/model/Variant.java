@@ -1,12 +1,16 @@
 package edu.yale.mutadelic.pipeline.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.management.RuntimeErrorException;
+
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLIndividual;
+import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
@@ -28,8 +32,89 @@ public class Variant {
 		this.strand = strand;
 	}
 
-	public static Variant fromOWL(IndividualPlus input) {
-		return null;
+	public static Variant fromOWL(DLController dl, IndividualPlus input) {
+		dl.addAxioms(input.getAxioms());
+		Collection<DLIndividual> loci = dl.getObjectPropertyValues(
+				input.getIndividual(), dl.objectProp(SIO + "has_locus"));
+		if (loci.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of loci (%d) for variant (%s)",
+					loci.size(), input.getIndividual()));
+		}
+		DLIndividual<?> locus = loci.iterator().next();
+
+		Collection<DLIndividual> chromInds = dl.getObjectPropertyValues(locus,
+				dl.objectProp(GELO + "on_chromosome"));
+		if (chromInds.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of chromosomes (%d) for locus (%s)",
+					chromInds.size(), locus));
+		}
+		DLIndividual<?> chromInd = chromInds.iterator().next();
+		String chromIndString = dl.getIRI(chromInd);
+		String chromosome = chromIndString.substring(
+				chromIndString.lastIndexOf('#'), chromIndString.length());
+
+		Collection<DLLiteral> locusStarts = dl.getDataPropertyValues(locus,
+				dl.dataProp(GELO + "locus_start"));
+		if (locusStarts.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of locus starts (%d) for locus (%s)",
+					locusStarts.size(), locus));
+		}
+		DLLiteral<?> locusStart = locusStarts.iterator().next();
+		long start = Long.parseLong(dl.getLiteralValue(locusStart));
+
+		Collection<DLLiteral> locusEnds = dl.getDataPropertyValues(locus,
+				dl.dataProp(GELO + "locus_end"));
+		if (locusEnds.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of locus ends (%d) for locus (%s)",
+					locusEnds.size(), locus));
+		}
+		DLLiteral<?> locusEnd = locusEnds.iterator().next();
+		long end = Long.parseLong(dl.getLiteralValue(locusEnd));
+
+		Collection<DLLiteral> locusStrands = dl.getDataPropertyValues(locus,
+				dl.dataProp(GELO + "strand"));
+		if (locusStrands.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of locus strands (%d) for locus (%s)",
+					locusStrands.size(), locus));
+		}
+		DLLiteral<?> locusStrand = locusStrands.iterator().next();
+		String strand = dl.getLiteralValue(locusEnd);
+
+		Collection<DLLiteral> locusSeqs = dl.getDataPropertyValues(locus,
+				dl.dataProp(GELO + "sequence"));
+		if (locusSeqs.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of locus seqs (%d) for locus (%s)",
+					locusSeqs.size(), locus));
+		}
+		DLLiteral<?> locusSeq = locusSeqs.iterator().next();
+		String seq = dl.getLiteralValue(locusSeq);
+
+		Collection<DLIndividual> models = dl.getObjectPropertyValues(
+				input.getIndividual(), dl.objectProp(SIO + "is_modelled_by"));
+		if (models.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of models (%d) for variant (%s)",
+					models.size(), input.getIndividual()));
+		}
+		DLIndividual<?> model = models.iterator().next();
+
+		Collection<DLLiteral> modelVals = dl.getDataPropertyValues(model,
+				dl.dataProp(SIO + "has_value"));
+		if (modelVals.size() != 1) {
+			throw new RuntimeException(String.format(
+					"Unexpected number of model values (%d) for model(%s)",
+					modelVals.size(), model));
+		}
+		DLLiteral<?> modelVal = modelVals.iterator().next();
+		String reference = dl.getLiteralValue(modelVal);
+
+		return new Variant(chromosome, start, end, reference, seq, strand);
 	}
 
 	public IndividualPlus toOWL(DLController dl) {
@@ -61,6 +146,7 @@ public class Variant {
 		ax.add(dl.newObjectFact(var, dl.objectProp(GELO + "has_locus"), locus));
 		ax.add(dl.newObjectFact(var, dl.objectProp(SIO + "is_modelled_by"),
 				model));
+		ax.add(dl.individualType(var, dl.clazz(NS + "Variant")));
 
 		return new IndividualPlus(var, ax);
 	}

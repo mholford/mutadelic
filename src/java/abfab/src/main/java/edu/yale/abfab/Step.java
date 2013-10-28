@@ -42,16 +42,22 @@ public abstract class Step implements Comparable {
 	}
 
 	public IndividualPlus mergeIndividuals(Collection<IndividualPlus> inds) {
+		Collection<IndividualPlus> nonNullInds = new HashSet<>();
+		for (IndividualPlus ip:inds) {
+			if (ip != null){
+				nonNullInds.add(ip);
+			}
+		}
 		DLController dl = abductor.getDLController();
 		String NS = abductor.getNamespace();
 		Set<DLAxiom<?>> oldAx = new HashSet<>();
 		Set<DLAxiom<?>> newAx = new HashSet<>();
 		String name = "merge" + UUID.randomUUID().toString();
 		IndividualPlus output = null;
-		if (inds.size() > 1) {
+		if (nonNullInds.size() > 1) {
 
 			try {
-				for (IndividualPlus ind : inds) {
+				for (IndividualPlus ind : nonNullInds) {
 					if (ind.getAxioms() != null) {
 						oldAx.addAll(ind.getAxioms());
 						newAx.addAll(ind.getAxioms());
@@ -64,7 +70,7 @@ public abstract class Step implements Comparable {
 				Set<DLIndividual<?>> diffIndivs = new HashSet<>();
 				Set<DLIndividual<?>> sameIndivs = new HashSet<>();
 
-				for (IndividualPlus ip : inds) {
+				for (IndividualPlus ip :nonNullInds) {
 					DLIndividual<?> i = ip.getIndividual();
 					for (DLDataPropertyExpression<?> odpe : dl
 							.getDataProperties(i)) {
@@ -116,8 +122,8 @@ public abstract class Step implements Comparable {
 			} finally {
 				dl.removeAxioms(oldAx);
 			}
-		} else if (inds.size() == 1) {
-			output = inds.iterator().next();
+		} else if (nonNullInds.size() == 1) {
+			output = nonNullInds.iterator().next();
 		}
 
 		return output;

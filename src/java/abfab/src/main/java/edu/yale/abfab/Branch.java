@@ -111,8 +111,8 @@ public class Branch extends Step {
 				IndividualPlus latestOutcome = p.exec(input.copy(input));
 
 				// If Path failed, quit here
-				if (latestOutcome == null) {
-					return null;
+				if (latestOutcome.isStop()) {
+					return latestOutcome;
 				}
 
 				outcomes.add(latestOutcome);
@@ -186,7 +186,8 @@ public class Branch extends Step {
 							}
 							dl.removeAxioms(ax2);
 							if (fail) {
-								return null;
+								currentEx.setStop(true);
+								return currentEx;
 							}
 						}
 					}

@@ -67,6 +67,7 @@ public class PipelineExecutor {
 	public String getLiteralResult(IndividualPlus ip, String outputTypeName) {
 		dl.addAxioms(ip.getAxioms());
 		String output = null;
+		abductor.debug();
 		Collection<DLIndividual> descs = dl.getObjectPropertyValues(
 				ip.getIndividual(), dl.objectProp(SIO + "is_described_by"));
 		for (DLIndividual<?> desc : descs) {

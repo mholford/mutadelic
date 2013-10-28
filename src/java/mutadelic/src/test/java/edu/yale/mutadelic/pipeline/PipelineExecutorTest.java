@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.mutadelic.pipeline.model.Variant;
+import edu.yale.mutadelic.pipeline.service.DefaultValues;
 
 public class PipelineExecutorTest {
 
@@ -15,6 +16,7 @@ public class PipelineExecutorTest {
 		try {
 			PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 123, 123, "G", "G", "+");
+			DefaultValues.ALLELE_FREQUENCY = 0.001;
 			IndividualPlus output = pex.execute(v1);
 			String varType = pex.getLiteralResult(output, NS + "VariationType");
 			assertEquals(varType, "Point");

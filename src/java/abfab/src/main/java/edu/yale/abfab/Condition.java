@@ -153,17 +153,20 @@ public class Condition extends Step {
 				}
 			});
 
+			IndividualPlus latestOutcome;
+
 			for (Path p : costSortedPaths) {
 				boolean fail = false;
-				//ab.setExecutingPath(p);
+				// ab.setExecutingPath(p);
 				IndividualPlus outcome = p.exec(input);
+				out = mergeIndividuals(Arrays.asList(outcome, out));
 
-				if (outcome == null) {
+				if (outcome.isStop()) {
 					continue;
 				}
 				// Peek and see if it passes the next step
 				Set<DLAxiom<?>> ax2 = new HashSet<>();
-				
+
 				Step nextStep = null;
 				if (contextPath.nextStep() != null) {
 					nextStep = contextPath.nextStep();
@@ -192,20 +195,26 @@ public class Condition extends Step {
 								}
 								dl.removeAxioms(ax2);
 								if (!fail) {
-									out = outcome;
+									//out.setStop(true);
 									return out;
 								}
 							}
 						}
 					}
 				} else {
-					out = outcome;
+//					out = mergeIndividuals(Arrays
+//							.asList(latestOutcome, outcome));
 				}
+//				latestOutcome = outcome;
 			}
 		} finally {
 			dl.removeAxioms(ax);
 		}
 
+//		if (out == null) {
+//			outcome.setStop(true);
+//			return outcome;
+//		}
 		return out;
 	}
 

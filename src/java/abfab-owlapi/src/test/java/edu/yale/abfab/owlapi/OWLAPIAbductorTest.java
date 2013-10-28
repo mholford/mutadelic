@@ -989,7 +989,7 @@ public class OWLAPIAbductorTest {
 					dl.clazz(NS + "FinishedMutation"));
 
 			IndividualPlus output2 = abductor.exec(ip2, p2);
-			assertEquals(null, output2);
+			assertEquals(true, output2.isStop());
 
 			TestVals.sift = 0.5;
 

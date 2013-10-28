@@ -10,6 +10,7 @@ public class IndividualPlus {
 
 	DLIndividual<?> individual;
 	Set<DLAxiom<?>> axioms;
+	boolean stop = false;
 
 	public IndividualPlus(DLIndividual<?> individual, Set<DLAxiom<?>> axioms) {
 		this.individual = individual;
@@ -45,6 +46,14 @@ public class IndividualPlus {
 
 	public void setAxioms(Set<DLAxiom<?>> axioms) {
 		this.axioms = axioms;
+	}
+
+	public boolean isStop() {
+		return stop;
+	}
+
+	public void setStop(boolean stop) {
+		this.stop = stop;
 	}
 
 	@Override
