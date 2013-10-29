@@ -53,4 +53,19 @@ public class PipelineExecutorTest {
 		}
 	}
 
+	@Test
+	public void testAlignVariantService() {
+		try {
+			PipelineExecutor pex = new PipelineExecutor();
+			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
+			IndividualPlus output = pex.execute(v1);
+			String alignment = pex
+					.getLiteralResult(output, NS + "HGVSNotation");
+			assertEquals("NM_000567.2:c.*1082G>T", alignment);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
 }

@@ -24,14 +24,14 @@ public class AlleleFrequencyService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		Variant v = Variant.fromOWL(abductor.getDLController(), input);
-		double result = findMAFForVariant(v);
-
 		DLController dl = abductor.getDLController();
 		DLClass<?> frequency = dl.clazz(ALLELE_FREQUENCY);
 		if (valueFilled(dl, input.getIndividual(), frequency)) {
 			return input;
 		}
+		Variant v = Variant.fromOWL(dl, input);
+		double result = findMAFForVariant(v);
+
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				frequency, dl.individual(MUTADELIC), result);
 		input.getAxioms().addAll(annotation);

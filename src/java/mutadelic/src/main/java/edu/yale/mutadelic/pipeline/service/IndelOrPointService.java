@@ -19,7 +19,12 @@ public class IndelOrPointService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		Variant v = Variant.fromOWL(abductor.getDLController(), input);
+		DLController dl = abductor.getDLController();
+		DLClass<?> variationType = dl.clazz(VARIATION_TYPE);
+		if (valueFilled(dl, input.getIndividual(), variationType)) {
+			return input;
+		}
+		Variant v = Variant.fromOWL(dl, input);
 		String result = "Point";
 		List seqs = Arrays.asList("A", "C", "G", "T");
 		if (v.getObserved().length() != 1 || v.getReference().length() != 1
@@ -27,11 +32,7 @@ public class IndelOrPointService extends AbstractPipelineService {
 				|| !(seqs.contains(v.getReference()))) {
 			result = "Indel";
 		}
-		DLController dl = abductor.getDLController();
-		DLClass<?> variationType = dl.clazz(VARIATION_TYPE);
-		if (valueFilled(dl, input.getIndividual(), variationType)) {
-			return input;
-		}
+
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				variationType, dl.individual(MUTADELIC), result);
 		input.getAxioms().addAll(annotation);
