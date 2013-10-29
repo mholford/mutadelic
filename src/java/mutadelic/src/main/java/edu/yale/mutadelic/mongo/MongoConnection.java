@@ -3,6 +3,7 @@ package edu.yale.mutadelic.mongo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.net.UnknownHostException;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -23,6 +24,39 @@ public class MongoConnection {
 	public static final String ONE_K_AMR_MAF = "amr";
 	public static final String ONE_K_ASN_MAF = "asn";
 	public static final String ONE_K_EUR_MAF = "eur";
+	private static MongoConnection INSTANCE;
+	private MongoClient mongoClient;
+	private DB mutadelicDB;
+	private DBCollection oneKTable;
+
+	private MongoConnection() {
+		try {
+			mongoClient = new MongoClient("localhost", 27017);
+			mutadelicDB = mongoClient.getDB(MONGO_DB);
+			oneKTable = mutadelicDB.getCollection(ONE_K_GENOME_TABLE);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static MongoConnection instance() {
+		if (INSTANCE == null) {
+			INSTANCE = new MongoConnection();
+		}
+		return INSTANCE;
+	}
+
+	public MongoClient getMongoClient() {
+		return mongoClient;
+	}
+
+	public DB getMutadelicDB() {
+		return mutadelicDB;
+	}
+
+	public DBCollection getOneKTable() {
+		return oneKTable;
+	}
 
 	public static void main(String[] args) {
 		String file = args[0];

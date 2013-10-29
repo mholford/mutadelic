@@ -31,4 +31,26 @@ public class PipelineExecutorTest {
 		}
 	}
 
+	@Test
+	public void testAlleleFrequencyService() {
+		try {
+			PipelineExecutor pex = new PipelineExecutor();
+			Variant v1 = new Variant("19", 80840, 80840, "CCT", "C", "+");
+			IndividualPlus output = pex.execute(v1);
+			String preMAF = pex.getLiteralResult(output, NS + "AlleleFrequency");
+			Double freq = Double.parseDouble(preMAF);
+			assertEquals(new Double(0.2029), freq);
+			
+			Variant v2 = new Variant("19", 80841, 80841, "CCT", "C", "+");
+			// Not a known variant
+			output = pex.execute(v2);
+			preMAF= pex.getLiteralResult(output, NS + "AlleleFrequency");
+			freq = Double.parseDouble(preMAF);
+			assertEquals(new Double(0d), freq);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
 }
