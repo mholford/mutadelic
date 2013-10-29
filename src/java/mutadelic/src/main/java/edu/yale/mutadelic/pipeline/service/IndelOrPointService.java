@@ -22,7 +22,7 @@ public class IndelOrPointService extends AbstractPipelineService {
 		Variant v = Variant.fromOWL(abductor.getDLController(), input);
 		String result = "Point";
 		List seqs = Arrays.asList("A", "C", "G", "T");
-		if (v.getObserved().length() != 2 || v.getReference().length() != 2
+		if (v.getObserved().length() != 1 || v.getReference().length() != 1
 				|| !(seqs.contains(v.getObserved()))
 				|| !(seqs.contains(v.getReference()))) {
 			result = "Indel";

@@ -15,7 +15,7 @@ public class PipelineExecutorTest {
 	public void testIndelOrPointService() {
 		try {
 			PipelineExecutor pex = new PipelineExecutor();
-			Variant v1 = new Variant("1", 123, 123, "G", "G", "+");
+			Variant v1 = new Variant("1", 123, 123, "G", "A", "+");
 			DefaultValues.ALLELE_FREQUENCY = 0.001;
 			IndividualPlus output = pex.execute(v1);
 			String varType = pex.getLiteralResult(output, NS + "VariationType");

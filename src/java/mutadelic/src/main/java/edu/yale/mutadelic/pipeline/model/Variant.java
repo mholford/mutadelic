@@ -16,13 +16,13 @@ import static edu.yale.abfab.NS.*;
 
 public class Variant {
 	String chromosome;
-	long startPos;
-	long endPos;
+	int startPos;
+	int endPos;
 	String reference;
 	String observed;
 	String strand;
 
-	public Variant(String chromosome, long startPos, long endPos,
+	public Variant(String chromosome, int startPos, int endPos,
 			String reference, String observed, String strand) {
 		this.chromosome = chromosome;
 		this.startPos = startPos;
@@ -35,7 +35,7 @@ public class Variant {
 	public static Variant fromOWL(DLController dl, IndividualPlus input) {
 		dl.addAxioms(input.getAxioms());
 		Collection<DLIndividual> loci = dl.getObjectPropertyValues(
-				input.getIndividual(), dl.objectProp(SIO + "has_locus"));
+				input.getIndividual(), dl.objectProp(GELO + "has_locus"));
 		if (loci.size() != 1) {
 			throw new RuntimeException(String.format(
 					"Unexpected number of loci (%d) for variant (%s)",
@@ -53,7 +53,7 @@ public class Variant {
 		DLIndividual<?> chromInd = chromInds.iterator().next();
 		String chromIndString = dl.getIRI(chromInd);
 		String chromosome = chromIndString.substring(
-				chromIndString.lastIndexOf('#'), chromIndString.length());
+				chromIndString.lastIndexOf('#') + 1, chromIndString.length());
 
 		Collection<DLLiteral> locusStarts = dl.getDataPropertyValues(locus,
 				dl.dataProp(GELO + "locus_start"));
@@ -63,7 +63,7 @@ public class Variant {
 					locusStarts.size(), locus));
 		}
 		DLLiteral<?> locusStart = locusStarts.iterator().next();
-		long start = Long.parseLong(dl.getLiteralValue(locusStart));
+		int  start = Integer.parseInt(dl.getLiteralValue(locusStart));
 
 		Collection<DLLiteral> locusEnds = dl.getDataPropertyValues(locus,
 				dl.dataProp(GELO + "locus_end"));
@@ -73,7 +73,7 @@ public class Variant {
 					locusEnds.size(), locus));
 		}
 		DLLiteral<?> locusEnd = locusEnds.iterator().next();
-		long end = Long.parseLong(dl.getLiteralValue(locusEnd));
+		int end = Integer.parseInt(dl.getLiteralValue(locusEnd));
 
 		Collection<DLLiteral> locusStrands = dl.getDataPropertyValues(locus,
 				dl.dataProp(GELO + "strand"));
@@ -83,7 +83,7 @@ public class Variant {
 					locusStrands.size(), locus));
 		}
 		DLLiteral<?> locusStrand = locusStrands.iterator().next();
-		String strand = dl.getLiteralValue(locusEnd);
+		String strand = dl.getLiteralValue(locusStrand);
 
 		Collection<DLLiteral> locusSeqs = dl.getDataPropertyValues(locus,
 				dl.dataProp(GELO + "sequence"));
@@ -159,19 +159,19 @@ public class Variant {
 		this.chromosome = chromosome;
 	}
 
-	public long getStartPos() {
+	public int getStartPos() {
 		return startPos;
 	}
 
-	public void setStartPos(long startPos) {
+	public void setStartPos(int startPos) {
 		this.startPos = startPos;
 	}
 
-	public long getEndPos() {
+	public int getEndPos() {
 		return endPos;
 	}
 
-	public void setEndPos(long endPos) {
+	public void setEndPos(int endPos) {
 		this.endPos = endPos;
 	}
 

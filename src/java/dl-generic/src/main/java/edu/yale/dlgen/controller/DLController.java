@@ -242,6 +242,8 @@ public interface DLController {
 	DLLiteral<?> asLiteral(int val);
 
 	DLLiteral<?> asLiteral(float val);
+	
+	DLLiteral<?> asLiteral(long val);
 
 	DLLiteral<?> asLiteral(String val);
 
