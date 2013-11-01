@@ -29,11 +29,11 @@ public class NCBIVariationReporter {
 			for (int j = 0; j < padding; j++) {
 				zeroPad += "0";
 			}
-			String nuc = String.format("NC_%s%s.10", zeroPad, is);
+			String nuc = String.format("NC_%s%s", zeroPad, is);
 			CHR_NUC.put(String.format("Chr%d", i), nuc);
 		}
-		CHR_NUC.put("ChrX", "NC_000023.10");
-		CHR_NUC.put("ChrY", "NC_000024.9");
+		CHR_NUC.put("ChrX", "NC_000023");
+		CHR_NUC.put("ChrY", "NC_000024");
 	}
 
 	public String analyze(String organism, String assembly, String query)

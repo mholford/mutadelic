@@ -13,7 +13,7 @@ import com.mongodb.MongoClient;
 public class MongoConnection {
 
 	public static final String MONGO_DB = "mutadelic";
-	public static final String ID = "_id";
+	public static final String MONGO_ID = "_id";
 	public static final String ONE_K_GENOME_TABLE = "onekgenome";
 	public static final String ONE_K_CHROMOSOME = "chr";
 	public static final String ONE_K_POSITION = "pos";
@@ -24,16 +24,19 @@ public class MongoConnection {
 	public static final String ONE_K_AMR_MAF = "amr";
 	public static final String ONE_K_ASN_MAF = "asn";
 	public static final String ONE_K_EUR_MAF = "eur";
+	public static final String PHYLOP_TABLE = "phylop";
+	public static final String PHYLOP_VALUES = "vals";
+	public static final String SIFT_TABLE = "sift";
+	public static final String SIFT_VALUES = "vals";
+
 	private static MongoConnection INSTANCE;
 	private MongoClient mongoClient;
 	private DB mutadelicDB;
-	private DBCollection oneKTable;
 
 	private MongoConnection() {
 		try {
 			mongoClient = new MongoClient("localhost", 27017);
 			mutadelicDB = mongoClient.getDB(MONGO_DB);
-			oneKTable = mutadelicDB.getCollection(ONE_K_GENOME_TABLE);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -55,60 +58,14 @@ public class MongoConnection {
 	}
 
 	public DBCollection getOneKTable() {
-		return oneKTable;
+		return mutadelicDB.getCollection(ONE_K_GENOME_TABLE);
 	}
-
-	public static void main(String[] args) {
-		String file = args[0];
-		new MongoConnection().load1Kdata(file);
+	
+	public DBCollection getPhylopTable() {
+		return mutadelicDB.getCollection(PHYLOP_TABLE);
 	}
-
-	private void load1Kdata(String file) {
-		try {
-			MongoClient mongo = new MongoClient("localhost", 27017);
-			DB db = mongo.getDB(MONGO_DB);
-			DBCollection table = db.getCollection(ONE_K_GENOME_TABLE);
-
-			BufferedReader br = new BufferedReader(new FileReader(
-					new File(file)));
-
-			String s;
-			int i = 0;
-			while ((s = br.readLine()) != null) {
-				if (++i % 100000 == 0) {
-					System.out.println(String.format("%d lines read", i));
-				}
-				String[] ss = s.split("\t");
-				BasicDBObject row = new BasicDBObject();
-				String chr = ss[0];
-				String pos = ss[1];
-				String ref = ss[2];
-				String obs = ss[3];
-				String refSub = ref.length() >= 5 ? ref.substring(0, 5) : ref;
-				String obsSub = obs.length() >= 5 ? obs.substring(0, 5) : obs;
-				String key = String.format("%s_%s_%s_%s", chr, pos, refSub,
-						obsSub);
-				row.put(ID, key);
-				row.put(ONE_K_POSITION, pos);
-				row.put(ONE_K_REFERENCE, ref);
-				row.put(ONE_K_CHROMOSOME, chr);
-				row.put(ONE_K_OBSERVED, obs);
-				row.put(ONE_K_MAF, ss[4]);
-				row.put(ONE_K_AFR_MAF, ss[5]);
-				row.put(ONE_K_AMR_MAF, ss[6]);
-				row.put(ONE_K_ASN_MAF, ss[7]);
-				row.put(ONE_K_EUR_MAF, ss[8]);
-				try {
-					table.insert(row);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-			br.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	
+	public DBCollection getSiftTable() {
+		return mutadelicDB.getCollection(SIFT_TABLE);
 	}
-
 }

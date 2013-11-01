@@ -12,7 +12,7 @@ public class NCBIVariationReporterTest {
 	@Test
 	public void test() {
 		try {
-			String testVar = "NC_000001.10:g.159682233C>A\nNC_000008.10:g.19819724C>G";
+			String testVar = "NC_000001:g.158647631T>A";
 
 			NCBIVariationReporter r = new NCBIVariationReporter();
 			String result = r.analyze("9606",
