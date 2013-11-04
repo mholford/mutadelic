@@ -16,6 +16,7 @@ import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 
 import static edu.yale.abfab.NS.*;
+import static edu.yale.abfab.Logging.*;
 
 public class Branch extends Step {
 	Set<Path> paths;
@@ -119,6 +120,7 @@ public class Branch extends Step {
 				currentEx = mergeIndividuals(outcomes);
 
 				// peek and check if passes next step
+				long start = System.currentTimeMillis();
 				Set<DLAxiom<?>> ax2 = new HashSet<>();
 
 				Step nextStep = null;
@@ -180,18 +182,23 @@ public class Branch extends Step {
 							ax2.add(dl.individualType(testI, dl.notClass(nc)));
 							dl.addAxioms(ax2);
 							boolean fail = false;
-							ab.debug();
+							//ab.debug();
 							if (dl.checkConsistency()) {
 								fail = true;
 							}
 							dl.removeAxioms(ax2);
 							if (fail) {
 								currentEx.setStop(true);
+								long end = System.currentTimeMillis();
+								dbg(DBG_TIMING, "Branch peek: %d millis", end
+										- start);
 								return currentEx;
 							}
 						}
 					}
 				}
+				long end = System.currentTimeMillis();
+				dbg(DBG_TIMING, "Branch peek: %d millis", end - start);
 			}
 
 			out = currentEx;

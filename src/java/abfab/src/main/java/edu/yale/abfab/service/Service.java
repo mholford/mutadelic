@@ -6,7 +6,7 @@ import edu.yale.abfab.IndividualPlus;
 
 public interface Service {
 
-	IndividualPlus exec(IndividualPlus input, Abductor abductor)
+	IndividualPlus serviceExec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException;
 
 	double cost();

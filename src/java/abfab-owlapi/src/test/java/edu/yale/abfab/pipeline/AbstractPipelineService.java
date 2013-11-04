@@ -1,5 +1,7 @@
 package edu.yale.abfab.pipeline;
 
+import static edu.yale.abfab.Logging.DBG_TIMING;
+import static edu.yale.abfab.Logging.dbg;
 import static edu.yale.abfab.NS.NS;
 import static edu.yale.abfab.NS.SIO;
 import static org.junit.Assert.fail;
@@ -10,6 +12,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import edu.yale.abfab.Abductor;
+import edu.yale.abfab.IndividualPlus;
+import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.abfab.service.Service;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
@@ -35,6 +39,24 @@ public abstract class AbstractPipelineService implements Service {
 	public static final String DATABASE_PRESENCE = NS + "DatabasePresence";
 	public static final String SIFT_SCORE = NS + "SiftScore";
 	public static final String VARIATION_LOCATION = NS + "VariationLocation";
+
+	public IndividualPlus serviceExec(IndividualPlus ip, Abductor ab) {
+		IndividualPlus output = null;
+		long start = System.currentTimeMillis();
+		System.out.println("Running service: " + getClass());
+		try {
+			output = exec(ip, ab);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		long end = System.currentTimeMillis();
+		dbg(DBG_TIMING, "%s service executed in %d millis", getClass(), end
+				- start);
+		return output;
+	}
+
+	public abstract IndividualPlus exec(IndividualPlus ip, Abductor ab)
+			throws AbfabServiceException;
 
 	public Set<DLAxiom<?>> annotatedResult(DLController dl,
 			DLIndividual<?> input, DLClass<?> referrant,

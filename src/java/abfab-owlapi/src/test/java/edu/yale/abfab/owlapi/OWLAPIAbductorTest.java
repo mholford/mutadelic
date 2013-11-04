@@ -53,6 +53,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testSimpleStaging() {
+		System.out.println("TEST SIMPLE STAGING");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test1.owl")),
@@ -73,6 +74,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testBranchedStaging() {
+		System.out.println("TEST BRANCHED STAGING");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test2.owl")),
@@ -96,6 +98,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testBranchedStaging2() {
+		System.out.println("TEST BRANCHED STAGING 2");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test4.owl")),
@@ -118,6 +121,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void test3WayBranchedStaging() {
+		System.out.println("TEST 3-WAY BRANCHED STAGING");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test3.owl")),
@@ -144,6 +148,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineStaging() {
+		System.out.println("TEST PIPELINE STAGING");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -189,6 +194,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineExec1() {
+		System.out.println("TEST PIPELINE EXEC 1");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -224,6 +230,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineExec2() {
+		System.out.println("TEST PIPELINE EXEC 2");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -255,6 +262,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineExec3() {
+		System.out.println("TEST PIPELINE EXEC 3");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -287,6 +295,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineExec4() {
+		System.out.println("TEST PIPELINE EXEC 4");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -319,6 +328,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineExec5() {
+		System.out.println("TEST PIPELINE EXEC 5");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -350,6 +360,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testPipelineExec6() {
+		System.out.println("TEST PIPELINE EXEC 6");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
@@ -382,6 +393,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testSimpleExec() {
+		System.out.println("TEST SIMPLE EXEC");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec.owl")),
@@ -454,6 +466,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testSimpleExecDP() {
+		System.out.println("TEST SIMPLE EXEC DP");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec2.owl")),
@@ -484,6 +497,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testBranchingExec() {
+		System.out.println("TEST BRANCHING EXEC 2");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec3.owl")),
@@ -517,6 +531,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testSimpleExecFDP() {
+		System.out.println("TEST SIMPLE EXEC FDP");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec4.owl")),
@@ -560,6 +575,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testMazeStaging() {
+		System.out.println("TEST MAZE STAGING");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("skel.owl")), "Manchester");
@@ -600,100 +616,67 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	/*@Test
-	public void testMazeStaging2() {
-		try {
-			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
-					.getResourceAsStream("skel.owl")), "Manchester");
-			int numNodes = 10;
-			List<String> mazeNodes = new ArrayList<>();
-			int i = 0;
-			while (i <= numNodes) {
-				mazeNodes.add(String.format("%sT%S", NS, String.valueOf(++i)));
-			}
-			int randomOut = new Random().nextInt(numNodes) + 1;
-			Object randomNode = mazeNodes.get(randomOut);
-
-			MazeGenerator mg = new MazeGenerator();
-			mg.setNodePool(mazeNodes);
-			Maze m = mg.createDAG(mazeNodes, 0.3, 0.0, -1);
-			MazeTransformer mt = new MazeTransformer();
-			Set<DLAxiom<?>> ax = mt.transform(m);
-			dl.addAxioms(ax);
-			String mdump = m.dump();
-
-			System.out.println(mdump);
-			String solution = mg.solveRandomDAG(m, String.valueOf(randomNode));
-
-			System.out.println("SOLUTION");
-			System.out.println(solution);
-
-			// abductor.debug();
-			System.out.println("ABFAB Solution");
-
-			DLIndividual<?> test = dl.individual(NS + "test");
-			IndividualPlus ip = new IndividualPlus(test);
-			DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
-					+ "Input");
-			ip.getAxioms().add(dl.individualType(test, ipType));
-
-			DLClassExpression<?> goalClass = dl.clazz(String
-					.valueOf(randomNode) + "Output");
-
-			// Try each of 3 reasoners
-			// List<Abductor> abductors = new ArrayList<>();
-			// abductors.add(new FactPPAbductor(""));
-			// abductors.add(new HermitAbductor(""));
-			// //abductors.add(new Pellet2Abductor());
-			// Random rand = new Random();
-			//
-			// while (abductors.size() > 0) {
-			//
-			// long start = System.currentTimeMillis();
-			//
-			// int r = rand.nextInt(abductors.size());
-			// Abductor ab = abductors.get(r);
-			// ab.setNamespace(NS);
-			// System.out.println(String.format("Using %s", ab.getClass()));
-			// dl = ab.getDLController();
-			// dl.load(new InputStreamReader(OWLAPIAbductor.class
-			// .getClassLoader().getResourceAsStream("skel.owl")),
-			// "Manchester");
-			//
-			// dl.addAxioms(ax);
-			//
-			// DLIndividual<?> test = dl.individual(NS + "test");
-			// IndividualPlus ip = new IndividualPlus(test);
-			// DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
-			// + "Input");
-			// ip.getAxioms().add(dl.individualType(test, ipType));
-			//
-			// DLClassExpression<?> goalClass = dl.clazz(String
-			// .valueOf(randomNode) + "Output");
-			//
-			// Path p = ab.getBestPath(ip, goalClass);
-			// System.out.println(p);
-			//
-			// assertEquals(solution, p.toString());
-			// long now = System.currentTimeMillis();
-			// double seconds = ((double) (now - start)) / 1000d;
-			// System.out
-			// .println(String.format("Done in %f seconds", seconds));
-			// abductors.remove(r);
-			// }
-
-			Path p = abductor.getBestPath(ip, goalClass);
-			System.out.println(p);
-
-			assertEquals(solution, p.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail();
-		}
-	}*/
+	/*
+	 * @Test public void testMazeStaging2() { try { dl.load(new
+	 * InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+	 * .getResourceAsStream("skel.owl")), "Manchester"); int numNodes = 10;
+	 * List<String> mazeNodes = new ArrayList<>(); int i = 0; while (i <=
+	 * numNodes) { mazeNodes.add(String.format("%sT%S", NS,
+	 * String.valueOf(++i))); } int randomOut = new Random().nextInt(numNodes) +
+	 * 1; Object randomNode = mazeNodes.get(randomOut);
+	 * 
+	 * MazeGenerator mg = new MazeGenerator(); mg.setNodePool(mazeNodes); Maze m
+	 * = mg.createDAG(mazeNodes, 0.3, 0.0, -1); MazeTransformer mt = new
+	 * MazeTransformer(); Set<DLAxiom<?>> ax = mt.transform(m);
+	 * dl.addAxioms(ax); String mdump = m.dump();
+	 * 
+	 * System.out.println(mdump); String solution = mg.solveRandomDAG(m,
+	 * String.valueOf(randomNode));
+	 * 
+	 * System.out.println("SOLUTION"); System.out.println(solution);
+	 * 
+	 * // abductor.debug(); System.out.println("ABFAB Solution");
+	 * 
+	 * DLIndividual<?> test = dl.individual(NS + "test"); IndividualPlus ip =
+	 * new IndividualPlus(test); DLClassExpression<?> ipType =
+	 * dl.clazz(m.getRoot().getName() + "Input");
+	 * ip.getAxioms().add(dl.individualType(test, ipType));
+	 * 
+	 * DLClassExpression<?> goalClass = dl.clazz(String .valueOf(randomNode) +
+	 * "Output");
+	 * 
+	 * // Try each of 3 reasoners // List<Abductor> abductors = new
+	 * ArrayList<>(); // abductors.add(new FactPPAbductor("")); //
+	 * abductors.add(new HermitAbductor("")); // //abductors.add(new
+	 * Pellet2Abductor()); // Random rand = new Random(); // // while
+	 * (abductors.size() > 0) { // // long start = System.currentTimeMillis();
+	 * // // int r = rand.nextInt(abductors.size()); // Abductor ab =
+	 * abductors.get(r); // ab.setNamespace(NS); //
+	 * System.out.println(String.format("Using %s", ab.getClass())); // dl =
+	 * ab.getDLController(); // dl.load(new
+	 * InputStreamReader(OWLAPIAbductor.class //
+	 * .getClassLoader().getResourceAsStream("skel.owl")), // "Manchester"); //
+	 * // dl.addAxioms(ax); // // DLIndividual<?> test = dl.individual(NS +
+	 * "test"); // IndividualPlus ip = new IndividualPlus(test); //
+	 * DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName() // +
+	 * "Input"); // ip.getAxioms().add(dl.individualType(test, ipType)); // //
+	 * DLClassExpression<?> goalClass = dl.clazz(String // .valueOf(randomNode)
+	 * + "Output"); // // Path p = ab.getBestPath(ip, goalClass); //
+	 * System.out.println(p); // // assertEquals(solution, p.toString()); //
+	 * long now = System.currentTimeMillis(); // double seconds = ((double) (now
+	 * - start)) / 1000d; // System.out //
+	 * .println(String.format("Done in %f seconds", seconds)); //
+	 * abductors.remove(r); // }
+	 * 
+	 * Path p = abductor.getBestPath(ip, goalClass); System.out.println(p);
+	 * 
+	 * assertEquals(solution, p.toString()); } catch (Exception e) {
+	 * e.printStackTrace(); fail(); } }
+	 */
 
 	@Test
 	public void testMazeStaging3() {
+		System.out.println("TEST MAZE STAGING 3");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("skel.owl")), "Manchester");
@@ -788,6 +771,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testConditionalBranchingExec() {
+		System.out.println("TEST CONDITIONAL BRANCHING EXEC");
 		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 				.getResourceAsStream("integration-abduct-exec6.owl")),
 				"Manchester");
@@ -835,6 +819,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testConditionalBranchingExec2() {
+		System.out.println("TEST CONDITIONAL BRANCHING EXEC 2");
 		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 				.getResourceAsStream("integration-abduct-exec7.owl")),
 				"Manchester");
@@ -918,6 +903,7 @@ public class OWLAPIAbductorTest {
 
 	@Test
 	public void testConditionalExec() {
+		System.out.println("TEST CONDITIONAL EXEC");
 		try {
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec5.owl")),

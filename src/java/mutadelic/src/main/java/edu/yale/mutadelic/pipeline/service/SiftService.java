@@ -24,23 +24,23 @@ import static edu.yale.mutadelic.mongo.MongoConnection.*;
 
 public class SiftService extends AbstractPipelineService {
 
-	
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		double result = DefaultValues.SIFT;
+
 		DLController dl = abductor.getDLController();
+		Variant v = Variant.fromOWL(dl, input);
+		Double result = getSiftScore(v);
 		DLClass<?> siftScore = dl.clazz(SIFT_SCORE);
 		if (valueFilled(dl, input.getIndividual(), siftScore)) {
 			return input;
 		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				siftScore, dl.individual(MUTADELIC),
-				result);
+				siftScore, dl.individual(MUTADELIC), result);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}
-	
+
 	public Double getSiftScore(Variant v) {
 		DBCollection table = MongoConnection.instance().getSiftTable();
 		String key = siftKey(v);
@@ -54,7 +54,7 @@ public class SiftService extends AbstractPipelineService {
 			String[] ss = vals.split(";", -1);
 			int idx = siftIndex(v);
 			String siftData = ss[idx];
-			
+
 			String[] sds = siftData.split(",", -1);
 			Map<String, String> obsScoreMap = new HashMap<>();
 			String obs = sds[3];
@@ -73,7 +73,7 @@ public class SiftService extends AbstractPipelineService {
 		}
 		return null;
 	}
-	
+
 	private int siftIndex(Variant v) {
 		int pst = siftStart(v);
 		return v.getStartPos() - pst;
@@ -88,6 +88,8 @@ public class SiftService extends AbstractPipelineService {
 
 	private String siftKey(Variant v) {
 		String chrNo = v.getChromosome();
+		chrNo = chrNo.toUpperCase().startsWith("CHR") ? chrNo.substring(3)
+				: chrNo;
 		int ps = siftStart(v);
 		return String.format("%s_%d", chrNo, ps);
 	}

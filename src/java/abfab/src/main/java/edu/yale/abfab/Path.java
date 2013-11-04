@@ -41,7 +41,7 @@ public class Path implements Comparable<Path> {
 
 	public void add(Collection<Collection<IndividualPlus>> collInds) {
 		if (collInds == null || collInds.size() == 0) {
-			abductor.debug();
+			//abductor.debug();
 			throw new RuntimeException("Invalid addition to path");
 		}
 		Set<Step> ss = new HashSet<>();

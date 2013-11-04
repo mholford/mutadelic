@@ -40,7 +40,7 @@ public class AlignVariantService extends AbstractPipelineService {
 	}
 
 	private String getAlignmentForVariant(Variant v) throws Exception {
-		String alignment = null;
+		String alignment = "";
 		NCBIVariationReporter ncbivr = new NCBIVariationReporter();
 		String q = var2NCBIVR(v);
 		String r = ncbivr.analyze(HUMAN, DEFAULT_ASSEMBLY, q);

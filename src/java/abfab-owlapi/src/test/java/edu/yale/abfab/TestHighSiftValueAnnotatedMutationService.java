@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
+import edu.yale.abfab.pipeline.AbstractPipelineService;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.abfab.service.Service;
 import edu.yale.dlgen.DLAxiom;
@@ -13,7 +14,7 @@ import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
-public class TestHighSiftValueAnnotatedMutationService implements Service {
+public class TestHighSiftValueAnnotatedMutationService extends AbstractPipelineService {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)

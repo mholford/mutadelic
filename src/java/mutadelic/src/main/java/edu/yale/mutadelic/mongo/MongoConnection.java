@@ -28,6 +28,15 @@ public class MongoConnection {
 	public static final String PHYLOP_VALUES = "vals";
 	public static final String SIFT_TABLE = "sift";
 	public static final String SIFT_VALUES = "vals";
+	public static final String RCMDB_TABLE = "rcmdb";
+	public static final String RCMDB_DISEASE= "disease";
+	public static final String RCMDB_GENE= "gene";
+	public static final String RCMDB_REGION= "region";
+	public static final String RCMDB_HGVSP= "hgvsp";
+	public static final String RCMDB_MUT_TYPE= "type";
+	public static final String RCMDB_MUT_NAME= "name";
+	public static final String RCMDB_PMID= "pmid";
+	public static final String RCMDB_REFS = "refs";	
 
 	private static MongoConnection INSTANCE;
 	private MongoClient mongoClient;
@@ -67,5 +76,9 @@ public class MongoConnection {
 	
 	public DBCollection getSiftTable() {
 		return mutadelicDB.getCollection(SIFT_TABLE);
+	}
+	
+	public DBCollection getRCMDBTable() {
+		return mutadelicDB.getCollection(RCMDB_TABLE);
 	}
 }

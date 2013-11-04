@@ -18,6 +18,7 @@ import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
 
 import static edu.yale.abfab.NS.*;
+import static edu.yale.abfab.Logging.*;
 
 public class Condition extends Step {
 	Set<Path> paths;
@@ -165,6 +166,7 @@ public class Condition extends Step {
 					continue;
 				}
 				// Peek and see if it passes the next step
+				long start = System.currentTimeMillis();
 				Set<DLAxiom<?>> ax2 = new HashSet<>();
 
 				Step nextStep = null;
@@ -189,32 +191,38 @@ public class Condition extends Step {
 								ax2.add(dl.individualType(testI,
 										dl.notClass(nc)));
 								dl.addAxioms(ax2);
-								ab.debug();
+								//ab.debug();
 								if (dl.checkConsistency()) {
 									fail = true;
 								}
 								dl.removeAxioms(ax2);
 								if (!fail) {
-									//out.setStop(true);
+									// out.setStop(true);
+									long end = System.currentTimeMillis();
+									dbg(DBG_TIMING,
+											"Condition peek: %d millis", end
+													- start);
 									return out;
 								}
 							}
 						}
 					}
 				} else {
-//					out = mergeIndividuals(Arrays
-//							.asList(latestOutcome, outcome));
+					// out = mergeIndividuals(Arrays
+					// .asList(latestOutcome, outcome));
 				}
-//				latestOutcome = outcome;
+				long end = System.currentTimeMillis();
+				dbg(DBG_TIMING, "Condition peek: %d millis", end - start);
+				// latestOutcome = outcome;
 			}
 		} finally {
 			dl.removeAxioms(ax);
 		}
 
-//		if (out == null) {
-//			outcome.setStop(true);
-//			return outcome;
-//		}
+		// if (out == null) {
+		// outcome.setStop(true);
+		// return outcome;
+		// }
 		return out;
 	}
 

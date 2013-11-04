@@ -1,176 +1,176 @@
-SPTB	intron 28	c.6023-1G>C	NA	splicing	Prague	8547102	118
-SPTB	exon 29	c.6053C>A	p.A2018D	missense	Kuwaitino	9882098	73
-SPTB	exon 29	c.6053C>G	p.A2018G	missense	Cagliari	8226774	107
-SPTB	exon 29	c.6055T>C	p.S2019P	missense	Providence	7883966	108
-SPTB	exon 29	c.6068C>T	p.A2023V	missense	Paris	8018926	68
-SPTB	exon 29	c.6070T>A	p.W2024R	missense	Linguere	8018926	68
-SPTB	exon 29	c.6074T>G	p.L2025R	missense	Buffalo	9005995	109
-SPTB	exon 29	c.6124_6130delGACAGTG	P.D2042Wfs.X32	deletion	Tandil1	1498324	110
-SPTB	exon 29	c.6136_6137insGA	p.K2046Rfs.X32	insertion	Nice1	3580577, 2070088	111, 112
-SPTB	exon 29	c.6157G>C	p.A2053P	missense	Kayes	1975598	113
-SPTB	exon 29	c.6160_6167delTTTGAGAA	p.F2054Vfs.X19	deletion	Napoli1	7803301	114
-SPTB	exon 29	c.6176delC	p.S2060Afs.X27	deletion	Tokyo1	1391962	115
-SPTB	exon 29	c.6181T>A	p.W2061R	missense	Cotonou	8857939	83
-SPTB	exon 29	c.6191G>C	p.R2064P	missense	Cosenza	9163587	116
-SPTB	exon 29	c.6205G>T	p.E2069X	nonsense	Nagoya1	8956043	117
-SPTB	intron 29	c.6219+2T>A	NA	splicing	Gottingen1	3276733, 2022662	119, 120
-SPTB	intron 29	c.6219+1G>A	NA	splicing	Campinas	9207403	125
-SPTB	intron 29	c.6219+4A>G	NA	splicing	Le Puy1	7119110, 1840591	121, 122
-SPTB	intron 30	c.6269+3G>T	NA	splicing	Rouen1	2056132, 1550783	123, 124
-SPTA1	exon 2	c.71T>G	p.I24S	missense	Lograno	8018926	68
-SPTA1	exon 2	c.82C>A	p.R28S	missense	Unnamed	1679439, 1878597	69, 72
-SPTA1	exon 2	c.82C>T	p.R28C	missense	Unnamed	1679439, 9882098, 8435324	69, 73, 74
-SPTA1	exon 2	c.83G>A	p.R28H	missense	Corbeil	1679439, 2328319, 2043465	69, 70, 71
-SPTA1	exon 2	c.83G>A	p.R28L	missense	Unnamed	1679439, 1878597	69, 72
-SPTA1	exon 2	c.92T>C	p.V31A	missense	Marseille	8136282	75
-SPTA1	exon 2	c.100C>T	p.R34W	missense	Genova	8018926, 8193371	68, 76
-SPTA1	exon 2	c.121C>T	p.R41W	missense	Tunis	3337911, 2568861	77, 78
-SPTA1	exon 2	c.134G>C	p.R45T	missense	Anastasia	7772539	80
-SPTA1	exon 2	c.135G>T	p.R45S	missense	Clichy	2568862	79
-SPTA1	exon 2	c.137G>T	p.G46V	missense	Culoz	7772539	80
-SPTA1	exon 2	c.143A>G	p.K48R	missense	Unnamed	1878597	72
-SPTA1	exon 2	c.145C>T	p.L49F	missense	Lyon	2384601	81
-SPTA1	exon 4	c.452G>A	P.G151D	missense	Ponte de Sor	8081008	82
-SPTA1	exon 4	c.459_459insTTG	p.154_155insL	insertion	Unnamed	8857939, 3752066, 2227954, 3940543, 3620700, 1353056, 3708157, 3748797, 2567189, 2794061, 4027386, 4077050, 3922449	83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95
-SPTA1	exon 5	c.620T>C	p.L207P	missense	Saint-Louis	8857939, 2794061, 3597773, 1541680	83, 92, 97, 98
-SPTA1	exon 6	c.779T>C	p.L260P	missense	Nigerian	2794061	92
-SPTA1	exon 6	c.781T>C	p.S261P	missense	Unnamed	2794061	92
-SPTA1	exon 6	c.800_801ins632	NA	splicing	Dayton	8040317	96
-SPTA1	exon 8	c.1086A>G	NA	splicing	Sfax	1571558	99
-SPTA1	exon 11	c.1405_1407delCAT	p.H469del	deletion	Alexandria	8400271	100
-SPTA1	exon 11	c.1406A>C	p.H469P	missense	Barcelona	8364215	101
-SPTA1	exon 11	c.1406A>G	p.H469R	missense	Unnamed	3597773	97
-SPTA1	exon 17	c.2373C>A	p.D791E	missense	Jendouba	1638030	102
-SPTA1	intron 17	c.2465-1G>A	NA	splicing	Oran	2895677	103
-SPTA1	intron 19	c.2806-13T>G	NA	splicing	St. Claude	9192783, 2346729	104, 105
-SPTA1	intron 45	c.6531-12C>T	NA	splicing	LELY	8486776	106
-ANK1	5' flank	c.-204C>G	NA	5'flanking	Unnamed	8640229	9
-ANK1	5' flank	c.[-153G>A; -108T>C]	NA	5'flanking	Campinas	11102985	10,22
-ANK1	5' flank	c.-108T>C	NA	5'flanking	Unnamed	8640229	9
-ANK1	5' flank	c.-72_-73delGT	NA	deletion	Unnamed	8640229, 16037067	9,11
-ANK1	exon 1	c.4_13del10	p.P2Lfs.Xl2	deletion	Chiba II	11372755	12
-ANK1	intron 1	c.27+5G>C	NA	splicing	Nara II	11372755	12
-ANK1	exon 5	c.336delT	p.F112Lfs.X27	deletion	Saitama	11372755	12
-ANK1	intron 5	c.426+3_426+4insA	NA	splicing	Shiga	11372755	12
-ANK1	exon 6	c.437delC	p.T146Sfs.X4	deletion	Bugey	9067504	13
-ANK1	exon 6	c.520_539del20	p.L173Gfs.X174	deletion	Osterholz	8640229	9
-ANK1	exon 6	c.561_570del10	p.T188Cfs.X62	deletion	Tokyo II	11372755	12
-ANK1	exon 9	c.830A>G	p.H277R	missense	Limeira	11102985	10
-ANK1	exon 10	c.985_986delGC	p.A329Rfs.X25	deletion	Stuttgart	8640229	9
-ANK1	exon 12	c.1282delG	p.A428Rfs.X7	deletion	Bari	9054656	14
-ANK1	exon 13	c.1387G>A	p.V463I	missense	Walsrode	8640229	9
-ANK1	exon 14	c.1514_1515insC	p.L507Pfs.X6	insertion	Florianopolis	11167760	15
-ANK1	exon 15	c.1603delA	p.F537Lfs.X33	deletion	Laguna	11167760	15
-ANK1	exon 16	c.1716_1717insC	p.L573Pfs.X47	insertion	Einbeck	8640229	9
-ANK1	exon 16	c.1717delC	p.L573Cfs.X62	deletion	Tokyo III	11372755	12
-ANK1	exon 16	c.1718delT	p.L573Rfs.X62	deletion	Napoli I	8703812	16
-ANK1	exon 16	c.1788delC	p.H596Qfs.X39	deletion	Munster		17
-ANK1	intron 16	c.1801-18C>A	NA	splicing	Duisberg	8640229	9
-ANK1	exon 17	c.1834C>T	p.Q612X	nonsense	Osaka II	11372755	12
-ANK1	exon 17	c.1891G>T	p.E631X	nonsense	Votice	12899723	18
-ANK1	exon 17	c.1909_1910insC	p.P638A	insertion	Osaka I	11372755	12
-ANK1	exon 20	c.2294C>A	p.S765X	nonsense	Olomouc	12899723	18
-ANK1	intron 20	c.2296-2A>T	NA	splicing	Horovice	12899723	18
-ANK1	intron 22	c.2388+1G>C	NA	splicing	Yamagata	11372755	12
-ANK1	exon 22	c.2390_2393delTAGT	p.L797Sfs.X5	deletion	Marburg	8640229	9
-ANK1	exon 22	c.2393_2396delTCAG	p.S799Ifs.X7	deletion	Kagosima or Yamanishi	11372755	12
-ANK1	exon 25	c.2720delG	p.S907Tfs.X7	deletion	Tabor	12899723	18
-ANK1	exon 26	c.2799delC	p.L934Cfs.X1	deletion	Napoli II	9054656	14
-ANK1	exon 26	c.2852_2858delGCCGCCTinsTCTG	p.C951F_R952W	deletion/insertion	Mie	11372755	12
-ANK1	exon 26	c.2948_2949delCA	p.Q984Vfs.X130	deletion	Anzio	9067504	13
-ANK1	exon 28	c.3137T>C	p.L1046P	missense	Nara I	11372755	12
-ANK1	exon 28	c.3157C>T	p.R1053X	nonsense	Melnik	12899723	18
-ANK1	exon 28	c.3161T>C	p.I1054T	missense	Jaguariuna	11102985	10
-ANK1	exon 28	c.3227T>C	p.I1076T	missense	Tubarao	11167760	15
-ANK1	intron 28	c.3327+1G>C	NA	splicing	Chiba I	11372755	12
-ANK1	exon 29	c.3380delC	p.T1127Nfs.X95	deletion	Porta Westfalica	8640229	9
-ANK1	exon 30	c.3553T>C	p.W1185R	missense	Unnamed	8640229	9
-ANK1	exon 31	c.3690C>G	p.Y1230X	nonsense	Chiba III	11372755	12
-ANK1	exon 31	c.3754C>T	p.R1252X	nonsense	Tokyo I	11372755	12
-ANK1	exon 36	c.4306C>T	p.R1436X	nonsense	Bovendem	8640229	9
-ANK1	exon 34	c.4462C>T	p.R1488X	nonsense	Karlov	12899723	18
-ANK1	intron 37	c.4537_4537+1ins201	NA	splicing	Prague		19
-ANK1	exon 38	c.4774G>A	p.D1592N	missense	Dusseldorf	8640229	9
-ANK1	exon 38	c.4918C>T	p.Q1640X	nonsense	Toyama	11372755	12
-ANK1	exon 38	c.5005G>T	p.E1669X	nonsense	Rakovnik	7883994	21
-ANK1	exon 39	c.5163G>A	p.W1721X	nonsense	Saint-Etienne 1	9590147	20
-ANK1	exon 41	c.5497C>T	p.R1833X	nonsense	Saint-Etienne 2	9590147	20
-ANK1	intron 41	c.5619+16C>T	NA	splicing	Bocholt	8640229	9
-SLC4A1	exon 4	c.118G>A	p.E40K	missense	Montefiore	8471774, 9207478	23,24
-SLC4A1	exon 4	c.163delC	p.H55Tfs.X11	deletion	Foggia	9012689	25
-SLC4A1	exon 4	c.167delA	p.K56Rfs.X10	deletion	Kagoshima	10745622	26
-SLC4A1	exon 5	c.241delT	p.W81Gfs.X28	deletion	Bohain	9233560	29
-SLC4A1	exon 5	c.243G>A	p.W81X	nonsense	Hodonin	8943874	27
-SLC4A1	exon 5	c.268G>A	p.E90K	missense	Cape Town	11380459	28
-SLC4A1	exon 5	c.300_301insT	p.H101Sfs.X12	insertion	Napoli	9233560	29
-SLC4A1	exon 5	c.336_337delAG	p.R112Sfs.X30	deletion	Fukayama I	10745622	26
-SLC4A1	intron 5	c.350-3C>A	p.G117_l21Ldel	splicing	Nachod	8943874	27
-SLC4A1	exon 6	c.388G>A	p.G130R	missense	Fukuoka	9734643	30
-SLC4A1	exon 6	c.448C>T	p.R150X	nonsense	Osnabruck I	8640229, 8704215	31,32
-SLC4A1	exon 6	c.448C>T	p.R150X	nonsense	Lyon	8640229	31
-SLC4A1	exon 7	c.515_516insG	p.V173Cfs.X30	insertion	Worcester	8943874	27
-SLC4A1	exon 7	c.548_549insA	p.D183Efs.X20	insertion	Fukuyama II	10745622	26
-SLC4A1	intron 8	c.694+1G>T	NA	splicing	Campinas	9326249	33
-SLC4A1	exon 9	c.823_824insC	p.H275Pfs.X96	insertion	Princeton	8943874	27
-SLC4A1	exon 9	c.854C>A	p.A285D	missense	Boston	8943874	27
-SLC4A1	exon 10	c.980C>G	p.P327R	missense	Tuscaloosa	1378323	34
-SLC4A1	exon 10	c.988C>T	p.Q330X	nonsense	Noirterre	8567957	35
-SLC4A1	exon 11	c.1257delC	p.A420SfsX22	deletion	Bruggen	8640229	31
-SLC4A1	exon 12	c.1364G>A	p.G455E	missense	Benesov	8943874	27
-SLC4A1	exon 12	c.1366delG	p.A456Lfs.X29	deletion	Bicetre II	9233560	29
-SLC4A1	intron 12	c.1432-1G>A	NA	splicing	Pribram	8943874	27
-SLC4A1	exon 13	c.1462G>A	p.V488M	missense	Coimbra	10942416, 11167760	36,37
-SLC4A1	exon 13	c.1468C>T	p.R490C	missense	Bicetre I	9233560	29
-SLC4A1	exon 13	c.1486delT	p.W496Gfs.X45	deletion	Evry	9233560	29
-SLC4A1	exon 13	c.1497_1498ins1432_1500	p.F479_499Ldup	duplication	Milano	10745622	26
-SLC4A1	exon 13	c.1552C>T	p.R518C	missense	Dresden	8640229	31
-SLC4A1	exon 15	c.1848delC	p.M617Wfs.X47	deletion	Smichov	8943874	27
-SLC4A1	exon 15	c.1884C>A	p.Y628X	nonsense	Trutnov	8943874	27
-SLC4A1	exon 16	c.1940delG	p.G647Afs.X17	deletion	Hobart	8943874	27
-SLC4A1	exon 16	c.1990_1992delATG	p.M664del	deletion	Osnabruck II	8640229	31
-SLC4A1	intron 16	c.2058-5delC	NA	splicing	Tochigi II	10745622	26
-SLC4A1	exon 17	c.2120T>C	p.L707P	missense	Most	8943874	27
-SLC4A1	exon 17	c.2140G>A	p.G714R	missense	Okinawa	9734643	30
-SLC4A1	exon 17	c.2278C>T	p.R760W	missense	Hradec Kralove	10745622, 7530501	26,38
-SLC4A1	exon 17	c.2278C>T	p.R760W	missense	Tochigi I	10745622, 7530501	26,38
-SLC4A1	exon 17	c.2279G>A	p.R760Q	missense	Prague II	10745622, 7530501	26,38
-SLC4A1	exon 17	c.2279G>A	p.R760Q	missense	Kumamoto	10745622, 7530501	26,38
-SLC4A1	exon 18	c.2312G>A	p.G771D	missense	Chur	8547122	39
-SLC4A1	exon 18	c.2348T>A	p.I783N	missense	Napoli II	9012689	25
-SLC4A1	exon 18	c.2422C>T	p.R808C	missense	Jablonec	7530501	38
-SLC4A1	exon 18	c.2423G>A	p.R808H	missense	Nara	10745622	26
-SLC4A1	exon 18	c.2465_2466ins10	p.V822Afs.X71	insertion	Prague I	8282779	40
-SLC4A1	exon 19	c.2501A>C	p.H834P	missense	Birmingham	8943874	27
-SLC4A1	exon 19	c.2509A>G	p.T837A	missense	Tokyo	9973643	41
-SLC4A1	exon 19	c.2510C>T	p.T837M	missense	Philadelphia	8943874	27
-SLC4A1	exon 19	c.2608C>T	p.R870W	missense	Prague III	7530501	38
-SLC4A1	exon 20	c.2682delC	p.F895Lfs.X133	deletion	Vesuvio	10189204	42
-SPTA1	intron 30	c.4339-1G>C	NA	splicing	Prague	8941647	43
-SPTA1	intron 36	c.5190-99C>T	NA	splicing	LEPRA	9067503, 8941647, 11318798, 11167781	43, 44, 45, 46
-SPTB	exon 1	c.1A>G	p.M1V	missense	Promissao	9414314	56
-SPTB	intron 3	c.301-1G>C	NA	splicing	Guemene-Penfao	9450796	48
-SPTB	exon 4	c.544T>G	p.W182G	missense	Atlanta	9207476	49
-SPTB	exon 4	c.566G>C	p.G189A	missense	Unnamed	9714702	50
-SPTB	exon 5	c.604T>C	p.W202R	missense	Kissimmee	6215583, 3957910, 3611357, 8102379	51, 52, 53, 54
-SPTB	exon 5	c.604delT	p.W202Gfs.X10	deletion	Ostrava	9207476	49
-SPTB	exon 6	c.658A>G	p.I220V	missense	Oakland	9207476	49
-SPTB	exon 10	c.1329_1336delCCTCGTGG	p.L444Pfs.X4	deletion	Bicetre	9714702	50
-SPTB	exon 11	c.1540C>T	p.Q514X	nonsense	Alger	9714702	50
-SPTB	exon 13	c.1907delC	p.K637Nfs.X34	deletion	St. Barbara	12185384, 11703334	47, 55
-SPTB	exon 13	c.2351_2352insA	p.H785Afs.X78	insertion	Bergen	9207476	49
-SPTB	exon 13	c.2533C>T	p.Q845X	nonsense	Baltimore	9207476	49
-SPTB	exon 16	c.3679C>T	p.P1227S	missense	Columbus	9207476	49
-SPTB	intron 16	c.3764+1G>A	NA	splicing	Winston-Salem	8630421	57
-SPTB	exon 19	c.4176delC	p.N1392Kfs.X6	deletion	Sao Paulo II	12185384	55
-SPTB	exon 21,22	c.4477_4842del366	p.L1492_K1614del	deletion	Durham	8675627	58
-SPTB	exon 24	c.5050C>T	p.R1684C	missense	Birmingham	9207476	49
-SPTB	exon 26	c.5651C>T	p.A1884V	missense	Sao Paulo I	12185384	55
-SPTB	exon 27	c.5836C>T	p.Q1946X	nonsense	Tabor	9207476	49
-EPB42	exon 2	c.267delG	p.A90Pfs.X47	deletion	Lisboa	7803799	59
-EPB42	exon 3	c.356G>A	p.W119X	missense	Fukuoka	7803799, 7819064	59, 60
-EPB42	exon 3	c.424G>A	p.A142T	missense	Nippon	8111049	61
-EPB42	exon 4	c.523G>T	p.D175Y	missense	Komatsu	8547605	66
-EPB42	intron 6	c.922+1G>A	NA	splicing	Notame	8528207	63
-EPB42	exon 7	c.929G>A	p.R310Q	missense	Tozeur	7772513, 2386772	64,65
-EPB42	exon 7	c.949C>T	p.R317C	missense	Shiga	8547071	62
-EPB42	exon 7	c.950delG	p.R317Pfs.X3	deletion	Nancy	10629586	67
+HE/HPP	SPTB	intron 28	c.6023-1G>C	NA	splicing	Prague	8547102	118
+HE/HPP	SPTB	exon 29	c.6053C>A	p.A2018D	missense	Kuwaitino	9882098	73
+HE/HPP	SPTB	exon 29	c.6053C>G	p.A2018G	missense	Cagliari	8226774	107
+HE/HPP	SPTB	exon 29	c.6055T>C	p.S2019P	missense	Providence	7883966	108
+HE/HPP	SPTB	exon 29	c.6068C>T	p.A2023V	missense	Paris	8018926	68
+HE/HPP	SPTB	exon 29	c.6070T>A	p.W2024R	missense	Linguere	8018926	68
+HE/HPP	SPTB	exon 29	c.6074T>G	p.L2025R	missense	Buffalo	9005995	109
+HE/HPP	SPTB	exon 29	c.6124_6130delGACAGTG	P.D2042Wfs.X32	deletion	Tandil1	1498324	110
+HE/HPP	SPTB	exon 29	c.6136_6137insGA	p.K2046Rfs.X32	insertion	Nice1	3580577, 2070088	111, 112
+HE/HPP	SPTB	exon 29	c.6157G>C	p.A2053P	missense	Kayes	1975598	113
+HE/HPP	SPTB	exon 29	c.6160_6167delTTTGAGAA	p.F2054Vfs.X19	deletion	Napoli1	7803301	114
+HE/HPP	SPTB	exon 29	c.6176delC	p.S2060Afs.X27	deletion	Tokyo1	1391962	115
+HE/HPP	SPTB	exon 29	c.6181T>A	p.W2061R	missense	Cotonou	8857939	83
+HE/HPP	SPTB	exon 29	c.6191G>C	p.R2064P	missense	Cosenza	9163587	116
+HE/HPP	SPTB	exon 29	c.6205G>T	p.E2069X	nonsense	Nagoya1	8956043	117
+HE/HPP	SPTB	intron 29	c.6219+2T>A	NA	splicing	Gottingen1	3276733, 2022662	119, 120
+HE/HPP	SPTB	intron 29	c.6219+1G>A	NA	splicing	Campinas	9207403	125
+HE/HPP	SPTB	intron 29	c.6219+4A>G	NA	splicing	Le Puy1	7119110, 1840591	121, 122
+HE/HPP	SPTB	intron 30	c.6269+3G>T	NA	splicing	Rouen1	2056132, 1550783	123, 124
+HE/HPP	SPTA1	exon 2	c.71T>G	p.I24S	missense	Lograno	8018926	68
+HE/HPP	SPTA1	exon 2	c.82C>A	p.R28S	missense	Unnamed	1679439, 1878597	69, 72
+HE/HPP	SPTA1	exon 2	c.82C>T	p.R28C	missense	Unnamed	1679439, 9882098, 8435324	69, 73, 74
+HE/HPP	SPTA1	exon 2	c.83G>A	p.R28H	missense	Corbeil	1679439, 2328319, 2043465	69, 70, 71
+HE/HPP	SPTA1	exon 2	c.83G>A	p.R28L	missense	Unnamed	1679439, 1878597	69, 72
+HE/HPP	SPTA1	exon 2	c.92T>C	p.V31A	missense	Marseille	8136282	75
+HE/HPP	SPTA1	exon 2	c.100C>T	p.R34W	missense	Genova	8018926, 8193371	68, 76
+HE/HPP	SPTA1	exon 2	c.121C>T	p.R41W	missense	Tunis	3337911, 2568861	77, 78
+HE/HPP	SPTA1	exon 2	c.134G>C	p.R45T	missense	Anastasia	7772539	80
+HE/HPP	SPTA1	exon 2	c.135G>T	p.R45S	missense	Clichy	2568862	79
+HE/HPP	SPTA1	exon 2	c.137G>T	p.G46V	missense	Culoz	7772539	80
+HE/HPP	SPTA1	exon 2	c.143A>G	p.K48R	missense	Unnamed	1878597	72
+HE/HPP	SPTA1	exon 2	c.145C>T	p.L49F	missense	Lyon	2384601	81
+HE/HPP	SPTA1	exon 4	c.452G>A	P.G151D	missense	Ponte de Sor	8081008	82
+HE/HPP	SPTA1	exon 4	c.459_459insTTG	p.154_155insL	insertion	Unnamed	8857939, 3752066, 2227954, 3940543, 3620700, 1353056, 3708157, 3748797, 2567189, 2794061, 4027386, 4077050, 3922449	83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95
+HE/HPP	SPTA1	exon 5	c.620T>C	p.L207P	missense	Saint-Louis	8857939, 2794061, 3597773, 1541680	83, 92, 97, 98
+HE/HPP	SPTA1	exon 6	c.779T>C	p.L260P	missense	Nigerian	2794061	92
+HE/HPP	SPTA1	exon 6	c.781T>C	p.S261P	missense	Unnamed	2794061	92
+HE/HPP	SPTA1	exon 6	c.800_801ins632	NA	splicing	Dayton	8040317	96
+HE/HPP	SPTA1	exon 8	c.1086A>G	NA	splicing	Sfax	1571558	99
+HE/HPP	SPTA1	exon 11	c.1405_1407delCAT	p.H469del	deletion	Alexandria	8400271	100
+HE/HPP	SPTA1	exon 11	c.1406A>C	p.H469P	missense	Barcelona	8364215	101
+HE/HPP	SPTA1	exon 11	c.1406A>G	p.H469R	missense	Unnamed	3597773	97
+HE/HPP	SPTA1	exon 17	c.2373C>A	p.D791E	missense	Jendouba	1638030	102
+HE/HPP	SPTA1	intron 17	c.2465-1G>A	NA	splicing	Oran	2895677	103
+HE/HPP	SPTA1	intron 19	c.2806-13T>G	NA	splicing	St. Claude	9192783, 2346729	104, 105
+HE/HPP	SPTA1	intron 45	c.6531-12C>T	NA	splicing	LELY	8486776	106
+HS	ANK1	5' flank	c.-204C>G	NA	5'flanking	Unnamed	8640229	9
+HS	ANK1	5' flank	c.[-153G>A; -108T>C]	NA	5'flanking	Campinas	11102985	10,22
+HS	ANK1	5' flank	c.-108T>C	NA	5'flanking	Unnamed	8640229	9
+HS	ANK1	5' flank	c.-72_-73delGT	NA	deletion	Unnamed	8640229, 16037067	9,11
+HS	ANK1	exon 1	c.4_13del10	p.P2Lfs.Xl2	deletion	Chiba II	11372755	12
+HS	ANK1	intron 1	c.27+5G>C	NA	splicing	Nara II	11372755	12
+HS	ANK1	exon 5	c.336delT	p.F112Lfs.X27	deletion	Saitama	11372755	12
+HS	ANK1	intron 5	c.426+3_426+4insA	NA	splicing	Shiga	11372755	12
+HS	ANK1	exon 6	c.437delC	p.T146Sfs.X4	deletion	Bugey	9067504	13
+HS	ANK1	exon 6	c.520_539del20	p.L173Gfs.X174	deletion	Osterholz	8640229	9
+HS	ANK1	exon 6	c.561_570del10	p.T188Cfs.X62	deletion	Tokyo II	11372755	12
+HS	ANK1	exon 9	c.830A>G	p.H277R	missense	Limeira	11102985	10
+HS	ANK1	exon 10	c.985_986delGC	p.A329Rfs.X25	deletion	Stuttgart	8640229	9
+HS	ANK1	exon 12	c.1282delG	p.A428Rfs.X7	deletion	Bari	9054656	14
+HS	ANK1	exon 13	c.1387G>A	p.V463I	missense	Walsrode	8640229	9
+HS	ANK1	exon 14	c.1514_1515insC	p.L507Pfs.X6	insertion	Florianopolis	11167760	15
+HS	ANK1	exon 15	c.1603delA	p.F537Lfs.X33	deletion	Laguna	11167760	15
+HS	ANK1	exon 16	c.1716_1717insC	p.L573Pfs.X47	insertion	Einbeck	8640229	9
+HS	ANK1	exon 16	c.1717delC	p.L573Cfs.X62	deletion	Tokyo III	11372755	12
+HS	ANK1	exon 16	c.1718delT	p.L573Rfs.X62	deletion	Napoli I	8703812	16
+HS	ANK1	exon 16	c.1788delC	p.H596Qfs.X39	deletion	Munster		17
+HS	ANK1	intron 16	c.1801-18C>A	NA	splicing	Duisberg	8640229	9
+HS	ANK1	exon 17	c.1834C>T	p.Q612X	nonsense	Osaka II	11372755	12
+HS	ANK1	exon 17	c.1891G>T	p.E631X	nonsense	Votice	12899723	18
+HS	ANK1	exon 17	c.1909_1910insC	p.P638A	insertion	Osaka I	11372755	12
+HS	ANK1	exon 20	c.2294C>A	p.S765X	nonsense	Olomouc	12899723	18
+HS	ANK1	intron 20	c.2296-2A>T	NA	splicing	Horovice	12899723	18
+HS	ANK1	intron 22	c.2388+1G>C	NA	splicing	Yamagata	11372755	12
+HS	ANK1	exon 22	c.2390_2393delTAGT	p.L797Sfs.X5	deletion	Marburg	8640229	9
+HS	ANK1	exon 22	c.2393_2396delTCAG	p.S799Ifs.X7	deletion	Kagosima or Yamanishi	11372755	12
+HS	ANK1	exon 25	c.2720delG	p.S907Tfs.X7	deletion	Tabor	12899723	18
+HS	ANK1	exon 26	c.2799delC	p.L934Cfs.X1	deletion	Napoli II	9054656	14
+HS	ANK1	exon 26	c.2852_2858delGCCGCCTinsTCTG	p.C951F_R952W	deletion/insertion	Mie	11372755	12
+HS	ANK1	exon 26	c.2948_2949delCA	p.Q984Vfs.X130	deletion	Anzio	9067504	13
+HS	ANK1	exon 28	c.3137T>C	p.L1046P	missense	Nara I	11372755	12
+HS	ANK1	exon 28	c.3157C>T	p.R1053X	nonsense	Melnik	12899723	18
+HS	ANK1	exon 28	c.3161T>C	p.I1054T	missense	Jaguariuna	11102985	10
+HS	ANK1	exon 28	c.3227T>C	p.I1076T	missense	Tubarao	11167760	15
+HS	ANK1	intron 28	c.3327+1G>C	NA	splicing	Chiba I	11372755	12
+HS	ANK1	exon 29	c.3380delC	p.T1127Nfs.X95	deletion	Porta Westfalica	8640229	9
+HS	ANK1	exon 30	c.3553T>C	p.W1185R	missense	Unnamed	8640229	9
+HS	ANK1	exon 31	c.3690C>G	p.Y1230X	nonsense	Chiba III	11372755	12
+HS	ANK1	exon 31	c.3754C>T	p.R1252X	nonsense	Tokyo I	11372755	12
+HS	ANK1	exon 36	c.4306C>T	p.R1436X	nonsense	Bovendem	8640229	9
+HS	ANK1	exon 34	c.4462C>T	p.R1488X	nonsense	Karlov	12899723	18
+HS	ANK1	intron 37	c.4537_4537+1ins201	NA	splicing	Prague		19
+HS	ANK1	exon 38	c.4774G>A	p.D1592N	missense	Dusseldorf	8640229	9
+HS	ANK1	exon 38	c.4918C>T	p.Q1640X	nonsense	Toyama	11372755	12
+HS	ANK1	exon 38	c.5005G>T	p.E1669X	nonsense	Rakovnik	7883994	21
+HS	ANK1	exon 39	c.5163G>A	p.W1721X	nonsense	Saint-Etienne 1	9590147	20
+HS	ANK1	exon 41	c.5497C>T	p.R1833X	nonsense	Saint-Etienne 2	9590147	20
+HS	ANK1	intron 41	c.5619+16C>T	NA	splicing	Bocholt	8640229	9
+HS	SLC4A1	exon 4	c.118G>A	p.E40K	missense	Montefiore	8471774, 9207478	23,24
+HS	SLC4A1	exon 4	c.163delC	p.H55Tfs.X11	deletion	Foggia	9012689	25
+HS	SLC4A1	exon 4	c.167delA	p.K56Rfs.X10	deletion	Kagoshima	10745622	26
+HS	SLC4A1	exon 5	c.241delT	p.W81Gfs.X28	deletion	Bohain	9233560	29
+HS	SLC4A1	exon 5	c.243G>A	p.W81X	nonsense	Hodonin	8943874	27
+HS	SLC4A1	exon 5	c.268G>A	p.E90K	missense	Cape Town	11380459	28
+HS	SLC4A1	exon 5	c.300_301insT	p.H101Sfs.X12	insertion	Napoli	9233560	29
+HS	SLC4A1	exon 5	c.336_337delAG	p.R112Sfs.X30	deletion	Fukayama I	10745622	26
+HS	SLC4A1	intron 5	c.350-3C>A	p.G117_l21Ldel	splicing	Nachod	8943874	27
+HS	SLC4A1	exon 6	c.388G>A	p.G130R	missense	Fukuoka	9734643	30
+HS	SLC4A1	exon 6	c.448C>T	p.R150X	nonsense	Osnabruck I	8640229, 8704215	31,32
+HS	SLC4A1	exon 6	c.448C>T	p.R150X	nonsense	Lyon	8640229	31
+HS	SLC4A1	exon 7	c.515_516insG	p.V173Cfs.X30	insertion	Worcester	8943874	27
+HS	SLC4A1	exon 7	c.548_549insA	p.D183Efs.X20	insertion	Fukuyama II	10745622	26
+HS	SLC4A1	intron 8	c.694+1G>T	NA	splicing	Campinas	9326249	33
+HS	SLC4A1	exon 9	c.823_824insC	p.H275Pfs.X96	insertion	Princeton	8943874	27
+HS	SLC4A1	exon 9	c.854C>A	p.A285D	missense	Boston	8943874	27
+HS	SLC4A1	exon 10	c.980C>G	p.P327R	missense	Tuscaloosa	1378323	34
+HS	SLC4A1	exon 10	c.988C>T	p.Q330X	nonsense	Noirterre	8567957	35
+HS	SLC4A1	exon 11	c.1257delC	p.A420SfsX22	deletion	Bruggen	8640229	31
+HS	SLC4A1	exon 12	c.1364G>A	p.G455E	missense	Benesov	8943874	27
+HS	SLC4A1	exon 12	c.1366delG	p.A456Lfs.X29	deletion	Bicetre II	9233560	29
+HS	SLC4A1	intron 12	c.1432-1G>A	NA	splicing	Pribram	8943874	27
+HS	SLC4A1	exon 13	c.1462G>A	p.V488M	missense	Coimbra	10942416, 11167760	36,37
+HS	SLC4A1	exon 13	c.1468C>T	p.R490C	missense	Bicetre I	9233560	29
+HS	SLC4A1	exon 13	c.1486delT	p.W496Gfs.X45	deletion	Evry	9233560	29
+HS	SLC4A1	exon 13	c.1497_1498ins1432_1500	p.F479_499Ldup	duplication	Milano	10745622	26
+HS	SLC4A1	exon 13	c.1552C>T	p.R518C	missense	Dresden	8640229	31
+HS	SLC4A1	exon 15	c.1848delC	p.M617Wfs.X47	deletion	Smichov	8943874	27
+HS	SLC4A1	exon 15	c.1884C>A	p.Y628X	nonsense	Trutnov	8943874	27
+HS	SLC4A1	exon 16	c.1940delG	p.G647Afs.X17	deletion	Hobart	8943874	27
+HS	SLC4A1	exon 16	c.1990_1992delATG	p.M664del	deletion	Osnabruck II	8640229	31
+HS	SLC4A1	intron 16	c.2058-5delC	NA	splicing	Tochigi II	10745622	26
+HS	SLC4A1	exon 17	c.2120T>C	p.L707P	missense	Most	8943874	27
+HS	SLC4A1	exon 17	c.2140G>A	p.G714R	missense	Okinawa	9734643	30
+HS	SLC4A1	exon 17	c.2278C>T	p.R760W	missense	Hradec Kralove	10745622, 7530501	26,38
+HS	SLC4A1	exon 17	c.2278C>T	p.R760W	missense	Tochigi I	10745622, 7530501	26,38
+HS	SLC4A1	exon 17	c.2279G>A	p.R760Q	missense	Prague II	10745622, 7530501	26,38
+HS	SLC4A1	exon 17	c.2279G>A	p.R760Q	missense	Kumamoto	10745622, 7530501	26,38
+HS	SLC4A1	exon 18	c.2312G>A	p.G771D	missense	Chur	8547122	39
+HS	SLC4A1	exon 18	c.2348T>A	p.I783N	missense	Napoli II	9012689	25
+HS	SLC4A1	exon 18	c.2422C>T	p.R808C	missense	Jablonec	7530501	38
+HS	SLC4A1	exon 18	c.2423G>A	p.R808H	missense	Nara	10745622	26
+HS	SLC4A1	exon 18	c.2465_2466ins10	p.V822Afs.X71	insertion	Prague I	8282779	40
+HS	SLC4A1	exon 19	c.2501A>C	p.H834P	missense	Birmingham	8943874	27
+HS	SLC4A1	exon 19	c.2509A>G	p.T837A	missense	Tokyo	9973643	41
+HS	SLC4A1	exon 19	c.2510C>T	p.T837M	missense	Philadelphia	8943874	27
+HS	SLC4A1	exon 19	c.2608C>T	p.R870W	missense	Prague III	7530501	38
+HS	SLC4A1	exon 20	c.2682delC	p.F895Lfs.X133	deletion	Vesuvio	10189204	42
+HS	SPTA1	intron 30	c.4339-1G>C	NA	splicing	Prague	8941647	43
+HS	SPTA1	intron 36	c.5190-99C>T	NA	splicing	LEPRA	9067503, 8941647, 11318798, 11167781	43, 44, 45, 46
+HS	SPTB	exon 1	c.1A>G	p.M1V	missense	Promissao	9414314	56
+HS	SPTB	intron 3	c.301-1G>C	NA	splicing	Guemene-Penfao	9450796	48
+HS	SPTB	exon 4	c.544T>G	p.W182G	missense	Atlanta	9207476	49
+HS	SPTB	exon 4	c.566G>C	p.G189A	missense	Unnamed	9714702	50
+HS	SPTB	exon 5	c.604T>C	p.W202R	missense	Kissimmee	6215583, 3957910, 3611357, 8102379	51, 52, 53, 54
+HS	SPTB	exon 5	c.604delT	p.W202Gfs.X10	deletion	Ostrava	9207476	49
+HS	SPTB	exon 6	c.658A>G	p.I220V	missense	Oakland	9207476	49
+HS	SPTB	exon 10	c.1329_1336delCCTCGTGG	p.L444Pfs.X4	deletion	Bicetre	9714702	50
+HS	SPTB	exon 11	c.1540C>T	p.Q514X	nonsense	Alger	9714702	50
+HS	SPTB	exon 13	c.1907delC	p.K637Nfs.X34	deletion	St. Barbara	12185384, 11703334	47, 55
+HS	SPTB	exon 13	c.2351_2352insA	p.H785Afs.X78	insertion	Bergen	9207476	49
+HS	SPTB	exon 13	c.2533C>T	p.Q845X	nonsense	Baltimore	9207476	49
+HS	SPTB	exon 16	c.3679C>T	p.P1227S	missense	Columbus	9207476	49
+HS	SPTB	intron 16	c.3764+1G>A	NA	splicing	Winston-Salem	8630421	57
+HS	SPTB	exon 19	c.4176delC	p.N1392Kfs.X6	deletion	Sao Paulo II	12185384	55
+HS	SPTB	exon 21,22	c.4477_4842del366	p.L1492_K1614del	deletion	Durham	8675627	58
+HS	SPTB	exon 24	c.5050C>T	p.R1684C	missense	Birmingham	9207476	49
+HS	SPTB	exon 26	c.5651C>T	p.A1884V	missense	Sao Paulo I	12185384	55
+HS	SPTB	exon 27	c.5836C>T	p.Q1946X	nonsense	Tabor	9207476	49
+HS	EPB42	exon 2	c.267delG	p.A90Pfs.X47	deletion	Lisboa	7803799	59
+HS	EPB42	exon 3	c.356G>A	p.W119X	missense	Fukuoka	7803799, 7819064	59, 60
+HS	EPB42	exon 3	c.424G>A	p.A142T	missense	Nippon	8111049	61
+HS	EPB42	exon 4	c.523G>T	p.D175Y	missense	Komatsu	8547605	66
+HS	EPB42	intron 6	c.922+1G>A	NA	splicing	Notame	8528207	63
+HS	EPB42	exon 7	c.929G>A	p.R310Q	missense	Tozeur	7772513, 2386772	64,65
+HS	EPB42	exon 7	c.949C>T	p.R317C	missense	Shiga	8547071	62
+HS	EPB42	exon 7	c.950delG	p.R317Pfs.X3	deletion	Nancy	10629586	67

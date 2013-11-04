@@ -15,6 +15,7 @@ public class PipelineExecutorTest {
 
 	@Test
 	public void testIndelOrPointService() {
+		System.out.println("TEST INDEL OR POINT SERVICE");
 		try {
 			PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 123, 123, "G", "A", "+");
@@ -35,6 +36,7 @@ public class PipelineExecutorTest {
 
 	@Test
 	public void testAlleleFrequencyService() {
+		System.out.println("TEST ALLELE FREQUENCY SERVICE");
 		try {
 			PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("19", 80840, 80840, "CCT", "C", "+");
@@ -58,6 +60,7 @@ public class PipelineExecutorTest {
 
 	@Test
 	public void testAlignVariantService() {
+		System.out.println("TEST ALIGN VARIANT SERVICE");
 		try {
 			PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
@@ -72,15 +75,57 @@ public class PipelineExecutorTest {
 	}
 
 	@Test
+	public void testRCMDBService() {
+		System.out.println("TEST RCMDB SERVICE");
+		try {
+			PipelineExecutor pex = new PipelineExecutor();
+			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
+			IndividualPlus output = pex.execute(v1);
+			String alignment = pex.getLiteralResult(output, NS
+					+ "DatabasePresence");
+			assertEquals(false, Boolean.parseBoolean(alignment));
+			
+			Variant v2 = new Variant("1", 158655079, 158655079, "C", "T", "+");
+			output = pex.execute(v2);
+			alignment = pex.getLiteralResult(output, NS + "DatabasePresence");
+			assertEquals(true, Boolean.parseBoolean(alignment));
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testSiftService() {
+		System.out.println("TEST SIFT SERVICE");
+		try {
+			PipelineExecutor pex = new PipelineExecutor();
+			Variant v1 = new Variant("1", 229577655, 229577655, "A", "G", "-");
+			IndividualPlus output = pex.execute(v1);
+			String preSift = pex.getLiteralResult(output, NS + "SiftScore");
+			Double sift = Double.parseDouble(preSift);
+			assertEquals(new Double(0.04), sift);
+			
+			Variant v2 = new Variant("1", 229553999, 229553999, "C", "A", "+");
+			output = pex.execute(v2);
+			preSift = pex.getLiteralResult(output, NS + "SiftScore");
+			assertEquals(null, preSift);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
 	public void testPhylopScore() {
 		try {
 			String test = "||";
 			String[] ts = test.split("\\|", -1);
-			
+
 			Variant v1 = new Variant("1", 229554000, 229554000, "C", "A", "+");
 			Double phylop = new PhylopService().getPhylopScore(v1);
 			assertEquals(new Double(0.075), phylop);
-			
+
 			Variant v2 = new Variant("1", 229553999, 229553999, "C", "A", "+");
 			phylop = new PhylopService().getPhylopScore(v2);
 			assertEquals(null, phylop);
@@ -89,18 +134,18 @@ public class PipelineExecutorTest {
 			fail();
 		}
 	}
-	
+
 	@Test
 	public void testSiftScore() {
 		try {
 			Variant v1 = new Variant("1", 229577655, 229577655, "A", "G", "-");
 			Double sift = new SiftService().getSiftScore(v1);
-			assertEquals(new Double(0.01), sift);
-			
+			assertEquals(new Double(0.04), sift);
+
 			Variant v2 = new Variant("1", 229553999, 229553999, "C", "A", "+");
 			sift = new SiftService().getSiftScore(v2);
 			assertEquals(null, sift);
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
+import edu.yale.abfab.pipeline.AbstractPipelineService;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.abfab.service.Service;
 import edu.yale.dlgen.DLAxiom;
@@ -13,7 +14,8 @@ import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
 
-public class TestLowSiftValueAnnotatedMutationService implements Service {
+public class TestLowSiftValueAnnotatedMutationService extends
+		AbstractPipelineService {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
@@ -36,7 +38,7 @@ public class TestLowSiftValueAnnotatedMutationService implements Service {
 				}
 			}
 		}
-		
+
 		String csID = UUID.randomUUID().toString();
 		String descID = "desc" + UUID.randomUUID().toString();
 		axioms.add(dl.individualType(dl.individual(NS + descID),

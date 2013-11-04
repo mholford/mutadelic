@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import sun.security.jca.ServiceId;
 import edu.yale.abfab.Path;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
@@ -21,6 +20,7 @@ import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
+import static edu.yale.abfab.Logging.*;
 
 public abstract class Abductor {
 
@@ -30,7 +30,6 @@ public abstract class Abductor {
 	private Path executingPath;
 	private DLObjectPropertyExpression<?> HAS_INPUT;
 	private DLObjectPropertyExpression<?> HAS_OUTPUT;
-	private int dbgLevel = 5;
 	private Map<ServiceOutputMatchCacheKey, Collection<Collection<IndividualPlus>>> serviceOutputMatchCache;
 
 	public Abductor() {
@@ -118,24 +117,19 @@ public abstract class Abductor {
 	}
 
 	public IndividualPlus exec(IndividualPlus input, Path goalPath) {
+		System.out.println("EXEC");
 		executingPath = goalPath;
 		return goalPath.exec(input);
 	}
 
-	private void dbg(int level, String s, Object... args) {
-		if (dbgLevel >= level) {
-			System.out.println(String.format(s, args));
-		}
-	}
-
 	public Set<Path> getAllPaths(IndividualPlus origInput,
 			DLClassExpression<?> goalClass) {
-		dbg(5, "Get All Paths: %s, %s", origInput, goalClass);
+		dbg(DBG_PATH_CREATION, "Get All Paths: %s, %s", origInput, goalClass);
 		Set<Path> completedPaths = new HashSet<>();
 
 		// Set<Path> paths = extendPath(null, origInput, goalI);
 		Set<Path> paths = initializePaths(origInput, goalClass);
-		dbg(5, "Initial Paths: %s", paths);
+		dbg(DBG_PATH_CREATION, "Initial Paths: %s", paths);
 
 		for (;;) {
 			Set<Path> nextPaths = new HashSet<>();
@@ -143,12 +137,13 @@ public abstract class Abductor {
 				if (matchesInput(origInput, p)) {
 					Path merged = mergeBranches(p);
 					completedPaths.add(merged);
-					dbg(5, "Path %d(%s) complete", p.hashCode(), merged.toString());
+					dbg(DBG_PATH_CREATION, "Path %d(%s) complete",
+							p.hashCode(), merged.toString());
 				} else {
 					Set<Path> eps = extendPath(p, origInput, p.getLastInput());
 					for (Path ep : eps) {
-						dbg(5, "Extend Path %d to %d(%s)", p.hashCode(),
-								ep.hashCode(), ep.toString());
+						dbg(DBG_PATH_CREATION, "Extend Path %d to %d(%s)",
+								p.hashCode(), ep.hashCode(), ep.toString());
 					}
 					nextPaths.addAll(eps);
 				}
@@ -215,50 +210,26 @@ public abstract class Abductor {
 				Branch newBranch = new Branch(this);
 				newBranch.setPaths(new HashSet<>(newPaths));
 				output.getSteps().add(addPos, newBranch);
-			} /*else if (s instanceof Condition) {
-				Condition b = (Condition) s;
-				List<Iterator<Step>> piters = new ArrayList<>();
-				List<Path> newPaths = new ArrayList<>();
-				for (Path p : b.getPaths()) {
-					piters.add(p.getSteps().iterator());
-					newPaths.add(p.copy());
-				}
-				boolean done = false;
-				Step stepToAdd = null;
-				int addPos = 0;
-				while (!done) {
-					for (Iterator<Step> piter : piters) {
-						if (piter.hasNext()) {
-							Step step = piter.next();
-
-							if (stepToAdd == null) {
-								stepToAdd = step;
-							}
-							if (!stepToAdd.equals(step)) {
-								done = true;
-								break;
-							} else {
-								stepToAdd = step;
-
-							}
-						} else {
-							done = true;
-							break;
-						}
-					}
-					if (!done && stepToAdd != null) {
-						output.getSteps().add(addPos, stepToAdd);
-						for (Path np : newPaths) {
-							np.getSteps().remove(0);
-						}
-						addPos++;
-						stepToAdd = null;
-					}
-				}
-				Condition newBranch = new Condition(this);
-				newBranch.setPaths(new HashSet<>(newPaths));
-				output.getSteps().add(addPos, newBranch);
-			}*/ else {
+			} /*
+			 * else if (s instanceof Condition) { Condition b = (Condition) s;
+			 * List<Iterator<Step>> piters = new ArrayList<>(); List<Path>
+			 * newPaths = new ArrayList<>(); for (Path p : b.getPaths()) {
+			 * piters.add(p.getSteps().iterator()); newPaths.add(p.copy()); }
+			 * boolean done = false; Step stepToAdd = null; int addPos = 0;
+			 * while (!done) { for (Iterator<Step> piter : piters) { if
+			 * (piter.hasNext()) { Step step = piter.next();
+			 * 
+			 * if (stepToAdd == null) { stepToAdd = step; } if
+			 * (!stepToAdd.equals(step)) { done = true; break; } else {
+			 * stepToAdd = step;
+			 * 
+			 * } } else { done = true; break; } } if (!done && stepToAdd !=
+			 * null) { output.getSteps().add(addPos, stepToAdd); for (Path np :
+			 * newPaths) { np.getSteps().remove(0); } addPos++; stepToAdd =
+			 * null; } } Condition newBranch = new Condition(this);
+			 * newBranch.setPaths(new HashSet<>(newPaths));
+			 * output.getSteps().add(addPos, newBranch); }
+			 */else {
 				output.getSteps().add(0, s);
 			}
 			if (!(output.equals(input))) {
@@ -291,6 +262,7 @@ public abstract class Abductor {
 
 	public Collection<DLIndividual<?>> findTerminals(
 			DLClassExpression<?> goalClass) {
+		long start = System.currentTimeMillis();
 		Set<DLIndividual<?>> terminals = new HashSet<>();
 
 		for (DLClassExpression<?> serviceClass : dl.getSubclasses(dl.clazz(NS
@@ -314,7 +286,7 @@ public abstract class Abductor {
 
 				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
 				dl.addAxioms(ax);
-				debug();
+				//debug();
 				if (!dl.checkConsistency()) {
 					add = true;
 				}
@@ -332,7 +304,7 @@ public abstract class Abductor {
 						ax.add(dl.individualType(testI, scioType));
 						ax.add(dl.individualType(testI, dl.notClass(goalClass)));
 						dl.addAxioms(ax);
-						debug();
+						//debug();
 						add = !dl.checkConsistency();
 						dl.removeAxioms(ax);
 					}
@@ -343,11 +315,14 @@ public abstract class Abductor {
 				}
 			}
 		}
-
+		long end = System.currentTimeMillis();
+		dbg(DBG_TIMING, "findTerminals: %d millis", end - start);
 		return terminals;
 	}
 
 	public boolean matchesInput(IndividualPlus input, Path p) {
+		boolean output;
+		long start = System.currentTimeMillis();
 		Set<DLAxiom<?>> ax = new HashSet<>();
 
 		try {
@@ -366,14 +341,18 @@ public abstract class Abductor {
 					input.getIndividual()));
 			ax.add(dl.individualType(testService, dl.notClass(topClass)));
 			dl.addAxioms(ax);
-			debug();
+			//debug();
 			if (!dl.checkConsistency()) {
-				return true;
+				output = true;
+			} else {
+				output = false;
 			}
-			return false;
 		} finally {
 			dl.removeAxioms(ax);
 		}
+		long end = System.currentTimeMillis();
+		dbg(DBG_TIMING, "matchesInput: %d millis", end - start);
+		return output;
 	}
 
 	public Collection<Collection<IndividualPlus>> findServiceOutputMatch(
@@ -392,7 +371,7 @@ public abstract class Abductor {
 
 			for (DLClassExpression serviceClass : dl.getSubclasses(dl.clazz(NS
 					+ "Service"))) {
-				dbg(9, "Try service: %s", serviceClass);
+				dbg(DBG_SERVICE_MATCH, "Try service: %s", serviceClass);
 				IndividualPlus serviceI = new IndividualPlus(dl.individual(NS
 						+ "testService"));
 				// serviceI.getAxioms().add(
@@ -412,17 +391,17 @@ public abstract class Abductor {
 
 						switch (match) {
 						case FULL:
-							dbg(9, "Full Match");
+							dbg(DBG_SERVICE_MATCH, "Full Match");
 							output.add(Arrays
 									.asList(new IndividualPlus[] { new IndividualPlus(
 											serviceClassI) }));
 							break;
 						case PARTIAL:
-							dbg(9, "Partial Match");
+							dbg(DBG_SERVICE_MATCH, "Partial Match");
 							servicePartials.add(serviceClass);
 							break;
 						default:
-							dbg(9, "No Match");
+							dbg(DBG_SERVICE_MATCH, "No Match");
 							break;
 						}
 					}
@@ -443,7 +422,8 @@ public abstract class Abductor {
 							.getNTuplePermutations(servicePartials, n);
 
 					for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
-						dbg(9, "Try services: %s", serviceClassTuple);
+						dbg(DBG_SERVICE_MATCH, "Try services: %s",
+								serviceClassTuple);
 						IndividualPlus serviceI = new IndividualPlus(
 								dl.individual(NS + "testService"));
 
@@ -540,7 +520,7 @@ public abstract class Abductor {
 
 								switch (match) {
 								case FULL:
-									dbg(9, "Full Match");
+									dbg(DBG_SERVICE_MATCH, "Full Match");
 									List<IndividualPlus> outputsToAdd = new ArrayList<>();
 									for (IndividualPlus s : serviceClassIPair) {
 										for (DLIndividual<?> soutput : dl
@@ -559,7 +539,7 @@ public abstract class Abductor {
 									break;
 
 								default:
-									dbg(9, "No Match");
+									dbg(DBG_SERVICE_MATCH, "No Match");
 									break;
 								}
 							}
@@ -595,6 +575,7 @@ public abstract class Abductor {
 			Collection<DLIndividual> serviceClassIFillers,
 			DLObjectPropertyExpression<?> propToKeep,
 			DLObjectPropertyExpression<?> propToReplace) {
+		long start = System.currentTimeMillis();
 		MatchStatus output = MatchStatus.NONE;
 		Set<DLAxiom<?>> ax = new HashSet<>();
 		for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
@@ -614,7 +595,7 @@ public abstract class Abductor {
 		ax.add(dl.individualType(serviceClassI.getIndividual(),
 				dl.notClass(serv)));
 		dl.addAxioms(ax);
-		debug();
+		//debug();
 		boolean add = false;
 		if (!dl.checkConsistency()) {
 			add = true;
@@ -674,7 +655,7 @@ public abstract class Abductor {
 								serviceClassI.getIndividual(),
 								dl.notClass(serv)));
 						dl.addAxioms(ax2);
-						debug();
+						//debug();
 						if (dl.checkConsistency()) {
 							add = false;
 						} else {
@@ -692,6 +673,8 @@ public abstract class Abductor {
 		if (add) {
 			output = MatchStatus.FULL;
 		}
+		long end = System.currentTimeMillis();
+		dbg(DBG_TIMING, "Service Class matches: %d millis", end - start);
 		return output;
 	}
 

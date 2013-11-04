@@ -98,7 +98,28 @@ public class SiftMongoLoader {
 			}
 
 			int pos = Integer.parseInt(prePos);
-
+			if (curPos != null && !(curPos.equals(prePos))) {
+				String obsListString = pipeList(obsList);
+				String aaObsListString = pipeList(obsAAList);
+				String scoreListString = pipeList(scoreList);
+				String val = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+						curStrand, curPos, curRef, obsListString,
+						curTranscript, curTransPos, curAARef, aaObsListString,
+						curProtein, curAAPos, scoreListString);
+				int rindex = Integer.parseInt(curPos) - curLow;
+				try {
+					curRange[rindex] = val;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				obsList = new ArrayList<>();
+				obsAAList = new ArrayList<>();
+				scoreList = new ArrayList<>();
+			} else if (curPos == null) {
+				obsList = new ArrayList<>();
+				obsAAList = new ArrayList<>();
+				scoreList = new ArrayList<>();
+			}
 			boolean newRange = false;
 			if (!chr.equals(curChr)) {
 				curChr = chr;
@@ -116,28 +137,7 @@ public class SiftMongoLoader {
 				curRange = new String[RANGE_SIZE];
 				curKey = String.format("%s_%d", curChr.substring(3), curLow);
 			}
-			if (curPos != null && !(curPos.equals(prePos))) {
-				String obsListString = pipeList(obsList);
-				String aaObsListString = pipeList(obsAAList);
-				String scoreListString = pipeList(scoreList);
-				String val = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-						curStrand, curPos, curRef, obsListString,
-						curTranscript, curTransPos, curAARef, aaObsListString,
-						curProtein, curAAPos, scoreListString);
-				int rindex = pos - curLow;
-				try {
-					curRange[rindex] = val;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				obsList = new ArrayList<>();
-				obsAAList = new ArrayList<>();
-				scoreList = new ArrayList<>();
-			} else if (curPos == null) {
-				obsList = new ArrayList<>();
-				obsAAList = new ArrayList<>();
-				scoreList = new ArrayList<>();
-			}
+			
 			curPos = prePos;
 			curStrand = strand;
 			curRef = ref;

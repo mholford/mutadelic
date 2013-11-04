@@ -5,14 +5,14 @@ import java.util.UUID;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
+import edu.yale.abfab.pipeline.AbstractPipelineService;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.abfab.service.Service;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.controller.DLController;
-
 import static edu.yale.abfab.NS.*;
 
-public class TestGeneAnnotatedMutationService implements Service {
+public class TestGeneAnnotatedMutationService extends AbstractPipelineService {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
@@ -30,7 +30,8 @@ public class TestGeneAnnotatedMutationService implements Service {
 		axioms.add(dl.newObjectFact(dl.individual(NS + descID),
 				dl.objectProp(SIO + "refers_to"), dl.individual(NS + csID)));
 		axioms.add(dl.newObjectFact(input.getIndividual(),
-				dl.objectProp(SIO + "is_described_by"), dl.individual(NS + descID)));
+				dl.objectProp(SIO + "is_described_by"),
+				dl.individual(NS + descID)));
 		return input;
 	}
 
