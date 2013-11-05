@@ -3,6 +3,7 @@ package edu.yale.mutadelic.pipeline;
 import static org.junit.Assert.*;
 import static edu.yale.abfab.NS.*;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.yale.abfab.IndividualPlus;
@@ -12,12 +13,18 @@ import edu.yale.mutadelic.pipeline.service.PhylopService;
 import edu.yale.mutadelic.pipeline.service.SiftService;
 
 public class PipelineExecutorTest {
+	
+	private static PipelineExecutor pex;
+
+	@BeforeClass
+	public static void beforeClass() {
+		pex = new PipelineExecutor();
+	}
 
 	@Test
 	public void testIndelOrPointService() {
 		System.out.println("TEST INDEL OR POINT SERVICE");
 		try {
-			PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 123, 123, "G", "A", "+");
 			DefaultValues.ALLELE_FREQUENCY = 0.001;
 			IndividualPlus output = pex.execute(v1);
@@ -38,7 +45,7 @@ public class PipelineExecutorTest {
 	public void testAlleleFrequencyService() {
 		System.out.println("TEST ALLELE FREQUENCY SERVICE");
 		try {
-			PipelineExecutor pex = new PipelineExecutor();
+			//PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("19", 80840, 80840, "CCT", "C", "+");
 			IndividualPlus output = pex.execute(v1);
 			String preMAF = pex
@@ -62,7 +69,7 @@ public class PipelineExecutorTest {
 	public void testAlignVariantService() {
 		System.out.println("TEST ALIGN VARIANT SERVICE");
 		try {
-			PipelineExecutor pex = new PipelineExecutor();
+			//PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
 			IndividualPlus output = pex.execute(v1);
 			String alignment = pex
@@ -78,7 +85,7 @@ public class PipelineExecutorTest {
 	public void testRCMDBService() {
 		System.out.println("TEST RCMDB SERVICE");
 		try {
-			PipelineExecutor pex = new PipelineExecutor();
+			//PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
 			IndividualPlus output = pex.execute(v1);
 			String alignment = pex.getLiteralResult(output, NS
@@ -99,7 +106,7 @@ public class PipelineExecutorTest {
 	public void testSiftService() {
 		System.out.println("TEST SIFT SERVICE");
 		try {
-			PipelineExecutor pex = new PipelineExecutor();
+			//PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 229577655, 229577655, "A", "G", "-");
 			IndividualPlus output = pex.execute(v1);
 			String preSift = pex.getLiteralResult(output, NS + "SiftScore");

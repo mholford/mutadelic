@@ -16,6 +16,7 @@ import java.util.Set;
 import edu.yale.abfab.Path;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
+import edu.yale.dlgen.DLDataPropertyExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
@@ -31,6 +32,7 @@ public abstract class Abductor {
 	private DLObjectPropertyExpression<?> HAS_INPUT;
 	private DLObjectPropertyExpression<?> HAS_OUTPUT;
 	private Map<ServiceOutputMatchCacheKey, Collection<Collection<IndividualPlus>>> serviceOutputMatchCache;
+	private Map<PathCacheKey, Path> pathCache;
 
 	public Abductor() {
 		dl = initDLController();
@@ -38,10 +40,92 @@ public abstract class Abductor {
 		HAS_INPUT = dl.objectProp(NS + "has_input");
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 		serviceOutputMatchCache = new HashMap<>();
+		pathCache = new HashMap<>();
 	}
 
 	public enum MatchStatus {
 		FULL, PARTIAL, NONE
+	}
+
+	class PathCacheKey {
+		Collection<DLClassExpression> types;
+		Collection<DLDataPropertyExpression> dataProperties;
+		Map<DLObjectPropertyExpression<?>, Collection<DLClassExpression>> objectPropertyMap;
+		DLClassExpression<?> goal;
+
+		public PathCacheKey(
+				Collection<DLClassExpression> types,
+				Collection<DLDataPropertyExpression> dataProperties,
+				Map<DLObjectPropertyExpression<?>, Collection<DLClassExpression>> objectPropertyMap,
+				DLClassExpression<?> goal) {
+			super();
+			this.types = types;
+			this.dataProperties = dataProperties;
+			this.objectPropertyMap = objectPropertyMap;
+			this.goal = goal;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime
+					* result
+					+ ((dataProperties == null) ? 0 : dataProperties.hashCode());
+			result = prime * result + ((goal == null) ? 0 : goal.hashCode());
+			result = prime
+					* result
+					+ ((objectPropertyMap == null) ? 0 : objectPropertyMap
+							.hashCode());
+			result = prime * result + ((types == null) ? 0 : types.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			PathCacheKey other = (PathCacheKey) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (dataProperties == null) {
+				if (other.dataProperties != null)
+					return false;
+			} else if (!dataProperties.equals(other.dataProperties))
+				return false;
+			if (goal == null) {
+				if (other.goal != null)
+					return false;
+			} else if (!goal.equals(other.goal))
+				return false;
+			if (objectPropertyMap == null) {
+				if (other.objectPropertyMap != null)
+					return false;
+			} else if (!objectPropertyMap.equals(other.objectPropertyMap))
+				return false;
+			if (types == null) {
+				if (other.types != null)
+					return false;
+			} else if (!types.equals(other.types))
+				return false;
+			return true;
+		}
+
+		private Abductor getOuterType() {
+			return Abductor.this;
+		}
+
+		@Override
+		public String toString() {
+			return "PathCacheKey [types=" + types + ", dataProperties="
+					+ dataProperties + ", objectPropertyMap="
+					+ objectPropertyMap + ", goal=" + goal + "]";
+		}
 	}
 
 	class ServiceOutputMatchCacheKey {
@@ -114,6 +198,38 @@ public abstract class Abductor {
 
 	public void setExecutingPath(Path executingPath) {
 		this.executingPath = executingPath;
+	}
+
+	private PathCacheKey createPathCacheKey(IndividualPlus ip,
+			DLClassExpression<?> goal) {
+		Set<DLAxiom<?>> newAx = new HashSet<>();
+		for (DLAxiom<?> ax : ip.getAxioms()) {
+			if (!dl.getAxioms().contains(ax)) {
+				newAx.add(ax);
+			}
+		}
+		try {
+			dl.addAxioms(newAx);
+			Collection<DLClassExpression> types = dl.getTypes(ip
+					.getIndividual());
+			Collection<DLDataPropertyExpression> dataProperties = dl
+					.getDataProperties(ip.getIndividual());
+			Collection<DLObjectPropertyExpression> ops = dl
+					.getObjectProperties(ip.getIndividual());
+			Map<DLObjectPropertyExpression<?>, Collection<DLClassExpression>> opMap = new HashMap<>();
+			for (DLObjectPropertyExpression op : ops) {
+				Collection<DLIndividual> opVals = dl.getObjectPropertyValues(
+						ip.getIndividual(), op);
+				for (DLIndividual<?> opValI : opVals) {
+					Collection<DLClassExpression> opValITypes = dl
+							.getTypes(opValI);
+					opMap.put(op, opValITypes);
+				}
+			}
+			return new PathCacheKey(types, dataProperties, opMap, goal);
+		} finally {
+			dl.removeAxioms(newAx);
+		}
 	}
 
 	public IndividualPlus exec(IndividualPlus input, Path goalPath) {
@@ -241,9 +357,16 @@ public abstract class Abductor {
 
 	public Path getBestPath(IndividualPlus origInput,
 			DLClassExpression<?> goalClass) {
+		PathCacheKey k = createPathCacheKey(origInput, goalClass);
+		if (pathCache.containsKey(k)) {
+			dbg(DBG_PATH_CREATION, "PATH CACHE HIT");
+			return pathCache.get(k);
+		}
 		Set<Path> completedPaths = getAllPaths(origInput, goalClass);
 
-		return chooseBestPath(completedPaths);
+		Path bestPath = chooseBestPath(completedPaths);
+		pathCache.put(k, bestPath);
+		return bestPath;
 	}
 
 	public Set<Path> initializePaths(IndividualPlus input,
@@ -286,7 +409,7 @@ public abstract class Abductor {
 
 				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
 				dl.addAxioms(ax);
-				//debug();
+				// debug();
 				if (!dl.checkConsistency()) {
 					add = true;
 				}
@@ -304,7 +427,7 @@ public abstract class Abductor {
 						ax.add(dl.individualType(testI, scioType));
 						ax.add(dl.individualType(testI, dl.notClass(goalClass)));
 						dl.addAxioms(ax);
-						//debug();
+						// debug();
 						add = !dl.checkConsistency();
 						dl.removeAxioms(ax);
 					}
@@ -341,7 +464,7 @@ public abstract class Abductor {
 					input.getIndividual()));
 			ax.add(dl.individualType(testService, dl.notClass(topClass)));
 			dl.addAxioms(ax);
-			//debug();
+			// debug();
 			if (!dl.checkConsistency()) {
 				output = true;
 			} else {
@@ -595,7 +718,7 @@ public abstract class Abductor {
 		ax.add(dl.individualType(serviceClassI.getIndividual(),
 				dl.notClass(serv)));
 		dl.addAxioms(ax);
-		//debug();
+		// debug();
 		boolean add = false;
 		if (!dl.checkConsistency()) {
 			add = true;
@@ -655,7 +778,7 @@ public abstract class Abductor {
 								serviceClassI.getIndividual(),
 								dl.notClass(serv)));
 						dl.addAxioms(ax2);
-						//debug();
+						// debug();
 						if (dl.checkConsistency()) {
 							add = false;
 						} else {
