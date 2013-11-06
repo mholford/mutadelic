@@ -18,6 +18,7 @@ import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLDataPropertyExpression;
 import edu.yale.dlgen.DLIndividual;
+import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
@@ -175,6 +176,129 @@ public abstract class Abductor {
 
 		private Abductor getOuterType() {
 			return Abductor.this;
+		}
+	}
+	
+	class SCCKey {
+		DLClassExpression<?> serviceClass;
+		SCCIndividual input;
+		SCCIndividual output;
+		public SCCKey(DLClassExpression<?> serviceClass, SCCIndividual input,
+				SCCIndividual output) {
+			super();
+			this.serviceClass = serviceClass;
+			this.input = input;
+			this.output = output;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((input == null) ? 0 : input.hashCode());
+			result = prime * result
+					+ ((output == null) ? 0 : output.hashCode());
+			result = prime * result
+					+ ((serviceClass == null) ? 0 : serviceClass.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SCCKey other = (SCCKey) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (input == null) {
+				if (other.input != null)
+					return false;
+			} else if (!input.equals(other.input))
+				return false;
+			if (output == null) {
+				if (other.output != null)
+					return false;
+			} else if (!output.equals(other.output))
+				return false;
+			if (serviceClass == null) {
+				if (other.serviceClass != null)
+					return false;
+			} else if (!serviceClass.equals(other.serviceClass))
+				return false;
+			return true;
+		}
+		private Abductor getOuterType() {
+			return Abductor.this;
+		}
+		@Override
+		public String toString() {
+			return "SCCKey [serviceClass=" + serviceClass + ", input=" + input
+					+ ", output=" + output + "]";
+		}
+	}
+	
+	class SCCIndividual {
+		Set<DLClassExpression<?>> types;
+		Map<DLDataPropertyExpression<?>, Set<DLLiteral<?>>> dataMap;
+		Map<DLObjectPropertyExpression<?>, Set<SCCIndividual>> objectMap;
+		public SCCIndividual(Set<DLClassExpression<?>> types,
+				Map<DLDataPropertyExpression<?>, Set<DLLiteral<?>>> dataMap,
+				Map<DLObjectPropertyExpression<?>, Set<SCCIndividual>> objectMap) {
+			super();
+			this.types = types;
+			this.dataMap = dataMap;
+			this.objectMap = objectMap;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result
+					+ ((dataMap == null) ? 0 : dataMap.hashCode());
+			result = prime * result
+					+ ((objectMap == null) ? 0 : objectMap.hashCode());
+			result = prime * result + ((types == null) ? 0 : types.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SCCIndividual other = (SCCIndividual) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (dataMap == null) {
+				if (other.dataMap != null)
+					return false;
+			} else if (!dataMap.equals(other.dataMap))
+				return false;
+			if (objectMap == null) {
+				if (other.objectMap != null)
+					return false;
+			} else if (!objectMap.equals(other.objectMap))
+				return false;
+			if (types == null) {
+				if (other.types != null)
+					return false;
+			} else if (!types.equals(other.types))
+				return false;
+			return true;
+		}
+		private Abductor getOuterType() {
+			return Abductor.this;
+		}
+		@Override
+		public String toString() {
+			return "SCCIndividual [types=" + types + ", dataMap=" + dataMap
+					+ ", objectMap=" + objectMap + "]";
 		}
 	}
 
