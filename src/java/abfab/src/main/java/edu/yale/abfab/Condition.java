@@ -11,12 +11,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import edu.yale.abfab.Abductor.SCCIndividual;
+import edu.yale.abfab.Abductor.SCCKey;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLObjectPropertyExpression;
 import edu.yale.dlgen.controller.DLController;
-
 import static edu.yale.abfab.NS.*;
 import static edu.yale.abfab.Logging.*;
 
@@ -181,21 +182,30 @@ public class Condition extends Step {
 						for (DLIndividual<?> nci : dl.getInstances(nc)) {
 							for (DLIndividual<?> ncOut : dl
 									.getObjectPropertyValues(nci, HAS_OUTPUT)) {
-								DLIndividual<?> testI = dl.individual(NS
-										+ "testI");
-								ax2.add(dl.newObjectFact(testI, HAS_OUTPUT,
-										ncOut));
-								ax2.addAll(outcome.getAxioms());
-								ax2.add(dl.newObjectFact(testI, HAS_INPUT,
-										outcome.getIndividual()));
-								ax2.add(dl.individualType(testI,
-										dl.notClass(nc)));
-								dl.addAxioms(ax2);
-								//ab.debug();
-								if (dl.checkConsistency()) {
-									fail = true;
-								}
-								dl.removeAxioms(ax2);
+//								DLIndividual<?> testI = dl.individual(NS
+//										+ "testI");
+//								ax2.add(dl.newObjectFact(testI, HAS_OUTPUT,
+//										ncOut));
+//								ax2.addAll(outcome.getAxioms());
+//								ax2.add(dl.newObjectFact(testI, HAS_INPUT,
+//										outcome.getIndividual()));
+//								ax2.add(dl.individualType(testI,
+//										dl.notClass(nc)));
+//								dl.addAxioms(ax2);
+//								//ab.debug();
+//								if (dl.checkConsistency()) {
+//									fail = true;
+//								}
+//								dl.removeAxioms(ax2);
+								IndividualPlus sInput = outcome;
+								IndividualPlus sOutput = new IndividualPlus(ncOut);
+								DLClassExpression<?> service = nc;
+								SCCIndividual sccInput = ab.createSCCIndividual(sInput);
+								SCCIndividual sccOutput = ab.createSCCIndividual(sOutput);
+								SCCKey sccKey = ab.createSCCKey(service, sccInput, sccOutput);
+								
+								fail = ab.checkSCCache(sccKey);
+								
 								if (!fail) {
 									// out.setStop(true);
 									long end = System.currentTimeMillis();

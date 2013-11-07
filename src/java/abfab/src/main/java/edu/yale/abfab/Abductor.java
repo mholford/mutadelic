@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import edu.yale.abfab.Path;
 import edu.yale.dlgen.DLAxiom;
@@ -34,6 +35,7 @@ public abstract class Abductor {
 	private DLObjectPropertyExpression<?> HAS_OUTPUT;
 	private Map<ServiceOutputMatchCacheKey, Collection<Collection<IndividualPlus>>> serviceOutputMatchCache;
 	private Map<PathCacheKey, Path> pathCache;
+	private Map<SCCKey, Boolean> scCache;
 
 	public Abductor() {
 		dl = initDLController();
@@ -42,6 +44,7 @@ public abstract class Abductor {
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 		serviceOutputMatchCache = new HashMap<>();
 		pathCache = new HashMap<>();
+		scCache = new HashMap<>();
 	}
 
 	public enum MatchStatus {
@@ -178,11 +181,12 @@ public abstract class Abductor {
 			return Abductor.this;
 		}
 	}
-	
+
 	class SCCKey {
 		DLClassExpression<?> serviceClass;
 		SCCIndividual input;
 		SCCIndividual output;
+
 		public SCCKey(DLClassExpression<?> serviceClass, SCCIndividual input,
 				SCCIndividual output) {
 			super();
@@ -190,6 +194,7 @@ public abstract class Abductor {
 			this.input = input;
 			this.output = output;
 		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -202,6 +207,7 @@ public abstract class Abductor {
 					+ ((serviceClass == null) ? 0 : serviceClass.hashCode());
 			return result;
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -230,28 +236,53 @@ public abstract class Abductor {
 				return false;
 			return true;
 		}
+
 		private Abductor getOuterType() {
 			return Abductor.this;
 		}
+
 		@Override
 		public String toString() {
 			return "SCCKey [serviceClass=" + serviceClass + ", input=" + input
 					+ ", output=" + output + "]";
 		}
 	}
-	
+
 	class SCCIndividual {
-		Set<DLClassExpression<?>> types;
-		Map<DLDataPropertyExpression<?>, Set<DLLiteral<?>>> dataMap;
-		Map<DLObjectPropertyExpression<?>, Set<SCCIndividual>> objectMap;
-		public SCCIndividual(Set<DLClassExpression<?>> types,
-				Map<DLDataPropertyExpression<?>, Set<DLLiteral<?>>> dataMap,
-				Map<DLObjectPropertyExpression<?>, Set<SCCIndividual>> objectMap) {
+		Collection<DLClassExpression> types;
+		Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dataMap;
+		Map<DLObjectPropertyExpression<?>, Collection<SCCIndividual>> objectMap;
+
+		public SCCIndividual(
+				Collection<DLClassExpression> types,
+				Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dataMap,
+				Map<DLObjectPropertyExpression<?>, Collection<SCCIndividual>> objectMap) {
 			super();
 			this.types = types;
 			this.dataMap = dataMap;
 			this.objectMap = objectMap;
 		}
+
+		public Set<DLAxiom<?>> getAxioms(DLIndividual<?> indiv) {
+			Set<DLAxiom<?>> ax = new HashSet<>();
+			for (DLClassExpression type : types) {
+				ax.add(dl.individualType(indiv, type));
+			}
+			for (DLDataPropertyExpression<?> dataProp : dataMap.keySet()) {
+				for (DLLiteral<?> val : dataMap.get(dataProp)) {
+					ax.add(dl.newDataFact(indiv, dataProp, val));
+				}
+			}
+			for (DLObjectPropertyExpression<?> obProp : objectMap.keySet()) {
+				for (SCCIndividual opi : objectMap.get(obProp)) {
+					DLIndividual<?> opii = dl.individual(NS
+							+ UUID.randomUUID().toString());
+					ax.addAll(opi.getAxioms(opii));
+				}
+			}
+			return ax;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -264,6 +295,7 @@ public abstract class Abductor {
 			result = prime * result + ((types == null) ? 0 : types.hashCode());
 			return result;
 		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -292,9 +324,11 @@ public abstract class Abductor {
 				return false;
 			return true;
 		}
+
 		private Abductor getOuterType() {
 			return Abductor.this;
 		}
+
 		@Override
 		public String toString() {
 			return "SCCIndividual [types=" + types + ", dataMap=" + dataMap
@@ -322,6 +356,119 @@ public abstract class Abductor {
 
 	public void setExecutingPath(Path executingPath) {
 		this.executingPath = executingPath;
+	}
+
+	public SCCKey createSCCKey(DLClassExpression<?> serviceClass,
+			SCCIndividual input, SCCIndividual output) {
+		return new SCCKey(serviceClass, input, output);
+	}
+
+	public boolean checkSCCache(SCCKey key) {
+		if (!scCache.containsKey(key)) {
+			Set<DLAxiom<?>> ax = new HashSet<>();
+			DLIndividual<?> testI = dl.individual(NS + "testI");
+			DLIndividual<?> inputI = dl.individual(NS
+					+ UUID.randomUUID().toString());
+			DLIndividual<?> outputI = dl.individual(NS
+					+ UUID.randomUUID().toString());
+			ax.addAll(key.input.getAxioms(inputI));
+			ax.addAll(key.output.getAxioms(outputI));
+			ax.add(dl.newObjectFact(testI, HAS_INPUT, inputI));
+			ax.add(dl.newObjectFact(testI, HAS_OUTPUT, outputI));
+			ax.add(dl.individualType(testI, dl.notClass(key.serviceClass)));
+			try {
+				dl.addAxioms(ax);
+				boolean consistent = dl.checkConsistency();
+				return !consistent;
+			} finally {
+				dl.removeAxioms(ax);
+			}
+		} else {
+			System.out.println("SCCache HIT");
+		}
+		return scCache.get(key);
+	}
+
+	public SCCIndividual createSCCIndividual(IndividualPlus ip) {
+		return createSCCIndividual(ip.getIndividual(), ip.getAxioms());
+	}
+
+	public SCCIndividual createSCCIndividual(DLIndividual<?> indiv,
+			Set<DLAxiom<?>> axioms) {
+		Set<DLAxiom<?>> newAx = new HashSet<>();
+		for (DLAxiom<?> ax : axioms) {
+			if (!dl.getAxioms().contains(ax)) {
+				newAx.add(ax);
+			}
+		}
+		try {
+			dl.addAxioms(newAx);
+			Collection<DLClassExpression> types = dl.getTypes(indiv);
+
+			Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dataMap = new HashMap<>();
+			Collection<DLDataPropertyExpression> dataProperties = dl
+					.getDataProperties(indiv);
+			Set<DLDataPropertyExpression<?>> ignores = new HashSet<>();
+			Map<DLDataPropertyExpression<?>, DLLiteral<?>> proxies = new HashMap<>();
+			if (dataProperties.contains(dl.dataProp(NS + "cacheValueIgnore"))) {
+				Collection<DLLiteral> ignoreLiterals = dl
+						.getDataPropertyValues(indiv,
+								dl.dataProp(NS + "cacheValueIgnore"));
+				for (DLLiteral ignoreLit : ignoreLiterals) {
+					String ignore = dl.getLiteralValue(ignoreLit);
+					ignores.add(dl.dataProp(ignore));
+				}
+			}
+			if (dataProperties.contains(dl.dataProp(NS + "cacheValueProxy"))) {
+				Collection<DLLiteral> proxyLiterals = dl.getDataPropertyValues(
+						indiv, dl.dataProp(NS + "cacheValueProxy"));
+				for (DLLiteral proxyLiteral : proxyLiterals) {
+					String proxy = dl.getLiteralValue(proxyLiteral);
+					/* Assume format IRI=Value */
+					String[] ps = proxy.split("=");
+					String proxiedProp = ps[0];
+					String proxyValue = ps[1];
+					proxies.put(dl.dataProp(proxiedProp),
+							dl.asLiteral(proxyValue));
+				}
+			}
+			for (DLDataPropertyExpression<?> dataProp : dataProperties) {
+				if (dataProp.equals(dl.dataProp(NS + "cacheValueIgnore"))
+						|| dataProp.equals(dl.dataProp(NS + "cacheValueProxy"))) {
+					continue;
+				} else if (ignores.contains(dataProp)) {
+					Collection<DLLiteral> literals = new HashSet<>();
+					literals.add(dl.asLiteral("ignore"));
+					dataMap.put(dataProp, literals);
+				} else if (proxies.containsKey(dataProp)) {
+					Collection<DLLiteral> literals = new HashSet<>();
+					literals.add(proxies.get(dataProp));
+					dataMap.put(dataProp, literals);
+				} else {
+					dataMap.put(dataProp,
+							dl.getDataPropertyValues(indiv, dataProp));
+				}
+			}
+
+			Map<DLObjectPropertyExpression<?>, Collection<SCCIndividual>> objectMap = new HashMap<>();
+			Collection<DLObjectPropertyExpression> objectProperties = dl
+					.getObjectProperties(indiv);
+			for (DLObjectPropertyExpression op : objectProperties) {
+				Set<SCCIndividual> sccIndivs = new HashSet<>();
+				Collection<DLIndividual> opVals = dl.getObjectPropertyValues(
+						indiv, op);
+				for (DLIndividual<?> opValI : opVals) {
+					Collection<DLClassExpression> opValITypes = dl
+							.getTypes(opValI);
+					SCCIndividual scci = createSCCIndividual(opValI, newAx);
+					sccIndivs.add(scci);
+				}
+				objectMap.put(op, sccIndivs);
+			}
+			return new SCCIndividual(types, dataMap, objectMap);
+		} finally {
+			dl.removeAxioms(newAx);
+		}
 	}
 
 	private PathCacheKey createPathCacheKey(IndividualPlus ip,
