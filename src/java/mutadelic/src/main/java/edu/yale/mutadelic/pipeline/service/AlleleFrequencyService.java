@@ -31,9 +31,10 @@ public class AlleleFrequencyService extends AbstractPipelineService {
 		}
 		Variant v = Variant.fromOWL(dl, input);
 		double result = findMAFForVariant(v);
+		Double cacheProxy = (result <= 0.01) ? 0.0 : 0.99;
 
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				frequency, dl.individual(MUTADELIC), result);
+				frequency, dl.individual(MUTADELIC), result, cacheProxy);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

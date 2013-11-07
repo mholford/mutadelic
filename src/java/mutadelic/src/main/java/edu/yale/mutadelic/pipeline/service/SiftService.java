@@ -35,8 +35,12 @@ public class SiftService extends AbstractPipelineService {
 		if (valueFilled(dl, input.getIndividual(), siftScore)) {
 			return input;
 		}
+		String cacheValueProxy = "NULL";
+		if (result != null) {
+			cacheValueProxy = (result > 0.05) ? "HIGH" : "LOW";
+		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				siftScore, dl.individual(MUTADELIC), result);
+				siftScore, dl.individual(MUTADELIC), result, cacheValueProxy);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}
@@ -74,19 +78,19 @@ public class SiftService extends AbstractPipelineService {
 		return null;
 	}
 
-	private int siftIndex(Variant v) {
+	public static int siftIndex(Variant v) {
 		int pst = siftStart(v);
 		return v.getStartPos() - pst;
 	}
 
-	private int siftStart(Variant v) {
+	public static int siftStart(Variant v) {
 		int pos = v.getStartPos();
 		int rs = RANGE_SIZE;
 		int pst = (((pos - 1) / rs) * rs) + 1;
 		return pst;
 	}
 
-	private String siftKey(Variant v) {
+	public static String siftKey(Variant v) {
 		String chrNo = v.getChromosome();
 		chrNo = chrNo.toUpperCase().startsWith("CHR") ? chrNo.substring(3)
 				: chrNo;

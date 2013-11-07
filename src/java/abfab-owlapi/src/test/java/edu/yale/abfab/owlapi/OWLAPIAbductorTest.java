@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.yale.abfab.Abductor;
@@ -38,15 +39,17 @@ import edu.yale.dlgen.controller.DLController;
 
 public class OWLAPIAbductorTest {
 
-	private OWLAPIAbductor abductor;
+	private static OWLAPIAbductor abductor;
 	private DLController dl;
+	
+	@BeforeClass
+	public static void beforeClass() {
+		abductor = new HermitAbductor("");
+		abductor.setNamespace(NS);
+	}
 
 	@Before
 	public void setUp() throws Exception {
-		abductor = new HermitAbductor("");
-		// abductor= new FactPPAbductor("");
-		// abductor = new Pellet2Abductor();
-		abductor.setNamespace(NS);
 		dl = abductor.getDLController();
 		TestValues.revert();
 	}
@@ -55,9 +58,11 @@ public class OWLAPIAbductorTest {
 	public void testSimpleStaging() {
 		System.out.println("TEST SIMPLE STAGING");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test1.owl")),
 					"Manchester");
+			abductor.debug();
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
 			ip.getAxioms().add(
 					dl.individualType(dl.individual(NS + "test"),
@@ -76,6 +81,7 @@ public class OWLAPIAbductorTest {
 	public void testBranchedStaging() {
 		System.out.println("TEST BRANCHED STAGING");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test2.owl")),
 					"Manchester");
@@ -100,6 +106,7 @@ public class OWLAPIAbductorTest {
 	public void testBranchedStaging2() {
 		System.out.println("TEST BRANCHED STAGING 2");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test4.owl")),
 					"Manchester");
@@ -123,9 +130,11 @@ public class OWLAPIAbductorTest {
 	public void test3WayBranchedStaging() {
 		System.out.println("TEST 3-WAY BRANCHED STAGING");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("test3.owl")),
 					"Manchester");
+			abductor.debug();
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
 			ip.getAxioms().add(
 					dl.individualType(dl.individual(NS + "test"),
@@ -150,6 +159,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineStaging() {
 		System.out.println("TEST PIPELINE STAGING");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -196,6 +206,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineExec1() {
 		System.out.println("TEST PIPELINE EXEC 1");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -232,6 +243,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineExec2() {
 		System.out.println("TEST PIPELINE EXEC 2");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -264,6 +276,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineExec3() {
 		System.out.println("TEST PIPELINE EXEC 3");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -297,6 +310,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineExec4() {
 		System.out.println("TEST PIPELINE EXEC 4");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -330,6 +344,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineExec5() {
 		System.out.println("TEST PIPELINE EXEC 5");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -362,6 +377,7 @@ public class OWLAPIAbductorTest {
 	public void testPipelineExec6() {
 		System.out.println("TEST PIPELINE EXEC 6");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
 					.getClassLoader().getResourceAsStream("pipeline-stage.owl")),
 					"Manchester");
@@ -395,10 +411,11 @@ public class OWLAPIAbductorTest {
 	public void testSimpleExec() {
 		System.out.println("TEST SIMPLE EXEC");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec.owl")),
 					"Manchester");
-
+			abductor.debug();
 			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
 			ip.getAxioms().add(
 					dl.individualType(dl.individual(NS + "test"),
@@ -468,6 +485,7 @@ public class OWLAPIAbductorTest {
 	public void testSimpleExecDP() {
 		System.out.println("TEST SIMPLE EXEC DP");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec2.owl")),
 					"Manchester");
@@ -499,6 +517,7 @@ public class OWLAPIAbductorTest {
 	public void testBranchingExec() {
 		System.out.println("TEST BRANCHING EXEC 2");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec3.owl")),
 					"Manchester");
@@ -533,6 +552,7 @@ public class OWLAPIAbductorTest {
 	public void testSimpleExecFDP() {
 		System.out.println("TEST SIMPLE EXEC FDP");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec4.owl")),
 					"Manchester");
@@ -577,6 +597,7 @@ public class OWLAPIAbductorTest {
 	public void testMazeStaging() {
 		System.out.println("TEST MAZE STAGING");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("skel.owl")), "Manchester");
 			int numNodes = 20;
@@ -678,6 +699,7 @@ public class OWLAPIAbductorTest {
 	public void testMazeStaging3() {
 		System.out.println("TEST MAZE STAGING 3");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("skel.owl")), "Manchester");
 			MazeGenerator mg = new MazeGenerator();
@@ -772,6 +794,7 @@ public class OWLAPIAbductorTest {
 	@Test
 	public void testConditionalBranchingExec() {
 		System.out.println("TEST CONDITIONAL BRANCHING EXEC");
+		abductor.clearCaches();
 		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 				.getResourceAsStream("integration-abduct-exec6.owl")),
 				"Manchester");
@@ -820,6 +843,7 @@ public class OWLAPIAbductorTest {
 	@Test
 	public void testConditionalBranchingExec2() {
 		System.out.println("TEST CONDITIONAL BRANCHING EXEC 2");
+		abductor.clearCaches();
 		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 				.getResourceAsStream("integration-abduct-exec7.owl")),
 				"Manchester");
@@ -905,6 +929,7 @@ public class OWLAPIAbductorTest {
 	public void testConditionalExec() {
 		System.out.println("TEST CONDITIONAL EXEC");
 		try {
+			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("integration-abduct-exec5.owl")),
 					"Manchester");

@@ -64,17 +64,20 @@ public abstract class OWLAPIDLController implements DLController {
 	private OWLReasoner reasoner;
 	private OWLDataFactory df;
 	private Map<String, DLVisitor<?>> visitors;
+	private Set<OWLAxiom> coreAxioms;
 
 	public OWLAPIDLController() {
 		manager = OWLManager.createOWLOntologyManager();
 		df = manager.getOWLDataFactory();
 		visitors = new HashMap<>();
+		coreAxioms = new HashSet<>();
 	}
 
 	public abstract OWLReasoner initReasoner();
 
 	@Override
 	public boolean load(Reader reader) {
+		//clearAddedAxioms();
 		boolean loaded = true;
 		if (ontology != null) {
 			manager.removeOntology(ontology);
@@ -84,11 +87,20 @@ public abstract class OWLAPIDLController implements DLController {
 					.loadOntologyFromOntologyDocument(new ReaderDocumentSource(
 							reader));
 			reasoner = initReasoner();
+			//coreAxioms = copyAxioms(ontology.getAxioms());
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 			loaded = false;
 		}
 		return loaded;
+	}
+
+	private Set<OWLAxiom> copyAxioms(Set<OWLAxiom> orig) {
+		Set<OWLAxiom> output = new HashSet<>();
+		for (OWLAxiom a : orig) {
+			output.add(a);
+		}
+		return output;
 	}
 
 	@Override
@@ -125,7 +137,19 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
+	public void clearAddedAxioms() {
+		for (DLAxiom<?> ax : getAxioms()) {
+			if (!coreAxioms.contains(ax.get())) {
+				removeAxiom(ax);
+			}
+		}
+	}
+
+	@Override
 	public Collection<DLAxiom> getAxioms() {
+		if (ontology == null){
+			return new HashSet<DLAxiom>();
+		}
 		return CollUtils.wrap(ontology.getAxioms(), DLAxiom.class);
 	}
 
@@ -301,7 +325,7 @@ public abstract class OWLAPIDLController implements DLController {
 	public DLLiteral<?> asLiteral(float val) {
 		return new DLLiteral<>(df.getOWLLiteral(val));
 	}
-	
+
 	@Override
 	public DLLiteral<?> asLiteral(long val) {
 		return new DLLiteral<>(df.getOWLLiteral(val));

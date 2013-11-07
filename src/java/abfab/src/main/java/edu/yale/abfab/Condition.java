@@ -161,7 +161,7 @@ public class Condition extends Step {
 				boolean fail = false;
 				// ab.setExecutingPath(p);
 				IndividualPlus outcome = p.exec(input);
-				out = mergeIndividuals(Arrays.asList(outcome, out));
+				out = ab.mergeIndividuals(Arrays.asList(outcome, out));
 
 				if (outcome.isStop()) {
 					continue;
@@ -182,6 +182,8 @@ public class Condition extends Step {
 						for (DLIndividual<?> nci : dl.getInstances(nc)) {
 							for (DLIndividual<?> ncOut : dl
 									.getObjectPropertyValues(nci, HAS_OUTPUT)) {
+
+								/* PRE SCC*/
 //								DLIndividual<?> testI = dl.individual(NS
 //										+ "testI");
 //								ax2.add(dl.newObjectFact(testI, HAS_OUTPUT,
@@ -192,11 +194,13 @@ public class Condition extends Step {
 //								ax2.add(dl.individualType(testI,
 //										dl.notClass(nc)));
 //								dl.addAxioms(ax2);
-//								//ab.debug();
+//								ab.debug();
 //								if (dl.checkConsistency()) {
 //									fail = true;
 //								}
 //								dl.removeAxioms(ax2);
+								
+								/* POST SCC*/
 								IndividualPlus sInput = outcome;
 								IndividualPlus sOutput = new IndividualPlus(ncOut);
 								DLClassExpression<?> service = nc;
@@ -204,7 +208,7 @@ public class Condition extends Step {
 								SCCIndividual sccOutput = ab.createSCCIndividual(sOutput);
 								SCCKey sccKey = ab.createSCCKey(service, sccInput, sccOutput);
 								
-								fail = ab.checkSCCache(sccKey);
+								fail = !ab.checkSCCache(sccKey);
 								
 								if (!fail) {
 									// out.setStop(true);

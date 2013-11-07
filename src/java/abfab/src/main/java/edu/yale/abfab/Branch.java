@@ -10,11 +10,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import edu.yale.abfab.Abductor.SCCIndividual;
+import edu.yale.abfab.Abductor.SCCKey;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
-
 import static edu.yale.abfab.NS.*;
 import static edu.yale.abfab.Logging.*;
 
@@ -117,7 +118,7 @@ public class Branch extends Step {
 				}
 
 				outcomes.add(latestOutcome);
-				currentEx = mergeIndividuals(outcomes);
+				currentEx = ab.mergeIndividuals(outcomes);
 
 				// peek and check if passes next step
 				long start = System.currentTimeMillis();
@@ -153,40 +154,55 @@ public class Branch extends Step {
 						for (DLIndividual<?> ncOut : dl
 								.getObjectPropertyValues(nci,
 										dl.objectProp(NS + "has_output"))) {
-							DLIndividual<?> testI = dl.individual(NS + "testI");
-							ax2.add(dl.newObjectFact(testI,
-									dl.objectProp(NS + "has_output"), ncOut));
-							IndividualPlus mergedOutcomes = mergeIndividuals(outcomes);
-							ax2.addAll(mergedOutcomes.getAxioms());
-							ax2.add(dl.newObjectFact(testI,
-									dl.objectProp(NS + "has_input"),
-									mergedOutcomes.getIndividual()));
-							for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
-								ax2.add(dl.individualType(
-										mergedOutcomes.getIndividual(),
-										otherPathOutputClass));
-							}
-							// for (IndividualPlus outcome : outcomes) {
-							// ax2.addAll(outcome.getAxioms());
+
+							/* PRE SCC */
+							// DLIndividual<?> testI = dl.individual(NS +
+							// "testI");
+							// ax2.add(dl.newObjectFact(testI,
+							// dl.objectProp(NS + "has_output"), ncOut));
+							// IndividualPlus mergedOutcomes =
+							// mergeIndividuals(outcomes);
+							// ax2.addAll(mergedOutcomes.getAxioms());
 							// ax2.add(dl.newObjectFact(testI,
 							// dl.objectProp(NS + "has_input"),
-							// outcome.getIndividual()));
-							//
+							// mergedOutcomes.getIndividual()));
 							// for (DLClassExpression<?> otherPathOutputClass :
 							// otherPathOutputClasses) {
 							// ax2.add(dl.individualType(
-							// outcome.getIndividual(),
+							// mergedOutcomes.getIndividual(),
 							// otherPathOutputClass));
 							// }
+							// ax2.add(dl.individualType(testI,
+							// dl.notClass(nc)));
+							// dl.addAxioms(ax2);
+							//
+							// boolean fail = false;
+							// ab.debug();
+							// if (dl.checkConsistency()) {
+							// fail = true;
 							// }
-							ax2.add(dl.individualType(testI, dl.notClass(nc)));
-							dl.addAxioms(ax2);
-							boolean fail = false;
-							//ab.debug();
-							if (dl.checkConsistency()) {
-								fail = true;
+							// dl.removeAxioms(ax2);
+
+							/* POST SCC */
+							IndividualPlus mergedOutcomes = ab.mergeIndividuals(outcomes);
+							IndividualPlus sInput = mergedOutcomes;
+							for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
+								sInput.getAxioms().add(
+										dl.individualType(
+												mergedOutcomes.getIndividual(),
+												otherPathOutputClass));
 							}
-							dl.removeAxioms(ax2);
+							IndividualPlus sOutput = new IndividualPlus(ncOut);
+							DLClassExpression<?> service = nc;
+							SCCIndividual sccInput = ab
+									.createSCCIndividual(sInput);
+							SCCIndividual sccOutput = ab
+									.createSCCIndividual(sOutput);
+							SCCKey sccKey = ab.createSCCKey(service, sccInput,
+									sccOutput);
+
+							boolean fail = !ab.checkSCCache(sccKey);
+
 							if (fail) {
 								currentEx.setStop(true);
 								long end = System.currentTimeMillis();
@@ -241,7 +257,7 @@ public class Branch extends Step {
 			}
 		}
 		return Arrays
-				.asList(new IndividualPlus[] { mergeIndividuals(outcomes) });
+				.asList(new IndividualPlus[] { getAbductor().mergeIndividuals(outcomes) });
 	}
 
 	@Override

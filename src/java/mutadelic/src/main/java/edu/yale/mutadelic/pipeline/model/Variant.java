@@ -63,7 +63,7 @@ public class Variant {
 					locusStarts.size(), locus));
 		}
 		DLLiteral<?> locusStart = locusStarts.iterator().next();
-		int  start = Integer.parseInt(dl.getLiteralValue(locusStart));
+		int start = Integer.parseInt(dl.getLiteralValue(locusStart));
 
 		Collection<DLLiteral> locusEnds = dl.getDataPropertyValues(locus,
 				dl.dataProp(GELO + "locus_end"));
@@ -137,11 +137,21 @@ public class Variant {
 				dl.asLiteral(strand)));
 		ax.add(dl.newDataFact(locus, dl.dataProp(GELO + "sequence"),
 				dl.asLiteral(observed)));
+		ax.add(dl.newDataFact(locus, dl.dataProp(NS + "cache_value_ignore"),
+				dl.asLiteral(GELO + "locus_start")));
+		ax.add(dl.newDataFact(locus, dl.dataProp(NS + "cache_value_ignore"),
+				dl.asLiteral(GELO + "locus_end")));
+		ax.add(dl.newDataFact(locus, dl.dataProp(NS + "cache_value_ignore"),
+				dl.asLiteral(GELO + "strand")));
+		ax.add(dl.newDataFact(locus, dl.dataProp(NS + "cache_value_ignore"),
+				dl.asLiteral(GELO + "sequence")));
 
 		String modelID = "model-" + UUID.randomUUID().toString();
 		DLIndividual<?> model = dl.individual(NS + modelID);
 		ax.add(dl.newDataFact(model, dl.dataProp(SIO + "has_value"),
 				dl.asLiteral(reference)));
+		ax.add(dl.newDataFact(model, dl.dataProp(NS + "cache_value_ignore"),
+				dl.asLiteral(SIO + "has_value")));
 
 		ax.add(dl.newObjectFact(var, dl.objectProp(GELO + "has_locus"), locus));
 		ax.add(dl.newObjectFact(var, dl.objectProp(SIO + "is_modelled_by"),

@@ -43,6 +43,11 @@ public interface DLController {
 	void addAxioms(Set<DLAxiom<?>> axioms);
 
 	void removeAxiom(DLAxiom<?> axiom);
+	
+	/**
+	 * Remove axioms that are not part of the loaded ontology.
+	 */
+	void clearAddedAxioms();
 
 	/**
 	 * Get the full {@link Collection} of DL Axioms from the KB

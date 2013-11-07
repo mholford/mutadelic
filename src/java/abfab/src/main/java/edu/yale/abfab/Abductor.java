@@ -28,7 +28,6 @@ import static edu.yale.abfab.Logging.*;
 public abstract class Abductor {
 
 	private DLController dl;
-	private Map<DLClassExpression<?>, Path> goalPathCache;
 	private String namespace;
 	private Path executingPath;
 	private DLObjectPropertyExpression<?> HAS_INPUT;
@@ -39,7 +38,6 @@ public abstract class Abductor {
 
 	public Abductor() {
 		dl = initDLController();
-		goalPathCache = new HashMap<>();
 		HAS_INPUT = dl.objectProp(NS + "has_input");
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 		serviceOutputMatchCache = new HashMap<>();
@@ -278,6 +276,7 @@ public abstract class Abductor {
 					DLIndividual<?> opii = dl.individual(NS
 							+ UUID.randomUUID().toString());
 					ax.addAll(opi.getAxioms(opii));
+					ax.add(dl.newObjectFact(indiv, obProp, opii));
 				}
 			}
 			return ax;
@@ -358,6 +357,12 @@ public abstract class Abductor {
 		this.executingPath = executingPath;
 	}
 
+	public void clearCaches() {
+		serviceOutputMatchCache = new HashMap<>();
+		pathCache = new HashMap<>();
+		scCache = new HashMap<>();
+	}
+
 	public SCCKey createSCCKey(DLClassExpression<?> serviceClass,
 			SCCIndividual input, SCCIndividual output) {
 		return new SCCKey(serviceClass, input, output);
@@ -376,15 +381,24 @@ public abstract class Abductor {
 			ax.add(dl.newObjectFact(testI, HAS_INPUT, inputI));
 			ax.add(dl.newObjectFact(testI, HAS_OUTPUT, outputI));
 			ax.add(dl.individualType(testI, dl.notClass(key.serviceClass)));
+			Set<DLAxiom<?>> newAx = new HashSet<>();
 			try {
-				dl.addAxioms(ax);
+
+				for (DLAxiom<?> a : ax) {
+					if (!dl.getAxioms().contains(ax)) {
+						newAx.add(a);
+					}
+				}
+
+				dl.addAxioms(newAx);
+				debug();
 				boolean consistent = dl.checkConsistency();
-				return !consistent;
+				scCache.put(key, !consistent);
 			} finally {
-				dl.removeAxioms(ax);
+				dl.removeAxioms(newAx);
 			}
 		} else {
-			System.out.println("SCCache HIT");
+			System.out.println("SCCACHE HIT!!");
 		}
 		return scCache.get(key);
 	}
@@ -410,31 +424,45 @@ public abstract class Abductor {
 					.getDataProperties(indiv);
 			Set<DLDataPropertyExpression<?>> ignores = new HashSet<>();
 			Map<DLDataPropertyExpression<?>, DLLiteral<?>> proxies = new HashMap<>();
-			if (dataProperties.contains(dl.dataProp(NS + "cacheValueIgnore"))) {
+			if (dataProperties.contains(dl.dataProp(NS + "cache_value_ignore"))) {
 				Collection<DLLiteral> ignoreLiterals = dl
 						.getDataPropertyValues(indiv,
-								dl.dataProp(NS + "cacheValueIgnore"));
+								dl.dataProp(NS + "cache_value_ignore"));
 				for (DLLiteral ignoreLit : ignoreLiterals) {
 					String ignore = dl.getLiteralValue(ignoreLit);
 					ignores.add(dl.dataProp(ignore));
 				}
 			}
-			if (dataProperties.contains(dl.dataProp(NS + "cacheValueProxy"))) {
+			if (dataProperties.contains(dl.dataProp(NS + "cache_value_proxy"))) {
 				Collection<DLLiteral> proxyLiterals = dl.getDataPropertyValues(
-						indiv, dl.dataProp(NS + "cacheValueProxy"));
+						indiv, dl.dataProp(NS + "cache_value_proxy"));
 				for (DLLiteral proxyLiteral : proxyLiterals) {
 					String proxy = dl.getLiteralValue(proxyLiteral);
 					/* Assume format IRI=Value */
 					String[] ps = proxy.split("=");
 					String proxiedProp = ps[0];
 					String proxyValue = ps[1];
-					proxies.put(dl.dataProp(proxiedProp),
-							dl.asLiteral(proxyValue));
+
+					DLLiteral<?> asLiteral = dl.asLiteral(proxyValue);
+					try {
+						double d = Double.parseDouble(proxyValue);
+						asLiteral = dl.asLiteral(d);
+					} catch (Exception e) {
+					}
+
+					try {
+						int i = Integer.parseInt(proxyValue);
+						asLiteral = dl.asLiteral(i);
+					} catch (Exception e) {
+
+					}
+					proxies.put(dl.dataProp(proxiedProp), asLiteral);
 				}
 			}
 			for (DLDataPropertyExpression<?> dataProp : dataProperties) {
-				if (dataProp.equals(dl.dataProp(NS + "cacheValueIgnore"))
-						|| dataProp.equals(dl.dataProp(NS + "cacheValueProxy"))) {
+				if (dataProp.equals(dl.dataProp(NS + "cache_value_ignore"))
+						|| dataProp.equals(dl
+								.dataProp(NS + "cache_value_proxy"))) {
 					continue;
 				} else if (ignores.contains(dataProp)) {
 					Collection<DLLiteral> literals = new HashSet<>();
@@ -731,21 +759,106 @@ public abstract class Abductor {
 				ax.add(dl.newObjectFact(testService, HAS_OUTPUT,
 						tsOutput.getIndividual()));
 			}
+			//IndividualPlus mergedOutput = mergeIndividuals(p.getLastOutput());
 			ax.add(dl.newObjectFact(testService, HAS_INPUT,
 					input.getIndividual()));
 			ax.add(dl.individualType(testService, dl.notClass(topClass)));
 			dl.addAxioms(ax);
 			// debug();
-			if (!dl.checkConsistency()) {
-				output = true;
-			} else {
-				output = false;
-			}
+			output = !dl.checkConsistency();
 		} finally {
 			dl.removeAxioms(ax);
 		}
 		long end = System.currentTimeMillis();
 		dbg(DBG_TIMING, "matchesInput: %d millis", end - start);
+		return output;
+	}
+	
+	public IndividualPlus mergeIndividuals(Collection<IndividualPlus> inds) {
+		Collection<IndividualPlus> nonNullInds = new HashSet<>();
+		for (IndividualPlus ip:inds) {
+			if (ip != null){
+				nonNullInds.add(ip);
+			}
+		}
+		DLController dl = getDLController();
+		String NS = getNamespace();
+		Set<DLAxiom<?>> oldAx = new HashSet<>();
+		Set<DLAxiom<?>> newAx = new HashSet<>();
+		String name = "merge" + UUID.randomUUID().toString();
+		IndividualPlus output = null;
+		if (nonNullInds.size() > 1) {
+
+			try {
+				for (IndividualPlus ind : nonNullInds) {
+					if (ind.getAxioms() != null) {
+						oldAx.addAll(ind.getAxioms());
+						newAx.addAll(ind.getAxioms());
+						dl.addAxioms(ind.getAxioms());
+					}
+				}
+				Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dpvs = new HashMap<>();
+				Map<DLObjectPropertyExpression<?>, Collection<DLIndividual>> opvs = new HashMap<>();
+				Set<DLClassExpression<?>> types = new HashSet<>();
+				Set<DLIndividual<?>> diffIndivs = new HashSet<>();
+				Set<DLIndividual<?>> sameIndivs = new HashSet<>();
+
+				for (IndividualPlus ip :nonNullInds) {
+					DLIndividual<?> i = ip.getIndividual();
+					for (DLDataPropertyExpression<?> odpe : dl
+							.getDataProperties(i)) {
+						if (!dpvs.containsKey(odpe)) {
+							dpvs.put(odpe, new HashSet<DLLiteral>());
+						}
+						dpvs.get(odpe)
+								.addAll(dl.getDataPropertyValues(i, odpe));
+					}
+					for (DLObjectPropertyExpression<?> oope : dl
+							.getObjectProperties(i)) {
+						if (!opvs.containsKey(oope)) {
+							opvs.put(oope, new HashSet<DLIndividual>());
+						}
+						opvs.get(oope).addAll(
+								dl.getObjectPropertyValues(i, oope));
+					}
+					for (DLClassExpression<?> oce : dl.getTypes(i)) {
+						types.add(oce);
+					}
+					for (DLIndividual<?> oi : dl.getDifferentIndividuals(i)) {
+						diffIndivs.add(oi);
+					}
+					for (DLIndividual<?> oi : dl.getSameIndividuals(i)) {
+						sameIndivs.add(oi);
+					}
+					diffIndivs.add(i);
+					sameIndivs.add(i);
+				}
+
+				newAx.add(dl.newIndividual(NS + name, dl.thing()));
+				for (DLClassExpression<?> t : types) {
+					newAx.add(dl.individualType(dl.individual(NS + name), t));
+				}
+				for (DLDataPropertyExpression<?> odpe : dpvs.keySet()) {
+					for (DLLiteral<?> owls : dpvs.get(odpe)) {
+						newAx.add(dl.newDataFact(dl.individual(NS + name),
+								odpe, owls));
+					}
+				}
+				for (DLObjectPropertyExpression<?> oope : opvs.keySet()) {
+					for (DLIndividual<?> oi : opvs.get(oope)) {
+						newAx.add(dl.newObjectFact(dl.individual(NS + name),
+								oope, oi));
+					}
+				}
+
+				output = new IndividualPlus(dl.individual(NS + name), newAx);
+			} finally {
+				dl.removeAxioms(oldAx);
+			}
+		} else if (nonNullInds.size() == 1) {
+			output = nonNullInds.iterator().next();
+		}
+
 		return output;
 	}
 

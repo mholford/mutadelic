@@ -58,6 +58,28 @@ public abstract class AbstractPipelineService implements Service {
 	public Set<DLAxiom<?>> annotatedResult(DLController dl,
 			DLIndividual<?> input, DLClass<?> referrant,
 			DLIndividual<?> citation, Object value) {
+		return annotatedResult(dl, input, referrant, citation, value, false,
+				null);
+	}
+
+	public Set<DLAxiom<?>> annotatedResult(DLController dl,
+			DLIndividual<?> input, DLClass<?> referrant,
+			DLIndividual<?> citation, Object value, boolean cacheValueIgnore) {
+		return annotatedResult(dl, input, referrant, citation, value,
+				cacheValueIgnore, null);
+	}
+	
+	public Set<DLAxiom<?>> annotatedResult(DLController dl,
+			DLIndividual<?> input, DLClass<?> referrant,
+			DLIndividual<?> citation, Object value, Object cacheValueProxy) {
+		return annotatedResult(dl, input, referrant, citation, value,
+				false, cacheValueProxy);
+	}
+
+	public Set<DLAxiom<?>> annotatedResult(DLController dl,
+			DLIndividual<?> input, DLClass<?> referrant,
+			DLIndividual<?> citation, Object value, boolean cacheValueIgnore,
+			Object cacheValueProxy) {
 		Set<DLAxiom<?>> output = new HashSet<>();
 
 		if (value != null) {
@@ -75,6 +97,18 @@ public abstract class AbstractPipelineService implements Service {
 			output.add(dl.newObjectFact(input,
 					dl.objectProp(SIO + "is_described_by"),
 					dl.individual(NS + descID)));
+			if (cacheValueIgnore) {
+				output.add(dl.newDataFact(dl.individual(NS + valID),
+						dl.dataProp(NS + "cache_value_ignore"),
+						dl.asLiteral(SIO + "has_value")));
+			}
+			if (cacheValueProxy != null) {
+				DLLiteral<?> asLiteral = dl
+				.asLiteral(String.format("%s=%s", SIO + "has_value",
+						cacheValueProxy));
+				output.add(dl.newDataFact(dl.individual(NS + valID), dl
+						.dataProp(NS + "cache_value_proxy"), asLiteral));
+			}
 		}
 		return output;
 	}
