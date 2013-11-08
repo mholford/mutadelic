@@ -712,18 +712,21 @@ public abstract class Abductor {
 				// }
 
 				/* PRE SCCACHE */
-//				DLIndividual<?> testOutput = dl.individual(NS + "testOutput");
-//
-//				ax.add(dl.individualType(testOutput, goalClass));
-//				ax.add(dl.newObjectFact(testService, HAS_OUTPUT, testOutput));
-//
-//				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
-//				dl.addAxioms(ax);
-//				// debug();
-//				if (!dl.checkConsistency()) {
-//					add = true;
-//				}
-//				dl.removeAxioms(ax);
+				// DLIndividual<?> testOutput = dl.individual(NS +
+				// "testOutput");
+				//
+				// ax.add(dl.individualType(testOutput, goalClass));
+				// ax.add(dl.newObjectFact(testService, HAS_OUTPUT,
+				// testOutput));
+				//
+				// ax.add(dl.individualType(testService,
+				// dl.notClass(serviceClass)));
+				// dl.addAxioms(ax);
+				// // debug();
+				// if (!dl.checkConsistency()) {
+				// add = true;
+				// }
+				// dl.removeAxioms(ax);
 
 				/* POST SCC */
 				IndividualPlus testOutput = new IndividualPlus(dl.individual(NS
@@ -1120,13 +1123,44 @@ public abstract class Abductor {
 		long start = System.currentTimeMillis();
 		MatchStatus output = MatchStatus.NONE;
 		Set<DLAxiom<?>> ax = new HashSet<>();
-		for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
-			ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToKeep,
-					serviceClassIFiller));
-		}
-		ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToReplace,
-				testI.getIndividual()));
 
+		// for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
+		// ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToKeep,
+		// serviceClassIFiller));
+		// }
+
+		Set<IndividualPlus> indsToMerge = new HashSet<>();
+		for (DLIndividual<?> serviceClassIFiller : serviceClassIFillers) {
+			indsToMerge.add(new IndividualPlus(serviceClassIFiller));
+		}
+		IndividualPlus mergedInd = mergeIndividuals(indsToMerge);
+
+		/* PRE SCC */
+		// ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToKeep,
+		// mergedInd.getIndividual()));
+		//
+		// ax.add(dl.newObjectFact(serviceClassI.getIndividual(), propToReplace,
+		// testI.getIndividual()));
+		//
+		// DLClassExpression<?> serv;
+		// if (serviceClasses.size() > 1) {
+		// serv = dl.andClass(serviceClasses
+		// .toArray(new DLClassExpression<?>[serviceClasses.size()]));
+		// } else {
+		// serv = serviceClasses.iterator().next();
+		// }
+		// ax.add(dl.individualType(serviceClassI.getIndividual(),
+		// dl.notClass(serv)));
+		// dl.addAxioms(ax);
+		// // debug();
+		// boolean add = false;
+		// if (!dl.checkConsistency()) {
+		// add = true;
+		// output = MatchStatus.PARTIAL;
+		// }
+		// dl.removeAxioms(ax);
+
+		/* POST SCC */
 		DLClassExpression<?> serv;
 		if (serviceClasses.size() > 1) {
 			serv = dl.andClass(serviceClasses
@@ -1134,16 +1168,22 @@ public abstract class Abductor {
 		} else {
 			serv = serviceClasses.iterator().next();
 		}
-		ax.add(dl.individualType(serviceClassI.getIndividual(),
-				dl.notClass(serv)));
-		dl.addAxioms(ax);
-		// debug();
-		boolean add = false;
-		if (!dl.checkConsistency()) {
-			add = true;
+		IndividualPlus inputIP;
+		IndividualPlus outputIP;
+		if (propToKeep.equals(HAS_INPUT)) {
+			inputIP = mergedInd;
+			outputIP = testI;
+		} else {
+			inputIP = testI;
+			outputIP = mergedInd;
+		}
+		SCCIndividual scInput = createSCCIndividual(inputIP);
+		SCCIndividual scOutput = createSCCIndividual(outputIP);
+		SCCKey key = createSCCKey(serv, scInput, scOutput);
+		boolean add = checkSCCache(key);
+		if (add) {
 			output = MatchStatus.PARTIAL;
 		}
-		dl.removeAxioms(ax);
 
 		if (/* add && */nextServiceClasses != null) {
 			Set<DLIndividual<?>> keepers = new HashSet<>();
@@ -1161,6 +1201,57 @@ public abstract class Abductor {
 						.getInstances(nextServiceClass)) {
 					for (DLIndividual<?> replacer : dl.getObjectPropertyValues(
 							nextServiceClassI, propToReplace)) {
+						if (nextServiceClasses.size() > 1) {
+							serv = dl
+									.andClass(nextServiceClasses
+											.toArray(new DLClassExpression<?>[nextServiceClasses
+													.size()]));
+						} else {
+							serv = nextServiceClasses.iterator().next();
+						}
+
+						/* PRE SCC */
+//						if (keepers.size() > 1) {
+//							Set<DLClassExpression> keeperClasses = new HashSet<>();
+//							for (DLIndividual<?> keeper : keepers) {
+//								keeperClasses.addAll(dl.getTypes(keeper));
+//							}
+//							DLClassExpression keeperClass = dl
+//									.andClass(keeperClasses
+//											.toArray(new DLClassExpression[keeperClasses
+//													.size()]));
+//							DLIndividual<?> keeperI = dl.individual(NS
+//									+ "keeperI");
+//							ax2.add(dl.individualType(keeperI, keeperClass));
+//							ax2.add(dl.newObjectFact(
+//									serviceClassI.getIndividual(), propToKeep,
+//									keeperI));
+//
+//						} else {
+//							ax2.add(dl.newObjectFact(
+//									serviceClassI.getIndividual(), propToKeep,
+//									keepers.iterator().next()));
+//						}
+//
+//						ax2.add(dl.newObjectFact(serviceClassI.getIndividual(),
+//								propToReplace, replacer));
+//
+//						ax2.add(dl.individualType(
+//								serviceClassI.getIndividual(),
+//								dl.notClass(serv)));
+//						dl.addAxioms(ax2);
+//						// debug();
+//						if (dl.checkConsistency()) {
+//							add = false;
+//						} else {
+//							add = true;
+//						}
+//						dl.removeAxioms(ax2);
+
+						/* POST SCC */
+						IndividualPlus keeperInd;
+						IndividualPlus input2;
+						IndividualPlus output2;
 						if (keepers.size() > 1) {
 							Set<DLClassExpression> keeperClasses = new HashSet<>();
 							for (DLIndividual<?> keeper : keepers) {
@@ -1172,38 +1263,31 @@ public abstract class Abductor {
 													.size()]));
 							DLIndividual<?> keeperI = dl.individual(NS
 									+ "keeperI");
-							ax2.add(dl.individualType(keeperI, keeperClass));
+							keeperInd = new IndividualPlus(keeperI);
+							keeperInd.getAxioms().add(
+									dl.individualType(keeperI, keeperClass));
 							ax2.add(dl.newObjectFact(
 									serviceClassI.getIndividual(), propToKeep,
 									keeperI));
 
 						} else {
+							keeperInd = new IndividualPlus(keepers.iterator().next());
 							ax2.add(dl.newObjectFact(
 									serviceClassI.getIndividual(), propToKeep,
 									keepers.iterator().next()));
 						}
+						if (propToKeep.equals(HAS_INPUT)){
+							input2 = keeperInd;
+							output2 = new IndividualPlus(replacer);
+						} else {
+							input2 = new IndividualPlus(replacer);
+							output2 = keeperInd;
+						}
+						SCCIndividual scInput2 = createSCCIndividual(input2);
+						SCCIndividual scOutput2 = createSCCIndividual(output2);
+						key = createSCCKey(serv, scInput2, scOutput2);
+						add = checkSCCache(key);
 
-						ax2.add(dl.newObjectFact(serviceClassI.getIndividual(),
-								propToReplace, replacer));
-						if (nextServiceClasses.size() > 1) {
-							serv = dl
-									.andClass(nextServiceClasses
-											.toArray(new DLClassExpression<?>[nextServiceClasses
-													.size()]));
-						} else {
-							serv = nextServiceClasses.iterator().next();
-						}
-						ax2.add(dl.individualType(
-								serviceClassI.getIndividual(),
-								dl.notClass(serv)));
-						dl.addAxioms(ax2);
-						// debug();
-						if (dl.checkConsistency()) {
-							add = false;
-						} else {
-							add = true;
-						}
-						dl.removeAxioms(ax2);
 						if (!add) {
 							break;
 						}
