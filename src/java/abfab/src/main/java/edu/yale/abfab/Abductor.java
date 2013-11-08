@@ -696,23 +696,45 @@ public abstract class Abductor {
 				DLIndividual<?> testService = dl.individual(NS + "testService");
 				ax.add(dl.individualType(testService, dl.thing()));
 
+				Set<IndividualPlus> indivsToMerge = new HashSet<>();
 				for (DLIndividual<?> sciInput : dl.getObjectPropertyValues(
 						serviceClassI, HAS_INPUT)) {
-					ax.add(dl.newObjectFact(testService, HAS_INPUT, sciInput));
+					indivsToMerge.add(new IndividualPlus(sciInput));
 				}
 
-				DLIndividual<?> testOutput = dl.individual(NS + "testOutput");
+				IndividualPlus mergedIndividual = mergeIndividuals(indivsToMerge);
+				ax.add(dl.newObjectFact(testService, HAS_INPUT,
+						mergedIndividual.getIndividual()));
 
-				ax.add(dl.individualType(testOutput, goalClass));
-				ax.add(dl.newObjectFact(testService, HAS_OUTPUT, testOutput));
+				// for (DLIndividual<?> sciInput : dl.getObjectPropertyValues(
+				// serviceClassI, HAS_INPUT)) {
+				// ax.add(dl.newObjectFact(testService, HAS_INPUT, sciInput));
+				// }
 
-				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
-				dl.addAxioms(ax);
-				// debug();
-				if (!dl.checkConsistency()) {
-					add = true;
-				}
-				dl.removeAxioms(ax);
+				/* PRE SCCACHE */
+//				DLIndividual<?> testOutput = dl.individual(NS + "testOutput");
+//
+//				ax.add(dl.individualType(testOutput, goalClass));
+//				ax.add(dl.newObjectFact(testService, HAS_OUTPUT, testOutput));
+//
+//				ax.add(dl.individualType(testService, dl.notClass(serviceClass)));
+//				dl.addAxioms(ax);
+//				// debug();
+//				if (!dl.checkConsistency()) {
+//					add = true;
+//				}
+//				dl.removeAxioms(ax);
+
+				/* POST SCC */
+				IndividualPlus testOutput = new IndividualPlus(dl.individual(NS
+						+ "testOutput"));
+				testOutput.getAxioms()
+						.add(dl.individualType(testOutput.getIndividual(),
+								goalClass));
+				SCCIndividual sccInput = createSCCIndividual(mergedIndividual);
+				SCCIndividual sccOutput = createSCCIndividual(testOutput);
+				SCCKey key = createSCCKey(serviceClass, sccInput, sccOutput);
+				add = checkSCCache(key);
 
 				if (add) {
 
@@ -754,18 +776,31 @@ public abstract class Abductor {
 			DLIndividual<?> testService = dl.individual(NS + "testService");
 			ax.add(dl.individualType(testService, dl.thing()));
 
-			for (IndividualPlus tsOutput : p.getLastOutput()) {
-				ax.addAll(tsOutput.getAxioms());
-				ax.add(dl.newObjectFact(testService, HAS_OUTPUT,
-						tsOutput.getIndividual()));
-			}
-			//IndividualPlus mergedOutput = mergeIndividuals(p.getLastOutput());
-			ax.add(dl.newObjectFact(testService, HAS_INPUT,
-					input.getIndividual()));
-			ax.add(dl.individualType(testService, dl.notClass(topClass)));
-			dl.addAxioms(ax);
-			// debug();
-			output = !dl.checkConsistency();
+			// for (IndividualPlus tsOutput : p.getLastOutput()) {
+			// ax.addAll(tsOutput.getAxioms());
+			// ax.add(dl.newObjectFact(testService, HAS_OUTPUT,
+			// tsOutput.getIndividual()));
+			// }
+
+			IndividualPlus mergedOutput = mergeIndividuals(p.getLastOutput());
+
+			/* PRE SCC */
+			// ax.addAll(mergedOutput.getAxioms());
+			// ax.add(dl.newObjectFact(testService, HAS_OUTPUT,
+			// mergedOutput.getIndividual()));
+			//
+			// ax.add(dl.newObjectFact(testService, HAS_INPUT,
+			// input.getIndividual()));
+			// ax.add(dl.individualType(testService, dl.notClass(topClass)));
+			// dl.addAxioms(ax);
+			// // debug();
+			// output = !dl.checkConsistency();
+
+			/* POST SCC */
+			SCCIndividual scInput = createSCCIndividual(input);
+			SCCIndividual scOutput = createSCCIndividual(mergedOutput);
+			SCCKey key = createSCCKey(topClass, scInput, scOutput);
+			output = checkSCCache(key);
 		} finally {
 			dl.removeAxioms(ax);
 		}
@@ -773,11 +808,11 @@ public abstract class Abductor {
 		dbg(DBG_TIMING, "matchesInput: %d millis", end - start);
 		return output;
 	}
-	
+
 	public IndividualPlus mergeIndividuals(Collection<IndividualPlus> inds) {
 		Collection<IndividualPlus> nonNullInds = new HashSet<>();
-		for (IndividualPlus ip:inds) {
-			if (ip != null){
+		for (IndividualPlus ip : inds) {
+			if (ip != null) {
 				nonNullInds.add(ip);
 			}
 		}
@@ -803,7 +838,7 @@ public abstract class Abductor {
 				Set<DLIndividual<?>> diffIndivs = new HashSet<>();
 				Set<DLIndividual<?>> sameIndivs = new HashSet<>();
 
-				for (IndividualPlus ip :nonNullInds) {
+				for (IndividualPlus ip : nonNullInds) {
 					DLIndividual<?> i = ip.getIndividual();
 					for (DLDataPropertyExpression<?> odpe : dl
 							.getDataProperties(i)) {
