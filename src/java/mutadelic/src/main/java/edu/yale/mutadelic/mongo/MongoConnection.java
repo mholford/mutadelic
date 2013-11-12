@@ -37,6 +37,8 @@ public class MongoConnection {
 	public static final String RCMDB_MUT_NAME= "name";
 	public static final String RCMDB_PMID= "pmid";
 	public static final String RCMDB_REFS = "refs";	
+	public static final String CCDS_TABLE = "ccds";
+	public static final String CCDS_NAME = "name";
 
 	private static MongoConnection INSTANCE;
 	private MongoClient mongoClient;
@@ -76,6 +78,10 @@ public class MongoConnection {
 	
 	public DBCollection getSiftTable() {
 		return mutadelicDB.getCollection(SIFT_TABLE);
+	}
+	
+	public DBCollection getCCDSTable() {
+		return mutadelicDB.getCollection(CCDS_TABLE);
 	}
 	
 	public DBCollection getRCMDBTable() {

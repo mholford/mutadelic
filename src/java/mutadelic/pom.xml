@@ -25,5 +25,10 @@
   		<artifactId>abfab-owlapi</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>mh-local</groupId>
+  		<artifactId>seq-tree</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>
