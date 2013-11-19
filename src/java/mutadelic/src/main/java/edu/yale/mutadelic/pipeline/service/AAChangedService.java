@@ -1,7 +1,13 @@
 package edu.yale.mutadelic.pipeline.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
@@ -9,15 +15,21 @@ import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.controller.DLController;
+import edu.yale.mutadelic.mongo.MongoConnection;
+import edu.yale.mutadelic.pipeline.model.Variant;
 import static edu.yale.abfab.NS.*;
+import static edu.yale.mutadelic.pipeline.service.SiftService.*;
+import static edu.yale.mutadelic.mongo.MongoConnection.*;
 
 public class AAChangedService extends AbstractPipelineService {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		String result = DefaultValues.AA_CHANGE;
 		DLController dl = abductor.getDLController();
+		Variant v = Variant.fromOWL(dl, input);
+		String result = getResult(v);
+		
 		DLClass<?> variationOutcome = dl.clazz(VARIATION_OUTCOME);
 		if (valueFilled(dl, input.getIndividual(), variationOutcome)) {
 			return input;
@@ -27,6 +39,47 @@ public class AAChangedService extends AbstractPipelineService {
 				result);
 		input.getAxioms().addAll(annotation);
 		return input;
+	}
+	
+	private String getResult(Variant v) {
+		String output = null;
+		DBCollection table = MongoConnection.instance().getSiftTable();
+		String key = siftKey(v);
+
+		DBObject q = new BasicDBObject();
+		q.put("_id", key);
+		DBObject r = table.findOne(q);
+
+		if (r != null) {
+			String vals = (String) r.get(SIFT_VALUES);
+			String[] ss = vals.split(";", -1);
+			int idx = siftIndex(v);
+			String siftData = ss[idx];
+
+			String[] sds = siftData.split(",", -1);
+			Map<String, String> obsAAChgMap = new HashMap<>();
+			String obs = sds[3];
+			String aa = sds[6];
+			String aaChgs= sds[7];
+			String[] os = obs.split("\\|", -1);
+			String[] scs = aaChgs.split("\\|", -1);
+			for (int i = 0; i < os.length; i++) {
+				obsAAChgMap.put(os[i], scs[i]);
+			}
+			if (obsAAChgMap.containsKey(v.getObserved())) {
+				String aaChg = obsAAChgMap.get(v.getObserved());
+				if (aaChg.equals(aa)) {
+					output = SYNONYMOUS;
+				} else if (aaChg.equals("*")) {
+//					output = STOP_GAINED;
+					output = NON_SYNONYMOUS;
+				} else {
+					output = NON_SYNONYMOUS;
+				}
+			}
+		}
+
+		return output;
 	}
 
 	@Override

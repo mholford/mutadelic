@@ -36,6 +36,13 @@ public abstract class AbstractPipelineService implements Service {
 	public static final String DATABASE_PRESENCE = NS + "DatabasePresence";
 	public static final String SIFT_SCORE = NS + "SiftScore";
 	public static final String VARIATION_LOCATION = NS + "VariationLocation";
+	
+	/* Constants for enum-style values returned from services */
+	public static final String INDEL = "Indel";
+	public static final String POINT = "Point";
+	public static final String SYNONYMOUS = "Synonymous";
+	public static final String NON_SYNONYMOUS = "NonSynonymous";
+	public static final String STOP_GAINED = "StopGained";
 
 	public abstract IndividualPlus exec(IndividualPlus ip, Abductor ab)
 			throws AbfabServiceException;

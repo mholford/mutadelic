@@ -13,6 +13,8 @@ import edu.yale.mutadelic.pipeline.service.DefaultValues;
 import edu.yale.mutadelic.pipeline.service.PhylopService;
 import edu.yale.mutadelic.pipeline.service.SiftService;
 
+import static edu.yale.mutadelic.pipeline.service.AbstractPipelineService.*;
+
 public class PipelineExecutorTest {
 
 	private static PipelineExecutor pex;
@@ -20,6 +22,30 @@ public class PipelineExecutorTest {
 	@BeforeClass
 	public static void beforeClass() {
 		pex = new PipelineExecutor();
+	}
+	
+	@Test
+	public void testAAChangedService() {
+		System.out.println("TEST AA CHANGED SERVICE");
+		try {
+			DefaultValues.ALLELE_FREQUENCY = 0.001;
+			Variant v;
+			IndividualPlus output;
+			String varType;
+			
+			v = new Variant("22", 50563994, 50563994, "C", "T", "+");
+			output = pex.execute(v);
+			varType = pex.getLiteralResult(output, VARIATION_OUTCOME);
+			assertEquals(varType, SYNONYMOUS);
+
+			v= new Variant("22", 50563994, 50563994, "C", "G", "+");
+			output = pex.execute(v);
+			varType = pex.getLiteralResult(output, VARIATION_OUTCOME);
+			assertEquals(varType, NON_SYNONYMOUS);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 	@Test
