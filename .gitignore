@@ -10,3 +10,4 @@ target
 *-output
 *.#*
 catalog-v*.xml
+*_output

@@ -46,6 +46,11 @@ public class MongoConnection {
 	public static final String CCDS_REF_ENSEMBL = "ensembl";
 	public static final String CCDS_REF_REFSEQ = "refseq";
 	public static final String CCDS_REF_HAVANA = "havana";
+	public static final String PFAM_TABLE = "pfam";
+	public static final String PFAM_DOMAINS = "domains";
+	public static final String PFAM_DOMAIN_NAME = "name";
+	public static final String PFAM_DOMAIN_START = "start";
+	public static final String PFAM_DOMAIN_END= "end";
 
 	private static MongoConnection INSTANCE;
 	private MongoClient mongoClient;
@@ -97,6 +102,10 @@ public class MongoConnection {
 	
 	public DBCollection getCCDSIndexTable() {
 		return mutadelicDB.getCollection(CCDS_IDX_TABLE);
+	}
+	
+	public DBCollection getPFAMTable() {
+		return mutadelicDB.getCollection(PFAM_TABLE);
 	}
 	
 	public DBCollection getRCMDBTable() {
