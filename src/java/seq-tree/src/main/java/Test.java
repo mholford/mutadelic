@@ -33,7 +33,7 @@ public class Test {
 	private void init(boolean build) {
 		long preStart = System.currentTimeMillis();
 		sm = SeqtreeManager.instance();
-		sm.init(new MemoryDataMap(), build);
+		sm.init(new MemoryDataMap(), "/home/matt/nio", build);
 
 		if (build) {
 			String numMatch = "^(\\d+).*";

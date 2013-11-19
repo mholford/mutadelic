@@ -45,14 +45,14 @@ public class MemoryDataMap implements DataMap<String> {
 		return IDToName.get(ID);
 	}
 
-	@Override
-	public void putIDToName(String name, String ID) {
-		IDToName.put(ID, name);
-	}
-
 //	@Override
-//	public void putNameToID(String ID, String name) {
-//		nameToID.put(name, ID);
+//	public void putIDToName(String name, String ID) {
+//		IDToName.put(ID, name);
 //	}
+
+	@Override
+	public void putNameToID(String ID, String name) {
+		nameToID.put(name, ID);
+	}
 
 }

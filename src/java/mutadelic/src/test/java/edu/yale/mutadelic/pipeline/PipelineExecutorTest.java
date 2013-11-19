@@ -8,12 +8,13 @@ import org.junit.Test;
 
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.mutadelic.pipeline.model.Variant;
+import edu.yale.mutadelic.pipeline.service.AlignVariantService;
 import edu.yale.mutadelic.pipeline.service.DefaultValues;
 import edu.yale.mutadelic.pipeline.service.PhylopService;
 import edu.yale.mutadelic.pipeline.service.SiftService;
 
 public class PipelineExecutorTest {
-	
+
 	private static PipelineExecutor pex;
 
 	@BeforeClass
@@ -45,7 +46,7 @@ public class PipelineExecutorTest {
 	public void testAlleleFrequencyService() {
 		System.out.println("TEST ALLELE FREQUENCY SERVICE");
 		try {
-			//PipelineExecutor pex = new PipelineExecutor();
+			// PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("19", 80840, 80840, "CCT", "C", "+");
 			IndividualPlus output = pex.execute(v1);
 			String preMAF = pex
@@ -69,12 +70,12 @@ public class PipelineExecutorTest {
 	public void testAlignVariantService() {
 		System.out.println("TEST ALIGN VARIANT SERVICE");
 		try {
-			//PipelineExecutor pex = new PipelineExecutor();
-			Variant v1 = new Variant("1", 158655079, 158655079, "C", "T", "+");
+			// PipelineExecutor pex = new PipelineExecutor();
+			Variant v1 = new Variant("22", 50563990, 50563990, "C", "T", "+");
 			IndividualPlus output = pex.execute(v1);
 			String alignment = pex
 					.getLiteralResult(output, NS + "HGVSNotation");
-			assertEquals("ENST00000368147:c.83C>T", alignment);
+			assertEquals("NM_018995.2:c.1739C>T", alignment);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -85,38 +86,76 @@ public class PipelineExecutorTest {
 	public void testRCMDBService() {
 		System.out.println("TEST RCMDB SERVICE");
 		try {
-			//PipelineExecutor pex = new PipelineExecutor();
+			// PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
 			IndividualPlus output = pex.execute(v1);
 			String alignment = pex.getLiteralResult(output, NS
 					+ "DatabasePresence");
 			assertEquals(false, Boolean.parseBoolean(alignment));
-			
-//			Variant v2 = new Variant("1", 158655079, 158655079, "C", "T", "+");
-//			output = pex.execute(v2);
-//			alignment = pex.getLiteralResult(output, NS + "DatabasePresence");
-//			assertEquals(true, Boolean.parseBoolean(alignment));
+
+			// Variant v2 = new Variant("1", 158655079, 158655079, "C", "T",
+			// "+");
+			// output = pex.execute(v2);
+			// alignment = pex.getLiteralResult(output, NS +
+			// "DatabasePresence");
+			// assertEquals(true, Boolean.parseBoolean(alignment));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
 		}
 	}
-	
+
 	@Test
 	public void testSiftService() {
 		System.out.println("TEST SIFT SERVICE");
 		try {
-			//PipelineExecutor pex = new PipelineExecutor();
+			// PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 229577655, 229577655, "A", "G", "-");
 			IndividualPlus output = pex.execute(v1);
 			String preSift = pex.getLiteralResult(output, NS + "SiftScore");
 			Double sift = Double.parseDouble(preSift);
 			assertEquals(new Double(0.04), sift);
-			
+
 			Variant v2 = new Variant("1", 229553999, 229553999, "C", "A", "+");
 			output = pex.execute(v2);
 			preSift = pex.getLiteralResult(output, NS + "SiftScore");
 			assertEquals(null, preSift);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testCCDSAlign() {
+		try {
+			AlignVariantService avs = new AlignVariantService();
+			Variant v;
+			String result;
+			
+			v = new Variant("Chr1", 158655079, 158655079, "C", "T", "+");
+			result = avs.getAlignmentFromCCDS(v);
+			assertEquals(result, "NM_003126.2:c.83C>T");
+
+			v = new Variant("Chr22", 50563990, 50563990, "C", "T", "+");
+			result = avs.getAlignmentFromCCDS(v);
+			assertEquals("NM_018995.2:c.1739C>T", result);
+
+			v = new Variant("Chr22", 50564234, 50564234, "C", "T", "+");
+			result = new AlignVariantService().getAlignmentFromCCDS(v);
+			assertEquals(result, "NM_018995.2:c.1747+236C>T");
+
+			v = new Variant("Chr22", 50564345, 50564345, "C", "T", "+");
+			result = new AlignVariantService().getAlignmentFromCCDS(v);
+			assertEquals(result, "NM_018995.2:c.1748-286C>T");
+			
+			v = new Variant("Chr22", 50510000, 50510000, "C", "T", "-");
+			result = new AlignVariantService().getAlignmentFromCCDS(v);
+			assertEquals(result, "NM_139202.2:c.715-988C>T");
+			
+			v = new Variant("Chr22", 50512620, 50512620, "C", "T", "-");
+			result = new AlignVariantService().getAlignmentFromCCDS(v);
+			assertEquals(result, "NM_139202.2:c.714+25C>T");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

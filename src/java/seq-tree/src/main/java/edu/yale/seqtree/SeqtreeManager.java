@@ -26,8 +26,9 @@ public class SeqtreeManager {
 		return INSTANCE;
 	}
 
-	public void init(DataMap dataMap, boolean buildNew) {
+	public void init(DataMap dataMap, String nioPath, boolean buildNew) {	
 		this.dataMap = dataMap;
+		new File(nioPath).mkdirs();
 		Chromosomes.init();
 		int numChrom = Chromosomes.count();
 
@@ -36,10 +37,11 @@ public class SeqtreeManager {
 		itrees = new IntervalTree[numChrom];
 
 		for (int i = 0; i < numChrom; i++) {
-			File f = new File("/vol/Users/meh46/nio/NIOFile" + i + ".nio");
-			if (!f.exists()) {
-				f = new File("/home/matt/nio/NIOFile" + i + ".nio");
-			}
+//			File f = new File("/vol/Users/meh46/nio/NIOFile" + i + ".nio");
+//			if (!f.exists()) {
+//				f = new File("/home/matt/nio/NIOFile" + i + ".nio");
+//			}
+			File f = new File(String.format("%s/NIOFile%d.nio", nioPath, i));
 			itrees[i] = new SrutiTree(new SimpleComparator(), f, buildNew);
 			((SrutiTree) itrees[i]).setDataMap(dataMap);
 //			itrees[i] = new IntervalTree(new SimpleComparator());

@@ -13,7 +13,7 @@ public class MongoDataMap implements DataMap<String> {
 
 	@Override
 	public void init(boolean build) {
-		table = MongoConnection.instance().getCCDSTable();
+		table = MongoConnection.instance().getCCDSIndexTable();
 		if (build)
 			table.drop();
 	}
@@ -30,7 +30,7 @@ public class MongoDataMap implements DataMap<String> {
 	public void putNameToID(String ID, String name) {
 		DBObject ins = new BasicDBObject();
 		ins.put(MONGO_ID, ID);
-		ins.put(CCDS_NAME, name);
+		ins.put(CCDS_IDX_NAME, name);
 		table.insert(ins);
 	}
 
@@ -39,7 +39,7 @@ public class MongoDataMap implements DataMap<String> {
 		DBObject check = new BasicDBObject();
 		check.put(MONGO_ID, ID);
 		DBObject r = table.findOne(check);
-		return (String) r.get(CCDS_NAME);
+		return (String) r.get(CCDS_IDX_NAME);
 	}
 
 	@Override

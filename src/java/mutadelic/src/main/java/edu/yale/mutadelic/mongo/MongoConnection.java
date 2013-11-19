@@ -37,8 +37,15 @@ public class MongoConnection {
 	public static final String RCMDB_MUT_NAME= "name";
 	public static final String RCMDB_PMID= "pmid";
 	public static final String RCMDB_REFS = "refs";	
-	public static final String CCDS_TABLE = "ccds";
-	public static final String CCDS_NAME = "name";
+	public static final String CCDS_IDX_TABLE = "ccds";
+	public static final String CCDS_IDX_NAME = "name";
+	public static final String CCDS_POS_TABLE = "ccdspos";
+	public static final String CCDS_POS_START = "start";
+	public static final String CCDS_POS_END = "end";
+	public static final String CCDS_REF_TABLE = "ccdsref";
+	public static final String CCDS_REF_ENSEMBL = "ensembl";
+	public static final String CCDS_REF_REFSEQ = "refseq";
+	public static final String CCDS_REF_HAVANA = "havana";
 
 	private static MongoConnection INSTANCE;
 	private MongoClient mongoClient;
@@ -80,8 +87,16 @@ public class MongoConnection {
 		return mutadelicDB.getCollection(SIFT_TABLE);
 	}
 	
-	public DBCollection getCCDSTable() {
-		return mutadelicDB.getCollection(CCDS_TABLE);
+	public DBCollection getCCDSPositionTable() {
+		return mutadelicDB.getCollection(CCDS_POS_TABLE);
+	}
+	
+	public DBCollection getCCDSRefTable() {
+		return mutadelicDB.getCollection(CCDS_REF_TABLE);
+	}
+	
+	public DBCollection getCCDSIndexTable() {
+		return mutadelicDB.getCollection(CCDS_IDX_TABLE);
 	}
 	
 	public DBCollection getRCMDBTable() {
