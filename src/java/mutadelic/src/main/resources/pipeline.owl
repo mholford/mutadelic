@@ -62,6 +62,11 @@ Class: SIO:BioinformaticData
 Class: HGVSNotation
     SubClassOf: SIO:BioinformaticData
 	
+Class: HGVSPNotation
+    SubClassOf: SIO:BioinformaticData	
+	
+Class: ProteinDomain	
+
 Class: SIO:Probability
 	
 Class: AlleleFrequency

@@ -47,6 +47,32 @@ public class PipelineExecutorTest {
 			fail();
 		}
 	}
+	
+	@Test
+	public void testCriticalDomainServiceService() {
+		System.out.println("TEST CRITICAL DOMAIN SERVICE");
+		try {
+			DefaultValues.ALLELE_FREQUENCY = 0.001;
+			Variant v;
+			IndividualPlus output;
+			String varVal;
+			
+			v = new Variant("1", 158653179, 158653179, "C", "T", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION);
+			assertEquals(varVal, "true");
+			varVal = pex.getLiteralResult(output, PROTEIN_DOMAIN);
+			assertEquals(varVal, "PF00435");
+
+			v= new Variant("1", 158655079, 158655079, "C", "G", "+");
+			output = pex.execute(v);
+			varVal= pex.getLiteralResult(output, DOMAIN_COLOCATION);
+			assertEquals(varVal, "false");
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
 
 	@Test
 	public void testIndelOrPointService() {
@@ -97,11 +123,11 @@ public class PipelineExecutorTest {
 		System.out.println("TEST ALIGN VARIANT SERVICE");
 		try {
 			// PipelineExecutor pex = new PipelineExecutor();
-			Variant v1 = new Variant("22", 50563990, 50563990, "C", "T", "+");
+			Variant v1 = new Variant("22", 50563990, 50563990, "C", "G", "+");
 			IndividualPlus output = pex.execute(v1);
 			String alignment = pex
 					.getLiteralResult(output, NS + "HGVSNotation");
-			assertEquals("NM_018995.2:c.1739C>T", alignment);
+			assertEquals("NM_018995.2:c.1739C>G", alignment);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

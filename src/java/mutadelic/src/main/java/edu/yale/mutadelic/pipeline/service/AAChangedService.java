@@ -23,26 +23,34 @@ import static edu.yale.mutadelic.mongo.MongoConnection.*;
 
 public class AAChangedService extends AbstractPipelineService {
 
+	class Result {
+		String type;
+		String hgvsp;
+	}
+
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
 		DLController dl = abductor.getDLController();
 		Variant v = Variant.fromOWL(dl, input);
-		String result = getResult(v);
-		
+		Result result = getResult(v);
+
 		DLClass<?> variationOutcome = dl.clazz(VARIATION_OUTCOME);
 		if (valueFilled(dl, input.getIndividual(), variationOutcome)) {
 			return input;
 		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				dl.clazz(VARIATION_OUTCOME), dl.individual(MUTADELIC),
-				result);
+				result.type);
+		annotation.addAll(annotatedResult(dl, input.getIndividual(),
+				dl.clazz(HGVSP_NOTATION), dl.individual(MUTADELIC),
+				result.hgvsp));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}
-	
-	private String getResult(Variant v) {
-		String output = null;
+
+	private Result getResult(Variant v) {
+		Result output = new Result();
 		DBCollection table = MongoConnection.instance().getSiftTable();
 		String key = siftKey(v);
 
@@ -59,8 +67,10 @@ public class AAChangedService extends AbstractPipelineService {
 			String[] sds = siftData.split(",", -1);
 			Map<String, String> obsAAChgMap = new HashMap<>();
 			String obs = sds[3];
+			String ensp = sds[8];
+			String pposPre = sds[9];
 			String aa = sds[6];
-			String aaChgs= sds[7];
+			String aaChgs = sds[7];
 			String[] os = obs.split("\\|", -1);
 			String[] scs = aaChgs.split("\\|", -1);
 			for (int i = 0; i < os.length; i++) {
@@ -69,13 +79,18 @@ public class AAChangedService extends AbstractPipelineService {
 			if (obsAAChgMap.containsKey(v.getObserved())) {
 				String aaChg = obsAAChgMap.get(v.getObserved());
 				if (aaChg.equals(aa)) {
-					output = SYNONYMOUS;
+					output.type = SYNONYMOUS;
 				} else if (aaChg.equals("*")) {
-//					output = STOP_GAINED;
-					output = NON_SYNONYMOUS;
+					// output.output = STOP_GAINED;
+					output.type = NON_SYNONYMOUS;
 				} else {
-					output = NON_SYNONYMOUS;
+					output.type = NON_SYNONYMOUS;
 				}
+				output.hgvsp = String.format("%s:p.%d%s>%s", ensp,
+						Integer.parseInt(pposPre), aa, aaChg);
+			} else {
+				output.type = "NA";
+				output.hgvsp = "NA";
 			}
 		}
 
