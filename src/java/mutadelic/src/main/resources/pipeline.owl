@@ -182,6 +182,11 @@ Class: IntronicVariant
 	(Annotation that SIO:refers_to some
 	(VariationLocation that SIO:has_value value "Intron"^^xsd:string))
 	
+Class: IntergenicVariant
+    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(VariationLocation that SIO:has_value value "Intergenic"^^xsd:string))
+	
 Class: AAChangedAnnotatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some

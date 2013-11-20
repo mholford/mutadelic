@@ -60,18 +60,20 @@ public class SiftService extends AbstractPipelineService {
 			String siftData = ss[idx];
 
 			String[] sds = siftData.split(",", -1);
-			Map<String, String> obsScoreMap = new HashMap<>();
-			String obs = sds[3];
-			String scores = sds[10];
-			String[] os = obs.split("\\|", -1);
-			String[] scs = scores.split("\\|", -1);
-			for (int i = 0; i < os.length; i++) {
-				obsScoreMap.put(os[i], scs[i]);
-			}
-			if (obsScoreMap.containsKey(v.getObserved())) {
-				String score = obsScoreMap.get(v.getObserved());
-				if (score.length() > 0) {
-					return Double.parseDouble(score);
+			if (sds.length > 1) {
+				Map<String, String> obsScoreMap = new HashMap<>();
+				String obs = sds[3];
+				String scores = sds[10];
+				String[] os = obs.split("\\|", -1);
+				String[] scs = scores.split("\\|", -1);
+				for (int i = 0; i < os.length; i++) {
+					obsScoreMap.put(os[i], scs[i]);
+				}
+				if (obsScoreMap.containsKey(v.getObserved())) {
+					String score = obsScoreMap.get(v.getObserved());
+					if (score.length() > 0) {
+						return Double.parseDouble(score);
+					}
 				}
 			}
 		}

@@ -38,13 +38,16 @@ public abstract class AbstractPipelineService implements Service {
 	public static final String DATABASE_PRESENCE = NS + "DatabasePresence";
 	public static final String SIFT_SCORE = NS + "SiftScore";
 	public static final String VARIATION_LOCATION = NS + "VariationLocation";
-	
+
 	/* Constants for enum-style values returned from services */
 	public static final String INDEL = "Indel";
 	public static final String POINT = "Point";
 	public static final String SYNONYMOUS = "Synonymous";
 	public static final String NON_SYNONYMOUS = "NonSynonymous";
-	public static final String STOP_GAINED = "StopGained";
+	public static final String CDS = "CDS";
+	public static final String SPLICE_SITE = "SpliceSite";
+	public static final String INTRON = "Intron";
+	public static final String INTERGENIC = "Intergenic";
 
 	public abstract IndividualPlus exec(IndividualPlus ip, Abductor ab)
 			throws AbfabServiceException;
@@ -77,12 +80,12 @@ public abstract class AbstractPipelineService implements Service {
 		return annotatedResult(dl, input, referrant, citation, value,
 				cacheValueIgnore, null);
 	}
-	
+
 	public Set<DLAxiom<?>> annotatedResult(DLController dl,
 			DLIndividual<?> input, DLClass<?> referrant,
 			DLIndividual<?> citation, Object value, Object cacheValueProxy) {
-		return annotatedResult(dl, input, referrant, citation, value,
-				false, cacheValueProxy);
+		return annotatedResult(dl, input, referrant, citation, value, false,
+				cacheValueProxy);
 	}
 
 	public Set<DLAxiom<?>> annotatedResult(DLController dl,
@@ -112,11 +115,10 @@ public abstract class AbstractPipelineService implements Service {
 						dl.asLiteral(SIO + "has_value")));
 			}
 			if (cacheValueProxy != null) {
-				DLLiteral<?> asLiteral = dl
-				.asLiteral(String.format("%s=%s", SIO + "has_value",
-						cacheValueProxy));
-				output.add(dl.newDataFact(dl.individual(NS + valID), dl
-						.dataProp(NS + "cache_value_proxy"), asLiteral));
+				DLLiteral<?> asLiteral = dl.asLiteral(String.format("%s=%s",
+						SIO + "has_value", cacheValueProxy));
+				output.add(dl.newDataFact(dl.individual(NS + valID),
+						dl.dataProp(NS + "cache_value_proxy"), asLiteral));
 			}
 		}
 		return output;

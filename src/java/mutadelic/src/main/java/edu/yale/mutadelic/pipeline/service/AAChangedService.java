@@ -65,32 +65,34 @@ public class AAChangedService extends AbstractPipelineService {
 			String siftData = ss[idx];
 
 			String[] sds = siftData.split(",", -1);
-			Map<String, String> obsAAChgMap = new HashMap<>();
-			String obs = sds[3];
-			String ensp = sds[8];
-			String pposPre = sds[9];
-			String aa = sds[6];
-			String aaChgs = sds[7];
-			String[] os = obs.split("\\|", -1);
-			String[] scs = aaChgs.split("\\|", -1);
-			for (int i = 0; i < os.length; i++) {
-				obsAAChgMap.put(os[i], scs[i]);
-			}
-			if (obsAAChgMap.containsKey(v.getObserved())) {
-				String aaChg = obsAAChgMap.get(v.getObserved());
-				if (aaChg.equals(aa)) {
-					output.type = SYNONYMOUS;
-				} else if (aaChg.equals("*")) {
-					// output.output = STOP_GAINED;
-					output.type = NON_SYNONYMOUS;
-				} else {
-					output.type = NON_SYNONYMOUS;
+			if (sds.length > 1) {
+				Map<String, String> obsAAChgMap = new HashMap<>();
+				String obs = sds[3];
+				String ensp = sds[8];
+				String pposPre = sds[9];
+				String aa = sds[6];
+				String aaChgs = sds[7];
+				String[] os = obs.split("\\|", -1);
+				String[] scs = aaChgs.split("\\|", -1);
+				for (int i = 0; i < os.length; i++) {
+					obsAAChgMap.put(os[i], scs[i]);
 				}
-				output.hgvsp = String.format("%s:p.%d%s>%s", ensp,
-						Integer.parseInt(pposPre), aa, aaChg);
-			} else {
-				output.type = "NA";
-				output.hgvsp = "NA";
+				if (obsAAChgMap.containsKey(v.getObserved())) {
+					String aaChg = obsAAChgMap.get(v.getObserved());
+					if (aaChg.equals(aa)) {
+						output.type = SYNONYMOUS;
+					} else if (aaChg.equals("*")) {
+						// output.output = STOP_GAINED;
+						output.type = NON_SYNONYMOUS;
+					} else {
+						output.type = NON_SYNONYMOUS;
+					}
+					output.hgvsp = String.format("%s:p.%d%s>%s", ensp,
+							Integer.parseInt(pposPre), aa, aaChg);
+				} else {
+					output.type = "NA";
+					output.hgvsp = "NA";
+				}
 			}
 		}
 

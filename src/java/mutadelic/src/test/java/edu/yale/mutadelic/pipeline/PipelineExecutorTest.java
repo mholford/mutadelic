@@ -23,7 +23,7 @@ public class PipelineExecutorTest {
 	public static void beforeClass() {
 		pex = new PipelineExecutor();
 	}
-	
+
 	@Test
 	public void testAAChangedService() {
 		System.out.println("TEST AA CHANGED SERVICE");
@@ -32,13 +32,13 @@ public class PipelineExecutorTest {
 			Variant v;
 			IndividualPlus output;
 			String varType;
-			
+
 			v = new Variant("22", 50563994, 50563994, "C", "T", "+");
 			output = pex.execute(v);
 			varType = pex.getLiteralResult(output, VARIATION_OUTCOME);
 			assertEquals(varType, SYNONYMOUS);
 
-			v= new Variant("22", 50563994, 50563994, "C", "G", "+");
+			v = new Variant("22", 50563994, 50563994, "C", "G", "+");
 			output = pex.execute(v);
 			varType = pex.getLiteralResult(output, VARIATION_OUTCOME);
 			assertEquals(varType, NON_SYNONYMOUS);
@@ -47,16 +47,65 @@ public class PipelineExecutorTest {
 			fail();
 		}
 	}
-	
+
 	@Test
-	public void testCriticalDomainServiceService() {
+	public void testCriticalDomainService() {
 		System.out.println("TEST CRITICAL DOMAIN SERVICE");
 		try {
 			DefaultValues.ALLELE_FREQUENCY = 0.001;
 			Variant v;
 			IndividualPlus output;
 			String varVal;
+
+			v = new Variant("1", 158655079, 158655079, "C", "A", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, CDS);
+
+			v = new Variant("22", 50528500, 50528500, "G", "A", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, INTERGENIC);
 			
+			v = new Variant("9", 82340060, 82340060, "G", "A", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, INTERGENIC);
+			
+			v = new Variant("22", 50564345, 50564345, "G", "A", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, INTRON);
+			
+			v = new Variant("9", 82191100, 82191100, "G", "A", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, INTRON);
+			
+			v = new Variant("9", 82336654, 82336654, "C", "T", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, SPLICE_SITE);
+			
+			v = new Variant("9", 82336804, 82336804, "C", "T", "+");
+			output = pex.execute(v);
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
+			assertEquals(varVal, SPLICE_SITE);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testTranscriptLocaleService() {
+		System.out.println("TEST TRANSCRIPT LOCALE SERVICE");
+		try {
+			DefaultValues.ALLELE_FREQUENCY = 0.001;
+			Variant v;
+			IndividualPlus output;
+			String varVal;
+
 			v = new Variant("1", 158653179, 158653179, "C", "T", "+");
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION);
@@ -64,9 +113,9 @@ public class PipelineExecutorTest {
 			varVal = pex.getLiteralResult(output, PROTEIN_DOMAIN);
 			assertEquals(varVal, "PF00435");
 
-			v= new Variant("1", 158655079, 158655079, "C", "G", "+");
+			v = new Variant("1", 158655079, 158655079, "C", "G", "+");
 			output = pex.execute(v);
-			varVal= pex.getLiteralResult(output, DOMAIN_COLOCATION);
+			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION);
 			assertEquals(varVal, "false");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,7 +233,7 @@ public class PipelineExecutorTest {
 			AlignVariantService avs = new AlignVariantService();
 			Variant v;
 			String result;
-			
+
 			v = new Variant("Chr1", 158655079, 158655079, "C", "T", "+");
 			result = avs.getAlignmentFromCCDS(v);
 			assertEquals(result, "NM_003126.2:c.83C>T");
@@ -200,11 +249,11 @@ public class PipelineExecutorTest {
 			v = new Variant("Chr22", 50564345, 50564345, "C", "T", "+");
 			result = new AlignVariantService().getAlignmentFromCCDS(v);
 			assertEquals(result, "NM_018995.2:c.1748-286C>T");
-			
+
 			v = new Variant("Chr22", 50510000, 50510000, "C", "T", "-");
 			result = new AlignVariantService().getAlignmentFromCCDS(v);
 			assertEquals(result, "NM_139202.2:c.715-988C>T");
-			
+
 			v = new Variant("Chr22", 50512620, 50512620, "C", "T", "-");
 			result = new AlignVariantService().getAlignmentFromCCDS(v);
 			assertEquals(result, "NM_139202.2:c.714+25C>T");

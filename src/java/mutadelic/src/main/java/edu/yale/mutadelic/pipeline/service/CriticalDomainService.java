@@ -80,6 +80,7 @@ public class CriticalDomainService extends AbstractPipelineService {
 				}
 			}
 		}
+		dl.removeAxioms(ip.getAxioms());
 
 		// Extract ENSP and position using regex
 		if (hgvsp != null) {
