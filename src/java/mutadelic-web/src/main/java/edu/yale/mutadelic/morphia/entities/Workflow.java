@@ -6,25 +6,26 @@ import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Property;
 import com.google.code.morphia.annotations.Reference;
+import com.google.code.morphia.annotations.Transient;
 
-@Entity(value="workflows")
+@Entity(value = "workflows")
 public class Workflow {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Reference
 	private User owner;
-	
+
 	@Property("exec_doc")
 	private String execDoc;
-	
+
 	@Property("staging_doc")
 	private String stagingDoc;
-	
+
 	@Property("orig_doc")
 	private String origDoc;
-	
+
 	private String name;
 
 	public ObjectId getId() {

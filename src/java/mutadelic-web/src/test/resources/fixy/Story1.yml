@@ -1,0 +1,42 @@
+- !package edu.yale.mutadelic.morphia.entities
+
+- User (Joe):
+   name: Joe
+   email: joe@gmail.com
+   
+- Workflow (W1):
+   name: Workflow 1
+   owner: User (Joe)
+   
+- Variant (V1):
+   chromosome: !!str 8
+   start: 2345
+   end: 2345
+   strand: +
+   reference: G
+   observed: A
+   
+- Variant (V2):
+   chromosome: !!str 9
+   start: 3456
+   end: 3456
+   strand: '-'
+   reference: T
+   observed: C
+   
+- Input (I1):
+   name: Input 1
+   owner: User (Joe)
+   variants: [Variant (V1), Variant (V2)]
+   
+- Output (O1):
+   owner: User (Joe)
+   workflow: Workflow (W1)
+   input: Input (I1)
+   results: 
+     - AnnotatedVariant (av1):
+        variant: Variant (V1)
+        values: { rare: !!str true, conserved: !!str false }
+     - AnnotatedVariant (av2):
+        variant: Variant (V2)
+        values: { rare: !!str false, conserved: !!str true } 

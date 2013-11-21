@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Transient;
 
 @Entity(value = "users")
 public class User {
@@ -17,7 +18,7 @@ public class User {
 	private String name;
 	
 	private String email;
-
+	
 	public ObjectId getId() {
 		return id;
 	}
