@@ -2,7 +2,7 @@ package edu.yale.mutadelic.morphia;
 
 import javax.inject.Singleton;
 
-import com.google.code.morphia.Morphia;
+import org.mongodb.morphia.Morphia;
 
 @Singleton
 public class MorphiaConfig {

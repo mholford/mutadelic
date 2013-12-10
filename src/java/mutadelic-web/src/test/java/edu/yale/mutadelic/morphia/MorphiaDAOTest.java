@@ -6,16 +6,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Before;
 import org.junit.Test;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.Morphia;
-import com.google.code.morphia.ext.guice.GuiceExtension;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 import com.mongodb.MongoClient;
 
 import edu.yale.mutadelic.morphia.dao.InputDAO;
@@ -33,20 +31,24 @@ import fixy.MorphiaFixyBuilder;
 
 public class MorphiaDAOTest {
 
-	private Injector injector;
 	private Morphia morphia;
 	private MongoClient mongo;
 	private String mongoDBName;
+	private MorphiaService morphiaService;
+	private ServiceLocator serviceLocator;
 
 	@Before
 	public void setUp() {
-		injector = Guice.createInjector(new MorphiaTestModule());
-		morphia = injector.getInstance(Morphia.class);
-		mongo = injector.getInstance(MongoClient.class);
-		mongoDBName = injector.getInstance(Key.get(String.class,
-				Names.named("mongoDB")));
+		serviceLocator = ServiceLocatorFactory.getInstance().create("sl");
+		ServiceLocatorUtilities.addClasses(serviceLocator,
+				MorphiaServiceTestImpl.class);
+
+		morphiaService = serviceLocator.getService(MorphiaService.class);
+		morphia = morphiaService.getMorphia();
+		mongo = morphiaService.getMongoClient();
+		mongoDBName = morphiaService.getMongoDB();
 		/* Learn Guice about Morphia */
-		new GuiceExtension(morphia, injector);
+		// new GuiceExtension(morphia, injector);
 		/* Clear out db at start of each test */
 		mongo.dropDatabase(mongoDBName);
 	}
@@ -72,14 +74,12 @@ public class MorphiaDAOTest {
 	@Test
 	public void testFixy() {
 		try {
-			UserDAO userDAO = new UserDAO(User.class, mongo, morphia,
-					mongoDBName);
-			WorkflowDAO workflowDAO = new WorkflowDAO(Workflow.class, mongo,
-					morphia, mongoDBName);
-			InputDAO inputDAO = new InputDAO(Input.class, mongo, morphia,
-					mongoDBName);
-			OutputDAO outputDAO = new OutputDAO(Output.class, mongo, morphia,
-					mongoDBName);
+			// UserDAO userDAO = new UserDAO(User.class, mongo, morphia,
+			// mongoDBName);
+			UserDAO userDAO = morphiaService.getUserDAO();
+			WorkflowDAO workflowDAO = morphiaService.getWorkflowDAO();
+			InputDAO inputDAO = morphiaService.getInputDAO();
+			OutputDAO outputDAO = morphiaService.getOutputDAO();
 
 			Datastore ds = userDAO.getDatastore();
 			Fixy fixtures = new MorphiaFixyBuilder(ds).build();

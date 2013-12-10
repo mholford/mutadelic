@@ -1,0 +1,31 @@
+GET	/users					View all Users
+POST	/users					Add new User
+GET	/users/{userId}				View a User
+POST	/users/{userId}				Edit a User
+DELETE	/users/{userId}				Delete a User
+GET	/users/{userId}/workflows		View Workflows belonging to User
+GET	/users/{userId}/inputs			View Inputs belonging to User
+GET	/users/{userId}/outputs			View Outputs belonging to User
+
+GET	/workflows				View all Workflows
+POST	/workflows				Add new Workflow
+GET	/workflows/{workflowId}			View a Workflow
+POST 	/workflows/{workflowId}			Edit a Workflow
+DELETE	/workflows/{workflowId}		     	Delete a Workflow
+GET	/workflows/{workflowId}/outputs	       	View Outputs of a Workflow
+
+POST	/inputs					Add new Input
+GET	/inputs/{inputId}			View an Input
+POST	/inputs/{inputId}			Edit an Input
+DELETE	/inputs/{inputId}			Delete an Input
+GET	/inputs/{inputId}/outputs		View Outputs of an Input
+GET	/inputs/{inputId}/variants		View Variants in an Input
+POST	/inputs/{inputId}/variants		Add a Variant to an Input
+GET	/inputs/{inputId}/variants/{variantId}	View a Variant
+POST	/inputs/{inputId}/variants/{variantId}	Edit a Variant
+DELETE	/inputs/{inputId}/variants/{variantId}	Delete a Variant
+
+GET	/outputs/{outputId}			View an Output
+DELETE	/outputs/{outputId}			Delete an Output
+GET	/outputs/{outputId}/variants		View Variants in an Output
+GET	/outputs/{outputId}/variants/{variantId}View a Variant

@@ -3,10 +3,19 @@
 - User (Joe):
    name: Joe
    email: joe@gmail.com
+   id: 1
+   
+- EntityId (euid):
+   className: UserDAO
+   counter: 1
    
 - Workflow (W1):
    name: Workflow 1
    owner: User (Joe)
+   
+- EntityId (ewid):
+   className: WorkflowDAO
+   counter: 1
    
 - Variant (V1):
    chromosome: !!str 8

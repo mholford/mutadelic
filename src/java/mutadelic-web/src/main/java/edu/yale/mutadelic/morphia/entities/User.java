@@ -1,31 +1,17 @@
 package edu.yale.mutadelic.morphia.entities;
 
-import org.bson.types.ObjectId;
-
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Transient;
+import org.mongodb.morphia.annotations.Entity;
 
 @Entity(value = "users")
-public class User {
+public class User extends MutadelicEntity {
 
 	public User() {
+		super();
 	}
 
-	@Id
-	private ObjectId id;
-	
 	private String name;
-	
-	private String email;
-	
-	public ObjectId getId() {
-		return id;
-	}
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+	private String email;
 
 	public String getName() {
 		return name;

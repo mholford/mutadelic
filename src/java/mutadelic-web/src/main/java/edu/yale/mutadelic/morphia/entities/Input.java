@@ -3,10 +3,9 @@ package edu.yale.mutadelic.morphia.entities;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Reference;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 @Entity(value="inputs")
 public class Input {

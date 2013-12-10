@@ -7,19 +7,9 @@
 	<name>mutadelic-web</name>
 	<dependencies>
 		<dependency>
-			<groupId>com.google.code.morphia</groupId>
-			<artifactId>morphia-guice-plug</artifactId>
-			<version>0.104</version>
-		</dependency>
-		<dependency>
 			<groupId>mh-local</groupId>
 			<artifactId>mutadelic</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>2.1_3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.proxytoys</groupId>
@@ -32,9 +22,49 @@
 			<version>1.8</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava-collections</artifactId>
-			<version>r03</version>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-grizzly2-http</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>
+				org.glassfish.jersey.test-framework.providers
+			</groupId>
+			<artifactId>
+				jersey-test-framework-provider-bundle
+			</artifactId>
+			<version>2.4</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-grizzly2-servlet</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb.morphia</groupId>
+			<artifactId>morphia</artifactId>
+			<version>0.105</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.hk2</groupId>
+			<artifactId>hk2</artifactId>
+			<version>2.2.0-b23</version>
 		</dependency>
 	</dependencies>
 </project>

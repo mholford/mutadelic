@@ -1,18 +1,11 @@
 package edu.yale.mutadelic.morphia.entities;
 
-import org.bson.types.ObjectId;
-
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Property;
-import com.google.code.morphia.annotations.Reference;
-import com.google.code.morphia.annotations.Transient;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Property;
+import org.mongodb.morphia.annotations.Reference;
 
 @Entity(value = "workflows")
-public class Workflow {
-
-	@Id
-	private ObjectId id;
+public class Workflow extends MutadelicEntity {
 
 	@Reference
 	private User owner;
@@ -27,14 +20,6 @@ public class Workflow {
 	private String origDoc;
 
 	private String name;
-
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
 
 	public User getOwner() {
 		return owner;
