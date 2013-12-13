@@ -2,32 +2,20 @@ package edu.yale.mutadelic.morphia.entities;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Property;
 import org.mongodb.morphia.annotations.Reference;
 
 @Entity(value="inputs")
-public class Input {
+public class Input extends MutadelicEntity {
 
-	@Id
-	private ObjectId id;
-	
 	String name;
 	
-	@Reference
-	private User owner;
+	@Property("user_id")
+	private Integer owner;
 	
 	@Reference(lazy = true)
 	private List<Variant> variants;
-
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;
@@ -37,11 +25,11 @@ public class Input {
 		this.name = name;
 	}
 
-	public User getOwner() {
+	public Integer getOwner() {
 		return owner;
 	}
 
-	public void setOwner(User owner) {
+	public void setOwner(Integer owner) {
 		this.owner = owner;
 	}
 

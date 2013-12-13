@@ -3,6 +3,8 @@ package edu.yale.mutadelic.pipeline;
 import static org.junit.Assert.*;
 import static edu.yale.abfab.NS.*;
 
+import java.io.InputStreamReader;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,7 +14,6 @@ import edu.yale.mutadelic.pipeline.service.AlignVariantService;
 import edu.yale.mutadelic.pipeline.service.DefaultValues;
 import edu.yale.mutadelic.pipeline.service.PhylopService;
 import edu.yale.mutadelic.pipeline.service.SiftService;
-
 import static edu.yale.mutadelic.pipeline.service.AbstractPipelineService.*;
 
 public class PipelineExecutorTest {
@@ -22,6 +23,12 @@ public class PipelineExecutorTest {
 	@BeforeClass
 	public static void beforeClass() {
 		pex = new PipelineExecutor();
+		pex.setStagingDoc(new InputStreamReader(PipelineExecutor.class
+				.getClassLoader().getResourceAsStream("pipeline-stage.owl")));
+		pex.setStagingDocFormat("Manchester");
+		pex.setExecDoc(new InputStreamReader(PipelineExecutor.class
+				.getClassLoader().getResourceAsStream("pipeline.owl")));
+		pex.setExecDocFormat("Manchester");
 	}
 
 	@Test
@@ -66,27 +73,27 @@ public class PipelineExecutorTest {
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
 			assertEquals(varVal, INTERGENIC);
-			
+
 			v = new Variant("9", 82340060, 82340060, "G", "A", "+");
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
 			assertEquals(varVal, INTERGENIC);
-			
+
 			v = new Variant("22", 50564345, 50564345, "G", "A", "+");
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
 			assertEquals(varVal, INTRON);
-			
+
 			v = new Variant("9", 82191100, 82191100, "G", "A", "+");
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
 			assertEquals(varVal, INTRON);
-			
+
 			v = new Variant("9", 82336654, 82336654, "C", "T", "+");
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);
 			assertEquals(varVal, SPLICE_SITE);
-			
+
 			v = new Variant("9", 82336804, 82336804, "C", "T", "+");
 			output = pex.execute(v);
 			varVal = pex.getLiteralResult(output, VARIATION_LOCATION);

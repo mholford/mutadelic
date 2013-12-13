@@ -10,6 +10,7 @@ import edu.yale.mutadelic.morphia.dao.OutputDAO;
 import edu.yale.mutadelic.morphia.dao.UserDAO;
 import edu.yale.mutadelic.morphia.dao.VariantDAO;
 import edu.yale.mutadelic.morphia.dao.WorkflowDAO;
+import edu.yale.mutadelic.pipeline.PipelineExecutor;
 
 @Contract
 public interface MorphiaService {
@@ -21,4 +22,6 @@ public interface MorphiaService {
 	InputDAO getInputDAO();
 	OutputDAO getOutputDAO();
 	VariantDAO getVariantDAO();
+	
+	PipelineExecutor getPipelineExecutor();
 }

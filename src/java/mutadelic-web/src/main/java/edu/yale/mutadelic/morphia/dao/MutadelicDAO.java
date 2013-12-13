@@ -32,27 +32,32 @@ public abstract class MutadelicDAO<T, K> extends BasicDAO<T, K> {
 	
 	protected Integer generateId(T entity) {
 		Datastore ds = getDatastore(); 
+		
 	    // lookup the collection name for the entity
 	    String collName = ds.getCollection(getClass()).getName();
+	    
 	    // find any existing counters for the type
 	    Query<EntityId> q = ds.find(EntityId.class, "_id", collName);
+	    
 	    // create an update operation which increments the counter
 	    UpdateOperations<EntityId> update = ds.createUpdateOperations(EntityId.class).inc("counter");
+	    
 	    // execute on server, if not found null is return,
 	    // else the counter is incremented atomically
 	    EntityId counter = ds.findAndModify(q, update);
+	    
 	    if (counter == null) {
 	        // so just create one
 	        counter = new EntityId(collName);
 	        ds.save(counter);
 	    }
+	    
 	    // return new id
 	    return counter.getCounter();
 	}
 	
-	public T findById(Class<T> clz, String idString) {
-		Integer id = Integer.parseInt(idString);
+	public T findById(Integer id) {
 		Datastore ds = getDatastore();
-		return findOne(ds.createQuery(clz).filter("id =", id));
+		return findOne(ds.createQuery(entityClazz).filter("id =", id));
 	}
 }

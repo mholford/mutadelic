@@ -2,6 +2,8 @@ package edu.yale.mutadelic.morphia;
 
 import java.net.UnknownHostException;
 
+import javax.inject.Singleton;
+
 import org.jvnet.hk2.annotations.Service;
 import org.mongodb.morphia.Morphia;
 
@@ -15,9 +17,11 @@ import edu.yale.mutadelic.morphia.dao.WorkflowDAO;
 import edu.yale.mutadelic.morphia.entities.Input;
 import edu.yale.mutadelic.morphia.entities.Output;
 import edu.yale.mutadelic.morphia.entities.User;
+import edu.yale.mutadelic.morphia.entities.Variant;
 import edu.yale.mutadelic.morphia.entities.Workflow;
-import edu.yale.mutadelic.pipeline.model.Variant;
+import edu.yale.mutadelic.pipeline.PipelineExecutor;
 
+@Singleton
 @Service
 public class MorphiaServiceTestImpl implements MorphiaService {
 
@@ -71,5 +75,10 @@ public class MorphiaServiceTestImpl implements MorphiaService {
 	public VariantDAO getVariantDAO() {
 		return new VariantDAO(Variant.class, getMongoClient(), getMorphia(),
 				getMongoDB());
+	}
+
+	@Override
+	public PipelineExecutor getPipelineExecutor() {
+		return new PipelineExecutor();
 	}
 }

@@ -89,7 +89,8 @@ public class MorphiaDAOTest {
 			assertEquals(found.getEmail(), "joe@gmail.com");
 
 			Workflow w2 = workflowDAO.findOne("name", "Workflow 1");
-			User uw2 = w2.getOwner();
+			Integer uwid2 = w2.getOwner();
+			User uw2 = userDAO.findById(uwid2);
 			assertEquals("Joe", uw2.getName());
 
 			Input i1 = inputDAO.findOne("name", "Input 1");
@@ -109,7 +110,7 @@ public class MorphiaDAOTest {
 			Variant v1 = vars.get(0);
 			assertEquals("A", v1.getObserved());
 
-			Output o1 = outputDAO.findOne("input", i1);
+			Output o1 = outputDAO.findOne("input", 1);
 			List<AnnotatedVariant> results = o1.getResults();
 			assertEquals(2, results.size());
 			Collections.sort(results, new Comparator<AnnotatedVariant>() {

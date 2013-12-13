@@ -1,34 +1,21 @@
 package edu.yale.mutadelic.morphia.entities;
 
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
 
 @Entity(value="variants")
-public class Variant {
+public class Variant extends MutadelicEntity {
 
-	@Id
-	private ObjectId id;
-	
 	private String chromosome;
 	
-	private int start;
+	private Integer start;
 	
-	private int end;
+	private Integer end;
 	
 	private String strand;
 	
 	private String reference;
 	
 	private String observed;
-
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
 
 	public String getChromosome() {
 		return chromosome;
@@ -38,19 +25,19 @@ public class Variant {
 		this.chromosome = chromosome;
 	}
 
-	public int getStart() {
+	public Integer getStart() {
 		return start;
 	}
 
-	public void setStart(int start) {
+	public void setStart(Integer start) {
 		this.start = start;
 	}
 
-	public int getEnd() {
+	public Integer getEnd() {
 		return end;
 	}
 
-	public void setEnd(int end) {
+	public void setEnd(Integer end) {
 		this.end = end;
 	}
 
@@ -76,5 +63,63 @@ public class Variant {
 
 	public void setObserved(String observed) {
 		this.observed = observed;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((chromosome == null) ? 0 : chromosome.hashCode());
+		result = prime * result + ((end == null) ? 0 : end.hashCode());
+		result = prime * result
+				+ ((observed == null) ? 0 : observed.hashCode());
+		result = prime * result
+				+ ((reference == null) ? 0 : reference.hashCode());
+		result = prime * result + ((start == null) ? 0 : start.hashCode());
+		result = prime * result + ((strand == null) ? 0 : strand.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Variant other = (Variant) obj;
+		if (chromosome == null) {
+			if (other.chromosome != null)
+				return false;
+		} else if (!chromosome.equals(other.chromosome))
+			return false;
+		if (end == null) {
+			if (other.end != null)
+				return false;
+		} else if (!end.equals(other.end))
+			return false;
+		if (observed == null) {
+			if (other.observed != null)
+				return false;
+		} else if (!observed.equals(other.observed))
+			return false;
+		if (reference == null) {
+			if (other.reference != null)
+				return false;
+		} else if (!reference.equals(other.reference))
+			return false;
+		if (start == null) {
+			if (other.start != null)
+				return false;
+		} else if (!start.equals(other.start))
+			return false;
+		if (strand == null) {
+			if (other.strand != null)
+				return false;
+		} else if (!strand.equals(other.strand))
+			return false;
+		return true;
 	}
 }

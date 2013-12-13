@@ -1,14 +1,110 @@
 package edu.yale.mutadelic.morphia.entities;
 
+import java.util.List;
+import java.util.Map;
+
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
-import org.mongodb.morphia.annotations.Reference;
 
 @Entity(value = "workflows")
 public class Workflow extends MutadelicEntity {
+	
+	public static enum RestrictionType {
+		GT, LT, EQ
+	}
+	
+	public static enum Level {
+		UP, DOWN
+	}
+	
+	public static class CriteriaRestriction {
+		RestrictionType type;
+		Comparable value;
+		
+		public CriteriaRestriction(RestrictionType type, Comparable value) {
+			this.type = type;
+			this.value = value;
+		}
 
-	@Reference
-	private User owner;
+		public RestrictionType getType() {
+			return type;
+		}
+
+		public void setType(RestrictionType type) {
+			this.type = type;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+
+		public void setValue(Comparable value) {
+			this.value = value;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			result = prime * result + ((value == null) ? 0 : value.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CriteriaRestriction other = (CriteriaRestriction) obj;
+			if (type != other.type)
+				return false;
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			} else if (!value.equals(other.value))
+				return false;
+			return true;
+		}
+	}
+	
+	public static class Criterion {
+		String param;
+		String label;
+		Map<CriteriaRestriction, Level> restrictionLevels;
+		boolean literal;
+		public String getParam() {
+			return param;
+		}
+		public void setParam(String param) {
+			this.param = param;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public void setLabel(String label) {
+			this.label = label;
+		}
+		public Map<CriteriaRestriction, Level> getRestrictionLevels() {
+			return restrictionLevels;
+		}
+		public void setRestrictionLevels(
+				Map<CriteriaRestriction, Level> restrictionLevels) {
+			this.restrictionLevels = restrictionLevels;
+		}
+		public boolean isLiteral() {
+			return literal;
+		}
+		public void setLiteral(boolean literal) {
+			this.literal = literal;
+		}
+	}
+
+	@Property("user_id")
+	private Integer owner;
 
 	@Property("exec_doc")
 	private String execDoc;
@@ -20,12 +116,22 @@ public class Workflow extends MutadelicEntity {
 	private String origDoc;
 
 	private String name;
+	
+	private List<Criterion> criteria;
 
-	public User getOwner() {
+	public List<Criterion> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(List<Criterion> criteria) {
+		this.criteria = criteria;
+	}
+
+	public Integer getOwner() {
 		return owner;
 	}
 
-	public void setOwner(User owner) {
+	public void setOwner(Integer owner) {
 		this.owner = owner;
 	}
 

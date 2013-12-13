@@ -14,8 +14,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import edu.yale.mutadelic.morphia.MorphiaService;
+import edu.yale.mutadelic.morphia.dao.InputDAO;
+import edu.yale.mutadelic.morphia.dao.OutputDAO;
 import edu.yale.mutadelic.morphia.dao.UserDAO;
 import edu.yale.mutadelic.morphia.dao.WorkflowDAO;
+import edu.yale.mutadelic.morphia.entities.Input;
+import edu.yale.mutadelic.morphia.entities.Output;
 import edu.yale.mutadelic.morphia.entities.User;
 import edu.yale.mutadelic.morphia.entities.Workflow;
 
@@ -26,6 +30,8 @@ public class UserResource {
 	private MorphiaService morphiaService;
 	private UserDAO userDao;
 	private WorkflowDAO workflowDao;
+	private InputDAO inputDao;
+	private OutputDAO outputDao;
 
 	public UserResource() {
 
@@ -57,8 +63,9 @@ public class UserResource {
 	@Path("{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public User getUser(@PathParam(value = "userId") String userId) {
+		Integer uid = Integer.parseInt(userId);
 		userDao = morphiaService.getUserDAO();
-		User u = userDao.findById(User.class, userId);
+		User u = userDao.findById(uid);
 		return u;
 	}
 	
@@ -66,10 +73,41 @@ public class UserResource {
 	@Path("{userId}/workflows")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Workflow> getUserWorkflows(@PathParam(value="userId") String userId) {
+		Integer uid = Integer.parseInt(userId);
 		try {
 			workflowDao = morphiaService.getWorkflowDAO();
-			List<Workflow> workflow = workflowDao.findByUserId(userId);
+			List<Workflow> workflow = workflowDao.findByUserId(uid);
 			return workflow;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@GET
+	@Path("{userId}/inputs")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Input> getUserInputs(@PathParam(value="userId") String userId) {
+		Integer uid = Integer.parseInt(userId);
+		try {
+			inputDao = morphiaService.getInputDAO();
+			List<Input> inputs = inputDao.findByUserId(uid);
+			return inputs;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@GET
+	@Path("{userId}/outputs")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Output> getUserOutputs(@PathParam(value="userId") String userId) {
+		Integer uid = Integer.parseInt(userId);
+		try {
+			outputDao = morphiaService.getOutputDAO();
+			List<Output> outputs = outputDao.findByUserId(uid);
+			return outputs;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,8 +118,9 @@ public class UserResource {
 	@Path("{userId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response editUser(@PathParam(value="userId") String userId, User newU) {
+		Integer uid = Integer.parseInt(userId);
 		userDao = morphiaService.getUserDAO();
-		User u = userDao.findById(User.class, userId);
+		User u = userDao.findById(uid);
 		
 		if (newU.getEmail() != null) {
 			u.setEmail(newU.getEmail());
@@ -97,8 +136,9 @@ public class UserResource {
 	@DELETE
 	@Path("{userId}")
 	public Response deleteUser(@PathParam(value="userId") String userId) {
+		Integer uid = Integer.parseInt(userId);
 		userDao = morphiaService.getUserDAO();
-		User u = userDao.findById(User.class, userId);
+		User u = userDao.findById(uid);
 		
 		userDao.delete(u);
 		

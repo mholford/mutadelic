@@ -1,14 +1,12 @@
 package edu.yale.mutadelic.pipeline;
 
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
 import edu.yale.abfab.owlapi.HermitAbductor;
-import edu.yale.abfab.owlapi.OWLAPIAbductorTest;
-import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.controller.DLController;
@@ -20,6 +18,10 @@ public class PipelineExecutor {
 
 	private Abductor abductor;
 	private DLController dl;
+	private Reader stagingDoc;
+	private String stagingDocFormat;
+	private Reader execDoc;
+	private String execDocFormat;
 
 	public PipelineExecutor() {
 		init();
@@ -34,11 +36,13 @@ public class PipelineExecutor {
 	public IndividualPlus execute(Variant v) {
 		IndividualPlus ip = v.toOWL(dl);
 
-		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
-				.getResourceAsStream("pipeline-stage.owl")), "Manchester");
+//		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
+//				.getResourceAsStream("pipeline-stage.owl")), "Manchester");
+		dl.load(stagingDoc, stagingDocFormat);
 		Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
-		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
-				.getResourceAsStream("pipeline.owl")), "Manchester");
+//		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
+//				.getResourceAsStream("pipeline.owl")), "Manchester");
+		dl.load(execDoc, execDocFormat);
 		IndividualPlus output = abductor.exec(ip, p);
 		return output;
 	}
@@ -88,5 +92,37 @@ public class PipelineExecutor {
 			}
 		}
 		return output;
+	}
+
+	public Reader getStagingDoc() {
+		return stagingDoc;
+	}
+
+	public void setStagingDoc(Reader stagingDoc) {
+		this.stagingDoc = stagingDoc;
+	}
+
+	public Reader getExecDoc() {
+		return execDoc;
+	}
+
+	public void setExecDoc(Reader execDoc) {
+		this.execDoc = execDoc;
+	}
+
+	public String getStagingDocFormat() {
+		return stagingDocFormat;
+	}
+
+	public void setStagingDocFormat(String stagingDocFormat) {
+		this.stagingDocFormat = stagingDocFormat;
+	}
+
+	public String getExecDocFormat() {
+		return execDocFormat;
+	}
+
+	public void setExecDocFormat(String execDocFormat) {
+		this.execDocFormat = execDocFormat;
 	}
 }

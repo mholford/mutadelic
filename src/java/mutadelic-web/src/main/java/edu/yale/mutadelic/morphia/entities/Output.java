@@ -1,61 +1,48 @@
 package edu.yale.mutadelic.morphia.entities;
 
 import java.util.List;
-import java.util.Map;
 
-import org.bson.types.ObjectId;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
+import org.mongodb.morphia.annotations.Property;
 
 @Entity(value="outputs")
-public class Output {
+public class Output extends MutadelicEntity {
 
-	@Id
-	private ObjectId id;
+	@Property("user_id")
+	private Integer owner;
 	
-	@Reference
-	private User owner;
+	@Property("workflow_id")
+	private Integer workflow;
 	
-	@Reference(lazy = true)
-	private Workflow workflow;
-	
-	@Reference(lazy = true)
-	private Input input;
+	@Property("input_id")
+	private Integer input;
 	
 	@Embedded
 	private List<AnnotatedVariant> results;
 
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
-
-	public User getOwner() {
+	public Integer getOwner() {
 		return owner;
 	}
 
-	public void setOwner(User owner) {
+	public void setOwner(Integer owner) {
 		this.owner = owner;
 	}
 
-	public Workflow getWorkflow() {
+	public Integer getWorkflow() {
 		return workflow;
 	}
 
-	public void setWorkflow(Workflow workflow) {
+	public void setWorkflow(Integer workflow) {
 		this.workflow = workflow;
 	}
 
-	public Input getInput() {
+	public Integer getInput() {
 		return input;
 	}
 
-	public void setInput(Input input) {
+	public void setInput(Integer input) {
 		this.input = input;
 	}
 

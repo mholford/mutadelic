@@ -16,4 +16,8 @@ public class UserDAO extends MutadelicDAO<User, ObjectId>{
 			@Named("mongoDB") String mongoDBName) {
 		super(entityClass, mongo, morphia, mongoDBName);
 	}
+	
+	public User findByName(String name) {
+		return findOne("name", name);
+	}
 }
