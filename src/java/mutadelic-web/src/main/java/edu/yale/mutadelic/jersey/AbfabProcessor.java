@@ -53,9 +53,9 @@ public class AbfabProcessor {
 			} else {
 				output = String.valueOf(pipelineExecutor.getResult(ip, cparam));
 			}
-			for (CriteriaRestriction cr : c.getRestrictionLevels().keySet()) {
+			for (CriteriaRestriction cr : c.getRestrictionLevels().values()) {
 				if (matchesRestriction(cr, output)) {
-					levels.put(c.getLabel(), c.getRestrictionLevels().get(cr));
+					levels.put(c.getLabel(), cr.getLevel());
 				}
 			}
 			values.put(c.getLabel(), String.valueOf(output));

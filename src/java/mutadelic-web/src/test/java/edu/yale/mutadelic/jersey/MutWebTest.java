@@ -2,6 +2,7 @@ package edu.yale.mutadelic.jersey;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,7 @@ import edu.yale.mutadelic.morphia.entities.Output;
 import edu.yale.mutadelic.morphia.entities.User;
 import edu.yale.mutadelic.morphia.entities.Variant;
 import edu.yale.mutadelic.morphia.entities.Workflow;
+import edu.yale.mutadelic.morphia.entities.Workflow.Criterion;
 import fixy.Fixy;
 import fixy.MorphiaFixyBuilder;
 

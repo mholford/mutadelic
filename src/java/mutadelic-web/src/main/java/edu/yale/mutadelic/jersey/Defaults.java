@@ -47,17 +47,17 @@ public class Defaults {
 		List<Criterion> criteria = new ArrayList<>();
 
 		criteria.add(new Criterion(DATABASE_PRESENCE, "In Red Cell DB", true,
-				RestrictionType.EQ, "true", Level.UP));
+				"In DB Up", RestrictionType.EQ, "true", Level.UP));
 		criteria.add(new Criterion(ALLELE_FREQUENCY, "Allele Frequency", true,
-				RestrictionType.LTE, 0.01, Level.UP));
+				"LTE 0.01 Up", RestrictionType.LTE, 0.01, Level.UP));
 		criteria.add(new Criterion(SIFT_SCORE, "Sift Score", true,
-				RestrictionType.LTE, 0.05, Level.UP));
+				"LTE 0.05 Up", RestrictionType.LTE, 0.05, Level.UP));
 		criteria.add(new Criterion(VARIATION_LOCATION, "Locus", true,
-				RestrictionType.EQ, "SpliceSite"));
+				"SpliceSite up", RestrictionType.EQ, "SpliceSite"));
 		criteria.add(new Criterion(PHYLOP_SCORE, "PhyloP Score", true,
-				RestrictionType.GTE, 1.0, Level.UP));
+				"GTE 1.0 Up", RestrictionType.GTE, 1.0, Level.UP));
 		criteria.add(new Criterion(DOMAIN_COLOCATION, "In Critical Domain",
-				true, RestrictionType.EQ, "true", Level.UP));
+				true, "In Domain Up", RestrictionType.EQ, "true", Level.UP));
 
 		return criteria;
 	}
