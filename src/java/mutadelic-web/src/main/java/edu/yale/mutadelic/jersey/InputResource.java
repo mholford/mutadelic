@@ -36,17 +36,17 @@ public class InputResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addInput(Input newI) {
+	public Integer addInput(Input newI) {
 		inputDao = morphiaService.getInputDAO();
 		inputDao.save(newI);
 
-		return Response.status(201).build();
+		return newI.getId();
 	}
 
 	@POST
 	@Path("{inputId}/variants")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addInputVariant(
+	public Integer addInputVariant(
 			@PathParam(value = "inputId") String inputId, Variant newV) {
 		Integer iid = Integer.parseInt(inputId);
 		inputDao = morphiaService.getInputDAO();
@@ -58,7 +58,7 @@ public class InputResource {
 
 		inputDao.save(i);
 
-		return Response.status(201).build();
+		return i.getId();
 	}
 
 	@GET

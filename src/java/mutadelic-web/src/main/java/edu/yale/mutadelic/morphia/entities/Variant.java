@@ -2,20 +2,33 @@ package edu.yale.mutadelic.morphia.entities;
 
 import org.mongodb.morphia.annotations.Entity;
 
-@Entity(value="variants")
+@Entity(value = "variants")
 public class Variant extends MutadelicEntity {
 
 	private String chromosome;
-	
+
 	private Integer start;
-	
+
 	private Integer end;
-	
+
 	private String strand;
-	
+
 	private String reference;
-	
+
 	private String observed;
+
+	public Variant() {
+	}
+
+	public Variant(String chromosome, Integer start, Integer end,
+			String reference, String observed, String strand) {
+		this.chromosome = chromosome;
+		this.start = start;
+		this.end = end;
+		this.strand = strand;
+		this.reference = reference;
+		this.observed = observed;
+	}
 
 	public String getChromosome() {
 		return chromosome;

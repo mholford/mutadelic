@@ -1,8 +1,11 @@
 package edu.yale.mutadelic.morphia.entities;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
 
@@ -10,7 +13,7 @@ import org.mongodb.morphia.annotations.Property;
 public class Workflow extends MutadelicEntity {
 	
 	public static enum RestrictionType {
-		GT, LT, EQ
+		GT, GTE, LT, LTE, EQ
 	}
 	
 	public static enum Level {
@@ -20,6 +23,8 @@ public class Workflow extends MutadelicEntity {
 	public static class CriteriaRestriction {
 		RestrictionType type;
 		Comparable value;
+		
+		public CriteriaRestriction() {}
 		
 		public CriteriaRestriction(RestrictionType type, Comparable value) {
 			this.type = type;
@@ -33,15 +38,15 @@ public class Workflow extends MutadelicEntity {
 		public void setType(RestrictionType type) {
 			this.type = type;
 		}
-
-		public Object getValue() {
+		
+		public Comparable getValue() {
 			return value;
 		}
-
+		
 		public void setValue(Comparable value) {
 			this.value = value;
 		}
-
+		
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -76,6 +81,49 @@ public class Workflow extends MutadelicEntity {
 		String label;
 		Map<CriteriaRestriction, Level> restrictionLevels;
 		boolean literal;
+		
+		public Criterion() {}
+		
+		public Criterion(String param, String label, boolean literal, Object... restrictions) {
+			Map<CriteriaRestriction, Level> restrictionLevels = new HashMap<>();
+			if (restrictions.length % 3 != 0) {
+				throw new RuntimeException("Improperly defined restrictions for Criterion");
+			}
+			for (int i = 0; i < restrictions.length; i++) {
+				Object rtype = restrictions[i];
+				if (!(rtype instanceof RestrictionType)) {
+					throw new RuntimeException(String.format("Parameter %d must be a RestrictionType", i));
+				}
+				RestrictionType rt = (RestrictionType) rtype;
+				
+				Object comp = restrictions[++i];
+				if (!(comp instanceof Comparable)) {
+					throw new RuntimeException(String.format("Parameter %d must be a Comparable", i));
+				}
+				Comparable c = (Comparable) comp;
+				
+				CriteriaRestriction cr = new CriteriaRestriction(rt, c);
+				
+				Object level = restrictions[++i];
+				if (!(level instanceof Level)) {
+					throw new RuntimeException(String.format("Paramenter %d must be a Level", i));
+				}
+				Level l = (Level) level;
+				
+				restrictionLevels.put(cr, l);
+			}
+			this.param = param;
+			this.label = label;
+			this.literal = literal;
+			this.restrictionLevels = restrictionLevels;
+		}
+		
+		public Criterion(String param, String label, boolean literal, Map<CriteriaRestriction, Level> restrictionLevels) {
+			this.param = param;
+			this.label = label;
+			this.literal = literal;
+			this.restrictionLevels = restrictionLevels;
+		}
 		public String getParam() {
 			return param;
 		}

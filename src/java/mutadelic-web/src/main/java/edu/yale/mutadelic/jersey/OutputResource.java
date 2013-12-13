@@ -49,51 +49,57 @@ public class OutputResource {
 			@QueryParam("input_id") String inputId) {
 		User u = null;
 		Workflow w = null;
-		
+
 		if (userId == null) {
 			User defU = Defaults.getDefaultUser();
 			userDao = morphiaService.getUserDAO();
 			User testU = userDao.findByName(defU.getName());
 			if (testU != null) {
 				u = testU;
-			}else {
+			} else {
 				u = defU;
 				userDao.save(defU);
 			}
 		}
-		
+
 		if (workflowId == null) {
-			Workflow defW = Defaults.getDefaultWorkflow();
-			workflowDao = morphiaService.getWorkflowDAO();
-			Workflow testW = workflowDao.findByName(defW.getName());
-			if (testW != null) {
-				w = testW;
-			} else {
-				w = defW;
-				workflowDao.save(defW);
+			Workflow defW;
+			try {
+				defW = Defaults.getDefaultWorkflow();
+
+				workflowDao = morphiaService.getWorkflowDAO();
+				Workflow testW = workflowDao.findByName(defW.getName());
+				if (testW != null) {
+					w = testW;
+				} else {
+					w = defW;
+					workflowDao.save(defW);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
-		
+
 		Integer iid = Integer.parseInt(inputId);
 		inputDao = morphiaService.getInputDAO();
 		Input input = inputDao.findById(iid);
-		
+
 		PipelineExecutor pex = morphiaService.getPipelineExecutor();
 		AbfabProcessor ap = new AbfabProcessor(pex, w);
-				
+
 		List<Variant> vars = input.getVariants();
 		List<AnnotatedVariant> avs = new ArrayList<>();
 		for (Variant v : vars) {
-			AnnotatedVariant av= ap.annotateVariant(v);
+			AnnotatedVariant av = ap.annotateVariant(v);
 			avs.add(av);
 		}
-		
+
 		Output o = new Output();
 		o.setInput(iid);
 		o.setOwner(u.getId());
 		o.setWorkflow(w.getId());
 		o.setResults(avs);
-		
+
 		outputDao.save(o);
 
 		return Response.status(201).build();

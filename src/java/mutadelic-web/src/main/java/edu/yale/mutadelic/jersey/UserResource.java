@@ -52,11 +52,11 @@ public class UserResource {
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addUser(User newU) {
+	public Integer addUser(User newU) {
 		userDao = morphiaService.getUserDAO();
 		userDao.save(newU);
 		
-		return Response.status(201).build();
+		return newU.getId();
 	}
 	
 	@GET

@@ -1,5 +1,6 @@
 package edu.yale.mutadelic.jersey;
 
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,9 @@ public class AbfabProcessor {
 	public AbfabProcessor(PipelineExecutor pipelineExecutor, Workflow workflow) {
 		this.pipelineExecutor = pipelineExecutor;
 		this.workflow = workflow;
+		pipelineExecutor.setStagingDoc(new StringReader(workflow
+				.getStagingDoc()));
+		pipelineExecutor.setExecDoc(new StringReader(workflow.getStagingDoc()));
 	}
 
 	public AnnotatedVariant annotateVariant(Variant v) {
@@ -69,8 +73,12 @@ public class AbfabProcessor {
 		switch (cr.getType()) {
 		case GT:
 			return co.compareTo(cr.getValue()) > 0;
+		case GTE:
+			return co.compareTo(cr.getValue()) >= 0;
 		case LT:
 			return co.compareTo(cr.getValue()) < 0;
+		case LTE:
+			return co.compareTo(cr.getValue()) <= 0;
 		case EQ:
 			return co.compareTo(cr.getValue()) == 0;
 		default:

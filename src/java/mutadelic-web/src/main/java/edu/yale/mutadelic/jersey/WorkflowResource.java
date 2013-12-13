@@ -46,11 +46,11 @@ public class WorkflowResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addUser(Workflow newW) {
+	public Integer addUser(Workflow newW) {
 		workflowDao = morphiaService.getWorkflowDAO();
 		workflowDao.save(newW);
 
-		return Response.status(201).build();
+		return newW.getId();
 	}
 
 	@GET

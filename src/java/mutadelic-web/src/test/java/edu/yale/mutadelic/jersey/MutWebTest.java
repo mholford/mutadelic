@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -17,16 +16,12 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mongodb.morphia.Datastore;
 
@@ -130,10 +125,10 @@ public class MutWebTest extends JerseyTest {
 			Workflow w = new Workflow();
 			w.setName("Workflow 2");
 			w.setOwner(1);
-			Response resp = target().path("workflows")
+			Integer resp = target().path("workflows")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(w, MediaType.APPLICATION_JSON));
-			assertEquals(201, resp.getStatus());
+					.post(Entity.entity(w, MediaType.APPLICATION_JSON), Integer.class);
+			assertEquals(new Integer(2), resp);
 
 			Workflow w2 = target().path("workflows/2")
 					.request(MediaType.APPLICATION_JSON).get(Workflow.class);
@@ -150,10 +145,10 @@ public class MutWebTest extends JerseyTest {
 			User u = new User();
 			u.setName("Reggie");
 			u.setEmail("reggie@dunkindonuts.com");
-			Response response = target().path("users")
+			Integer response = target().path("users")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(u, MediaType.APPLICATION_JSON));
-			assertEquals(201, response.getStatus());
+					.post(Entity.entity(u, MediaType.APPLICATION_JSON), Integer.class);
+			assertEquals(new Integer(2), response);
 			User reggie = target().path("users/2")
 					.request(MediaType.APPLICATION_JSON).get(User.class);
 			assertEquals("Reggie", reggie.getName());
@@ -163,16 +158,39 @@ public class MutWebTest extends JerseyTest {
 		}
 	}
 
+//	@Test
+//	public void testAddOutput() {
+//		try {
+//			Input i = new Input();
+//			i.setName("Test Input");
+//			i.setOwner(1);
+//			i.setVariants(Arrays.asList(new Variant[] { new Variant("9",
+//					82336654, 82336654, "C", "T", "+") }));
+//			Response response = target().path("inputs")
+//					.request(MediaType.APPLICATION_JSON)
+//					.post(Entity.entity(i, MediaType.APPLICATION_JSON));
+//
+//			Response response = target().path("outputs")
+//					.queryParam("input_id", i.getId())
+//					.request(MediaType.APPLICATION_JSON).post(null);
+//			assert
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail();
+//		}
+//	}
+
 	@Test
 	public void testAddInput() {
 		try {
 			Input i = new Input();
 			i.setName("Reggie's Input");
 			i.setOwner(1);
-			Response response = target().path("inputs")
+			Integer response = target().path("inputs")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(i, MediaType.APPLICATION_JSON));
-			assertEquals(201, response.getStatus());
+					.post(Entity.entity(i, MediaType.APPLICATION_JSON), Integer.class);
+			assertEquals(new Integer(2), response);
 			Input reggie = target().path("inputs/2")
 					.request(MediaType.APPLICATION_JSON).get(Input.class);
 			assertEquals("Reggie's Input", reggie.getName());
@@ -192,10 +210,10 @@ public class MutWebTest extends JerseyTest {
 			newV.setStrand("+");
 			newV.setReference("A");
 			newV.setObserved("G");
-			Response response = target().path("inputs/1/variants")
+			Integer response = target().path("inputs/1/variants")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(newV, MediaType.APPLICATION_JSON));
-			assertEquals(201, response.getStatus());
+					.post(Entity.entity(newV, MediaType.APPLICATION_JSON), Integer.class);
+			assertEquals(new Integer(3), response);
 
 			GenericType<List<Variant>> variantListType = new GenericType<List<Variant>>() {
 			};
