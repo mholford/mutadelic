@@ -38,6 +38,11 @@ public class InputResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Integer addInput(Input newI) {
 		inputDao = morphiaService.getInputDAO();
+		variantDao = morphiaService.getVariantDAO();
+		
+		for (Variant v : newI.getVariants()) {
+			variantDao.save(v);
+		}
 		inputDao.save(newI);
 
 		return newI.getId();
@@ -58,7 +63,7 @@ public class InputResource {
 
 		inputDao.save(i);
 
-		return i.getId();
+		return newV.getId();
 	}
 
 	@GET

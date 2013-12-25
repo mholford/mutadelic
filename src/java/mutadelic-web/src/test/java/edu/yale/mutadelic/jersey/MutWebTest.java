@@ -3,6 +3,7 @@ package edu.yale.mutadelic.jersey;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -127,9 +128,11 @@ public class MutWebTest extends JerseyTest {
 			Workflow w = new Workflow();
 			w.setName("Workflow 2");
 			w.setOwner(1);
-			Integer resp = target().path("workflows")
+			Integer resp = target()
+					.path("workflows")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(w, MediaType.APPLICATION_JSON), Integer.class);
+					.post(Entity.entity(w, MediaType.APPLICATION_JSON),
+							Integer.class);
 			assertEquals(new Integer(2), resp);
 
 			Workflow w2 = target().path("workflows/2")
@@ -147,9 +150,11 @@ public class MutWebTest extends JerseyTest {
 			User u = new User();
 			u.setName("Reggie");
 			u.setEmail("reggie@dunkindonuts.com");
-			Integer response = target().path("users")
+			Integer response = target()
+					.path("users")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(u, MediaType.APPLICATION_JSON), Integer.class);
+					.post(Entity.entity(u, MediaType.APPLICATION_JSON),
+							Integer.class);
 			assertEquals(new Integer(2), response);
 			User reggie = target().path("users/2")
 					.request(MediaType.APPLICATION_JSON).get(User.class);
@@ -160,28 +165,30 @@ public class MutWebTest extends JerseyTest {
 		}
 	}
 
-//	@Test
-//	public void testAddOutput() {
-//		try {
-//			Input i = new Input();
-//			i.setName("Test Input");
-//			i.setOwner(1);
-//			i.setVariants(Arrays.asList(new Variant[] { new Variant("9",
-//					82336654, 82336654, "C", "T", "+") }));
-//			Response response = target().path("inputs")
-//					.request(MediaType.APPLICATION_JSON)
-//					.post(Entity.entity(i, MediaType.APPLICATION_JSON));
-//
-//			Response response = target().path("outputs")
-//					.queryParam("input_id", i.getId())
-//					.request(MediaType.APPLICATION_JSON).post(null);
-//			assert
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			fail();
-//		}
-//	}
+	@Test
+	public void testAddOutput() {
+		try {
+			Input i = new Input();
+			i.setName("Test Input");
+			i.setOwner(1);
+			i.setVariants(Arrays.asList(new Variant[] { new Variant("9",
+					82336654, 82336654, "C", "T", "+") }));
+			int iid = target()
+					.path("inputs")
+					.request(MediaType.APPLICATION_JSON)
+					.post(Entity.entity(i, MediaType.APPLICATION_JSON),
+							Integer.class);
+
+			int oid = target().path("outputs").queryParam("input_id", iid)
+					.request(MediaType.APPLICATION_JSON)
+					.post(null, Integer.class);
+			
+			assertEquals(2, oid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
 
 	@Test
 	public void testAddInput() {
@@ -189,9 +196,12 @@ public class MutWebTest extends JerseyTest {
 			Input i = new Input();
 			i.setName("Reggie's Input");
 			i.setOwner(1);
-			Integer response = target().path("inputs")
+			i.setVariants(new ArrayList<Variant>());
+			Integer response = target()
+					.path("inputs")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(i, MediaType.APPLICATION_JSON), Integer.class);
+					.post(Entity.entity(i, MediaType.APPLICATION_JSON),
+							Integer.class);
 			assertEquals(new Integer(2), response);
 			Input reggie = target().path("inputs/2")
 					.request(MediaType.APPLICATION_JSON).get(Input.class);
@@ -212,9 +222,11 @@ public class MutWebTest extends JerseyTest {
 			newV.setStrand("+");
 			newV.setReference("A");
 			newV.setObserved("G");
-			Integer response = target().path("inputs/1/variants")
+			Integer response = target()
+					.path("inputs/1/variants")
 					.request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(newV, MediaType.APPLICATION_JSON), Integer.class);
+					.post(Entity.entity(newV, MediaType.APPLICATION_JSON),
+							Integer.class);
 			assertEquals(new Integer(3), response);
 
 			GenericType<List<Variant>> variantListType = new GenericType<List<Variant>>() {

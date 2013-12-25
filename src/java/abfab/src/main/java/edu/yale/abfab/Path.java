@@ -145,6 +145,7 @@ public class Path implements Comparable<Path> {
 		} finally {
 			dl.removeAxioms(ax);
 		}
+		
 		return out;
 	}
 

@@ -12,6 +12,7 @@ import edu.yale.mutadelic.morphia.entities.Workflow.CriteriaRestriction;
 import edu.yale.mutadelic.morphia.entities.Workflow.Criterion;
 import edu.yale.mutadelic.morphia.entities.Workflow.Level;
 import edu.yale.mutadelic.pipeline.PipelineExecutor;
+import static edu.yale.mutadelic.pipeline.service.AbstractPipelineService.*;
 
 public class AbfabProcessor {
 
@@ -23,7 +24,7 @@ public class AbfabProcessor {
 		this.workflow = workflow;
 		pipelineExecutor.setStagingDoc(new StringReader(workflow
 				.getStagingDoc()));
-		pipelineExecutor.setExecDoc(new StringReader(workflow.getStagingDoc()));
+		pipelineExecutor.setExecDoc(new StringReader(workflow.getExecDoc()));
 	}
 
 	public AnnotatedVariant annotateVariant(Variant v) {
@@ -38,6 +39,9 @@ public class AbfabProcessor {
 	private AnnotatedVariant processOutput(IndividualPlus ip, Variant v) {
 		Map<String, String> values = new HashMap<>();
 		Map<String, Level> levels = new HashMap<>();
+		
+		String flaggedPre = pipelineExecutor.getLiteralResult(ip, COMPLETION_STATUS);
+		boolean flagged = flaggedPre != null && flaggedPre.equals("true");
 
 		for (Criterion c : workflow.getCriteria()) {
 			Object output;
@@ -45,6 +49,9 @@ public class AbfabProcessor {
 			if (c.isLiteral()) {
 				String outputPre = pipelineExecutor
 						.getLiteralResult(ip, cparam);
+				if (outputPre == null) {
+					continue;
+				}
 				try {
 					output = Double.parseDouble(outputPre);
 				} catch (NumberFormatException e) {
@@ -52,6 +59,9 @@ public class AbfabProcessor {
 				}
 			} else {
 				output = String.valueOf(pipelineExecutor.getResult(ip, cparam));
+				if (output == null) {
+					continue;
+				}
 			}
 			for (CriteriaRestriction cr : c.getRestrictionLevels().values()) {
 				if (matchesRestriction(cr, output)) {
@@ -65,6 +75,7 @@ public class AbfabProcessor {
 		av.setVariant(v);
 		av.setValues(values);
 		av.setValueLevels(levels);
+		av.setFlagged(flagged);
 		return av;
 	}
 

@@ -15,7 +15,7 @@ public class FinishedVariantService extends AbstractPipelineService {
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		boolean result = DefaultValues.CRITICAL_DOMAIN;
+		boolean result = DefaultValues.FINISHED;
 		DLController dl = abductor.getDLController();
 		DLClass<?> completionStatus = dl.clazz(COMPLETION_STATUS);
 		if (valueFilled(dl, input.getIndividual(), completionStatus)) {

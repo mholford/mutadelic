@@ -44,7 +44,7 @@ public class OutputResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addOutput(@QueryParam("user_id") String userId,
+	public Integer addOutput(@QueryParam("user_id") String userId,
 			@QueryParam("workflow_id") String workflowId,
 			@QueryParam("input_id") String inputId) {
 		User u = null;
@@ -94,6 +94,7 @@ public class OutputResource {
 			avs.add(av);
 		}
 
+		outputDao = morphiaService.getOutputDAO();
 		Output o = new Output();
 		o.setInput(iid);
 		o.setOwner(u.getId());
@@ -102,7 +103,7 @@ public class OutputResource {
 
 		outputDao.save(o);
 
-		return Response.status(201).build();
+		return o.getId();
 	}
 
 	@GET

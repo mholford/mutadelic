@@ -53,7 +53,7 @@ public class Defaults {
 		criteria.add(new Criterion(SIFT_SCORE, "Sift Score", true,
 				"LTE 0.05 Up", RestrictionType.LTE, 0.05, Level.UP));
 		criteria.add(new Criterion(VARIATION_LOCATION, "Locus", true,
-				"SpliceSite up", RestrictionType.EQ, "SpliceSite"));
+				"SpliceSite up", RestrictionType.EQ, "SpliceSite", Level.UP));
 		criteria.add(new Criterion(PHYLOP_SCORE, "PhyloP Score", true,
 				"GTE 1.0 Up", RestrictionType.GTE, 1.0, Level.UP));
 		criteria.add(new Criterion(DOMAIN_COLOCATION, "In Critical Domain",
@@ -71,6 +71,7 @@ public class Defaults {
 		String s;
 		while ((s = br.readLine()) != null) {
 			sb.append(s);
+			sb.append("\n");
 		}
 		return sb.toString();
 	}

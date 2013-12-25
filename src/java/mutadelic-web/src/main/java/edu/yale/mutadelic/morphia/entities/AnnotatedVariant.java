@@ -14,6 +14,8 @@ public class AnnotatedVariant {
 	@Reference
 	Variant variant;
 	
+	boolean flagged;
+	
 	Map<String, String> values;
 	
 	Map<String, Level> valueLevels;
@@ -24,6 +26,14 @@ public class AnnotatedVariant {
 
 	public void setVariant(Variant variant) {
 		this.variant = variant;
+	}
+
+	public boolean isFlagged() {
+		return flagged;
+	}
+
+	public void setFlagged(boolean flagged) {
+		this.flagged = flagged;
 	}
 
 	public Map<String, String> getValues() {
