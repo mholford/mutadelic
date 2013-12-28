@@ -36,6 +36,7 @@ import edu.yale.mutadelic.morphia.entities.AnnotatedVariant;
 import edu.yale.mutadelic.morphia.entities.Input;
 import edu.yale.mutadelic.morphia.entities.Output;
 import edu.yale.mutadelic.morphia.entities.User;
+import edu.yale.mutadelic.morphia.entities.ValueEntry;
 import edu.yale.mutadelic.morphia.entities.Variant;
 import edu.yale.mutadelic.morphia.entities.Workflow;
 import edu.yale.mutadelic.morphia.entities.Workflow.Criterion;
@@ -315,9 +316,12 @@ public class MutWebTest extends JerseyTest {
 			Variant v = av.getVariant();
 			assertEquals(new Integer(3456), v.getStart());
 			assertEquals("T", v.getReference());
-			Map<String, String> values = av.getValues();
-			assertEquals("false", values.get("rare"));
-			assertEquals("true", values.get("conserved"));
+			List<ValueEntry> values = av.getValueEntries();
+			assertEquals(2, values.size());
+			ValueEntry ve1 = values.get(0);
+			assertEquals("false", ve1.getValue());
+			ValueEntry ve2 = values.get(1);
+			assertEquals("true", ve2.getValue());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -439,11 +443,10 @@ public class MutWebTest extends JerseyTest {
 
 			AnnotatedVariant av1 = lvar.get(0);
 			Variant v1 = av1.getVariant();
-			Map<String, String> values = av1.getValues();
+			List<ValueEntry> valueEntries = av1.getValueEntries();
 			assertEquals("G", v1.getReference());
 			assertEquals("A", v1.getObserved());
-			assertEquals("true", values.get("rare"));
-			assertEquals("false", values.get("conserved"));
+			assertEquals(2, valueEntries.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

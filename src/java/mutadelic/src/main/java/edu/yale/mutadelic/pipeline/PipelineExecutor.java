@@ -1,5 +1,6 @@
 package edu.yale.mutadelic.pipeline;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
 
@@ -38,10 +39,20 @@ public class PipelineExecutor {
 
 //		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
 //				.getResourceAsStream("pipeline-stage.owl")), "Manchester");
+		try {
+			stagingDoc.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		dl.load(stagingDoc, stagingDocFormat);
 		Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
 //		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
 //				.getResourceAsStream("pipeline.owl")), "Manchester");
+		try {
+			execDoc.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		dl.load(execDoc, execDocFormat);
 		IndividualPlus output = abductor.exec(ip, p);
 		return output;

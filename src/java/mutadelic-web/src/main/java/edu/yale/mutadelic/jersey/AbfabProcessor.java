@@ -1,11 +1,14 @@
 package edu.yale.mutadelic.jersey;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.mutadelic.morphia.entities.AnnotatedVariant;
+import edu.yale.mutadelic.morphia.entities.ValueEntry;
 import edu.yale.mutadelic.morphia.entities.Variant;
 import edu.yale.mutadelic.morphia.entities.Workflow;
 import edu.yale.mutadelic.morphia.entities.Workflow.CriteriaRestriction;
@@ -66,15 +69,27 @@ public class AbfabProcessor {
 			for (CriteriaRestriction cr : c.getRestrictionLevels().values()) {
 				if (matchesRestriction(cr, output)) {
 					levels.put(c.getLabel(), cr.getLevel());
+				} else {
+					levels.put(c.getLabel(), Level.DOWN);
 				}
 			}
 			values.put(c.getLabel(), String.valueOf(output));
 		}
+		
+		List<ValueEntry> valueEntries = new ArrayList<>();
+		for (String vk:values.keySet()) {
+			String vv=values.get(vk);
+			String level = levels.get(vk).toString();
+			ValueEntry ve = new ValueEntry();
+			ve.setKey(vk);
+			ve.setValue(vv);
+			ve.setLevel(level);
+			valueEntries.add(ve);
+		}
 
 		AnnotatedVariant av = new AnnotatedVariant();
 		av.setVariant(v);
-		av.setValues(values);
-		av.setValueLevels(levels);
+		av.setValueEntries(valueEntries);
 		av.setFlagged(flagged);
 		return av;
 	}
@@ -83,13 +98,17 @@ public class AbfabProcessor {
 		Comparable co = (Comparable) output;
 		switch (cr.getType()) {
 		case GT:
-			return co.compareTo(cr.getValue()) > 0;
+			Double d = Double.parseDouble(cr.getValue());
+			return co.compareTo(d) > 0;
 		case GTE:
-			return co.compareTo(cr.getValue()) >= 0;
+			d = Double.parseDouble(cr.getValue());
+			return co.compareTo(d) >= 0;
 		case LT:
-			return co.compareTo(cr.getValue()) < 0;
+			d = Double.parseDouble(cr.getValue());
+			return co.compareTo(d) < 0;
 		case LTE:
-			return co.compareTo(cr.getValue()) <= 0;
+			d = Double.parseDouble(cr.getValue());
+			return co.compareTo(d) <= 0;
 		case EQ:
 			return co.compareTo(cr.getValue()) == 0;
 		default:

@@ -180,7 +180,7 @@ public abstract class Abductor {
 		}
 	}
 
-	class SCCKey {
+	public class SCCKey {
 		DLClassExpression<?> serviceClass;
 		SCCIndividual input;
 		SCCIndividual output;
@@ -246,7 +246,7 @@ public abstract class Abductor {
 		}
 	}
 
-	class SCCIndividual {
+	public class SCCIndividual {
 		Collection<DLClassExpression> types;
 		Map<DLDataPropertyExpression<?>, Collection<DLLiteral>> dataMap;
 		Map<DLObjectPropertyExpression<?>, Collection<SCCIndividual>> objectMap;
@@ -367,9 +367,13 @@ public abstract class Abductor {
 			SCCIndividual input, SCCIndividual output) {
 		return new SCCKey(serviceClass, input, output);
 	}
+	
+	public boolean checkSCCache(SCCKey key){
+		return checkSCCache(key, false);
+	}
 
-	public boolean checkSCCache(SCCKey key) {
-		if (!scCache.containsKey(key)) {
+	public boolean checkSCCache(SCCKey key, boolean ignoreCache) {
+		if (!scCache.containsKey(key) || ignoreCache) {
 			Set<DLAxiom<?>> ax = new HashSet<>();
 			DLIndividual<?> testI = dl.individual(NS + "testI");
 			DLIndividual<?> inputI = dl.individual(NS

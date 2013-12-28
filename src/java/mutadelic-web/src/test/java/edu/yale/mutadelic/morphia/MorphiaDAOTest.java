@@ -127,7 +127,7 @@ public class MorphiaDAOTest {
 				}
 			});
 			AnnotatedVariant res1 = results.get(0);
-			assertEquals("true", res1.getValues().get("rare"));
+			assertEquals("true", res1.getValueEntries().get(0).getValue());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

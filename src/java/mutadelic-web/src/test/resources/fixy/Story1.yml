@@ -57,10 +57,26 @@
    results: 
      - AnnotatedVariant (av1):
         variant: Variant (V1)
-        values: { rare: !!str true, conserved: !!str false }
+        valueEntries:
+           - ValueEntry (ve1):
+              key: rare
+              value: !!str true
+              level: high
+           - ValueEntry (ve2):
+              key: conserved
+              value: !!str false
+              level: low 
      - AnnotatedVariant (av2):
         variant: Variant (V2)
-        values: { rare: !!str false, conserved: !!str true }
+        valueEntries:
+           - ValueEntry (ve3):
+              key: rare
+              value: !!str false
+              level: low
+           - ValueEntry (ve4):
+              key: conserved
+              value: !!str true
+              level: high
    id: 1
         
 - EntityId (eoid):

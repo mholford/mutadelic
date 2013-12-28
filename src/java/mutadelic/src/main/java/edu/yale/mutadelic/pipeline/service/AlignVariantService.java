@@ -37,7 +37,7 @@ import static edu.yale.mutadelic.pipeline.service.SiftService.*;
 
 public class AlignVariantService extends AbstractPipelineService {
 
-	private final static String CCDS_NIO_PATH = "/home/matt/nio/ccds";
+	private final static String CCDS_NIO_PATH = System.getProperty("user.home") + "/nio/ccds";
 
 	class ExonMatch {
 		String name;

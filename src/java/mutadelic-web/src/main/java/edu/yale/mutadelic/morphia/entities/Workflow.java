@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
 
@@ -18,15 +19,16 @@ public class Workflow extends MutadelicEntity {
 		UP, DOWN
 	}
 
+	@Embedded
 	public static class CriteriaRestriction {
 		RestrictionType type;
-		Comparable value;
+		String value;
 		Level level;
 
 		public CriteriaRestriction() {
 		}
 
-		public CriteriaRestriction(RestrictionType type, Comparable value,
+		public CriteriaRestriction(RestrictionType type, String value,
 				Level level) {
 			this.type = type;
 			this.value = value;
@@ -41,11 +43,11 @@ public class Workflow extends MutadelicEntity {
 			this.type = type;
 		}
 
-		public Object getValue() {
+		public String getValue() {
 			return value;
 		}
 
-		public void setValue(Comparable value) {
+		public void setValue(String value) {
 			this.value = value;
 		}
 
@@ -58,11 +60,19 @@ public class Workflow extends MutadelicEntity {
 		}
 	}
 
+	@Embedded
 	public static class Criterion {
 		String param;
 		String label;
+		
+		@Embedded
 		Map<String, CriteriaRestriction> criteriaRestrictions;
+		
 		boolean literal;
+		
+		public Criterion() {
+			
+		}
 
 		public Criterion(String param, String label, boolean literal,
 				Map<String, CriteriaRestriction> criteriaRestrictions) {
@@ -80,7 +90,7 @@ public class Workflow extends MutadelicEntity {
 			for (int i = 0; i < restr.length; i++) {
 				String rname = (String) restr[i];
 				RestrictionType rtype = (RestrictionType) restr[++i];
-				Comparable comp = (Comparable) restr[++i];
+				String comp = (String) restr[++i];
 				Level lvl = (Level) restr[++i];
 				cr.put(rname, new CriteriaRestriction(rtype, comp, lvl));
 			}
@@ -135,6 +145,7 @@ public class Workflow extends MutadelicEntity {
 
 	private String name;
 
+	@Embedded
 	private List<Criterion> criteria;
 
 	public List<Criterion> getCriteria() {

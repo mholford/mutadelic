@@ -1,5 +1,6 @@
 package edu.yale.mutadelic.morphia.entities;
 
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -15,10 +16,9 @@ public class AnnotatedVariant {
 	Variant variant;
 	
 	boolean flagged;
-	
-	Map<String, String> values;
-	
-	Map<String, Level> valueLevels;
+
+	@Embedded
+	List<ValueEntry> valueEntries;
 
 	public Variant getVariant() {
 		return variant;
@@ -36,19 +36,13 @@ public class AnnotatedVariant {
 		this.flagged = flagged;
 	}
 
-	public Map<String, String> getValues() {
-		return values;
+	public List<ValueEntry> getValueEntries() {
+		return valueEntries;
 	}
 
-	public void setValues(Map<String, String> values) {
-		this.values = values;
+	public void setValueEntries(List<ValueEntry> valueEntries) {
+		this.valueEntries = valueEntries;
 	}
 
-	public Map<String, Level> getValueLevels() {
-		return valueLevels;
-	}
 
-	public void setValueLevels(Map<String, Level> valueLevels) {
-		this.valueLevels = valueLevels;
-	}
 }

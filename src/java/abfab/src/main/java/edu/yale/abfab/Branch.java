@@ -114,7 +114,11 @@ public class Branch extends Step {
 
 				// If Path failed, quit here
 				if (latestOutcome.isStop()) {
-					return latestOutcome;
+					// Merge with out?  ie the latest path to execute?
+					outcomes.add(latestOutcome);
+					IndividualPlus early = ab.mergeIndividuals(outcomes);
+					early.setStop(true);
+					return early;
 				}
 
 				outcomes.add(latestOutcome);

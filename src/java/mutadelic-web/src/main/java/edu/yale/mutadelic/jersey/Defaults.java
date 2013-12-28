@@ -49,13 +49,13 @@ public class Defaults {
 		criteria.add(new Criterion(DATABASE_PRESENCE, "In Red Cell DB", true,
 				"In DB Up", RestrictionType.EQ, "true", Level.UP));
 		criteria.add(new Criterion(ALLELE_FREQUENCY, "Allele Frequency", true,
-				"LTE 0.01 Up", RestrictionType.LTE, 0.01, Level.UP));
+				"LTE 0.01 Up", RestrictionType.LTE, "0.01", Level.UP));
 		criteria.add(new Criterion(SIFT_SCORE, "Sift Score", true,
-				"LTE 0.05 Up", RestrictionType.LTE, 0.05, Level.UP));
+				"LTE 0.05 Up", RestrictionType.LTE, "0.05", Level.UP));
 		criteria.add(new Criterion(VARIATION_LOCATION, "Locus", true,
 				"SpliceSite up", RestrictionType.EQ, "SpliceSite", Level.UP));
 		criteria.add(new Criterion(PHYLOP_SCORE, "PhyloP Score", true,
-				"GTE 1.0 Up", RestrictionType.GTE, 1.0, Level.UP));
+				"GTE 1.0 Up", RestrictionType.GTE, "1.0", Level.UP));
 		criteria.add(new Criterion(DOMAIN_COLOCATION, "In Critical Domain",
 				true, "In Domain Up", RestrictionType.EQ, "true", Level.UP));
 
