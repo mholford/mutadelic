@@ -40,6 +40,7 @@ function ViewModel() {
     self._end= ko.observable('');
     self._reference = ko.observable('');
     self._observed = ko.observable('');
+    self.loading = ko.observable(false);
     
     self.addVariant = function() {
 	if (self._start() && self._start().length > 0 
@@ -61,6 +62,9 @@ function ViewModel() {
 	    alert('Add at least one variant');
 	}
 	else {
+	    $("#submitButton").button('loading');
+	    self.annotatedVariants([]);
+	    self.loading(true);
 	    var input = new Input('Input' + new Date().getTime(), 2, self.variants);
 	    var data = ko.toJSON(input);
 	    console.log(data);
@@ -95,6 +99,8 @@ function ViewModel() {
 						console.log(returnedData.results);
 						self.annotatedVariants(returnedData.results);
 						console.log(self.annotatedVariants());
+						$("#submitButton").button('reset');
+						self.loading(false);
 					    }});
 				}});
 		    }});

@@ -42,6 +42,7 @@
      .lg-expand-sig {
        font-weight: bold;
      }
+
     </style>
   </head>
   <body>
@@ -59,8 +60,11 @@
       <div id="content" class="row" style="padding-top: 10px;">
 	<div class="col-md-8 main">
 	  <h2 style="padding-bottom: 10px;">Analyzed Variants</h2>
+	  <div class="col-sm-offset-5" style="padding-top: 150px;" data-bind="visible: loading() == true">
+	    <img src="preloader-green.gif">
+	  </div>
 	  <div class="col-sm-4 sidebar">
-	    <ul class="nav nav-pills nav-stacked">
+	    <ul class="nav nav-pills nav-stacked" data-bind="visible: annotatedVariants().length > 0">
 	      <li data-bind="css: { active: selectedOutputGroup() === 'all-var-list-group-item' }, 
 		  click: $data.setAll" id="all-var-list-group-item">
 		<a href="#">
@@ -226,7 +230,8 @@
 
 		<div class="form-group">
 		  <div class="col-sm-offset-4">
-		    <button type="button" class="btn btn-primary" data-bind="click: $root.submitVariants">
+		    <button type="button" id="submitButton" class="btn btn-primary" 
+			    data-loading-text="Processing..." data-bind="click: $root.submitVariants">
 		      Submit Variants
 		    </button>
 		  </div>
