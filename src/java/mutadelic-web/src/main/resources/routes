@@ -1,3 +1,5 @@
+# This is just a reference document
+
 GET	/users					View all Users
 POST	/users					Add new User
 GET	/users/{userId}				View a User
