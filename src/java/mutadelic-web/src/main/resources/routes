@@ -31,3 +31,5 @@ GET	/outputs/{outputId}			View an Output
 DELETE	/outputs/{outputId}			Delete an Output
 GET	/outputs/{outputId}/variants		View Variants in an Output
 GET	/outputs/{outputId}/variants/{variantId}View a Variant
+
+POST	/variants					Adds variants from a file

@@ -41,6 +41,43 @@ function ViewModel() {
     self._reference = ko.observable('');
     self._observed = ko.observable('');
     self.loading = ko.observable(false);
+
+    self.uploadFile = function() {
+	var fileInput = $('.btn-file :file')[0];
+	if (!fileInput.files) {
+	    self.showFileAlert(true);
+	    self.fileAlertText("Please select a file to upload.");
+	}
+
+	var file = fileInput.files[0];
+	if (file.name.length < 1) {
+	    self.showFileAlert(true);
+	    self.fileAlertText("Please select a file to upload.");
+	}
+	else if (file.size > 100000) {
+	    self.showFileAlert(true);
+	    self.fileAlertText("File size must not be greater than 100K");
+	}
+	else {
+	    var formData = new FormData();
+	    formData.append("file", file);
+	    $.ajax({'type': 'POST',
+		    'url': 'http://localhost:8080/mutadelic/variants',
+		    'success': function(returnedData) {
+			self.variants.push(returnedData);
+			self.showFileAlert(false);
+		    },
+		    'error': function() {
+			self.showFileAlert(true);
+			self.fileAlertText("There was an error processing this file");
+		    },
+		    'data': formData,
+		    'cache': false,
+		    'contentType': false,
+		    'processData': false
+		   }, 'json');
+	}
+    }
     
     self.addVariant = function() {
 	if (self._start() && self._start().length > 0 
@@ -68,6 +105,33 @@ function ViewModel() {
 	    var input = new Input('Input' + new Date().getTime(), 2, self.variants);
 	    var data = ko.toJSON(input);
 	    console.log(data);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	    var iid = null;
 
@@ -119,6 +183,10 @@ function ViewModel() {
     self.removeVariant = function(variant) { self.variants.remove(variant) };
 
     self.showAlert = ko.observable(false);
+
+    self.showFileAlert = ko.observable(false);
+
+    self.fileAlertText = ko.observable("");
 
     self.numTwo = ko.computed(function() {
 	return 1+1;
@@ -206,3 +274,45 @@ $(document).ready(function(){
     $('.collapse').collapse({toggle: false});
     setUpInputMasks();
 });
+
+$(document).on('change', '.btn-file :file', function() {
+    var input = $(this);
+    var label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', label);
+});
+
+$(document).ready(function() {
+    $('.btn-file :file').on('fileselect', function(event, label) {
+	var input = $(this).parents('.input-group').find(':text');
+	
+	if (input.length) {
+	    input.val(label);
+	} else {
+	    alert('File not selected');
+	}
+    });
+});
+
+
+// $(document).on('change', '.btn-file :file', function() {
+//     var input = $(this),
+//         numFiles = input.get(0).files ? input.get(0).files.length : 1,
+//         label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+//     input.trigger('fileselect', [numFiles, label]);
+// });
+		
+// $(document).ready( function() {
+//     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+// 	var input = $(this).parents('.input-group').find(':text');
+// 	var log = numFiles > 1 ? numFiles + ' files selected' : label;
+	
+// 	console.log(input);
+// 	console.log(log);
+
+// 	if( input.length ) {
+// 	    input.val(log);
+// 	} else {
+// 	    if( log ) alert(log);
+// 	}
+//     });
+// });
