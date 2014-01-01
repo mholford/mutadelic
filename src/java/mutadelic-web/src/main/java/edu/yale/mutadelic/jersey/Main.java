@@ -13,6 +13,7 @@ import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import edu.yale.mutadelic.morphia.MorphiaService;
@@ -55,7 +56,7 @@ public class Main {
 
 		ResourceConfig rc = new ResourceConfig();
 		rc.packages("edu.yale.mutadelic.jersey");
-		rc.registerInstances(new MorphiaBinder(), new JacksonFeature());
+		rc.registerInstances(new MorphiaBinder(), new JacksonFeature(), new MultiPartFeature());
 		rc.register(CORSFilter.class);
 		return rc;
 	}

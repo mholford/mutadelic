@@ -4,11 +4,16 @@
     <title>Mutadelic</title>
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="bootstrap-select.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style type='text/css'>
      body {
        background-color: #CCC;
      }
+
+    .black {
+      color: #000000;
+      }
 
      #content {
        background-color: #fff;
@@ -23,7 +28,8 @@
      }
 
      .lghighlight {
-       background-color: #99ff99;
+       /*background-color: #99ff99;*/
+       background-color: #98FB98;
      }
 
      .badge-highlight {
@@ -66,6 +72,19 @@
      input[readonly] {
        background-color: white !important;
        cursor: text !important;
+     }
+
+      .cleanselect {
+       -webkit-box-shadow: none;
+       box-shadow: none;
+       -webkit-transition: none;
+       transition: none;
+      }
+
+     .var-input-table-wrapper {
+       overflow: auto;
+       max-height: 150px;
+      margin-bottom: 10px;
      }
 
     </style>
@@ -125,7 +144,7 @@
 		 attr: {href: "#collapse" + $index()}'>
 		<div class="row" data-bind="with: variant">
 		  <div class="col-xs-1">
-		    <span class="glyphicon glyphicon-plus-sign"></span>
+		    <span class="glyphicon glyphicon-plus black"></span>
 		  </div>
 		  <div class="col-xs-1">
 		    <span data-bind="text: chromosome"></span>
@@ -172,7 +191,7 @@
 		  <label for="chromosome" class="col-sm-2 control-label">Chrom.</label>
 
 		  <div class="col-sm-3">
-		    <select id="chromosome" data-bind="value: _chromosome, options: chroms" class="form-control" 
+		    <select id="chromosome" data-bind="value: _chromosome, options: chroms" class="form-control selectpicker" 
 		    	style="padding-left: 8px;">
 		    </select>
 		  </div>
@@ -250,7 +269,7 @@
 
 		<div class="alert alert-danger" data-bind='visible: $root.showFileAlert(), text: $root.fileAlertText()'></div>
 
-		<table class="table table-hover table-condensed" style="font-size:75%; margin-top: 10px;">
+		<table class="table table-hover table-condensed" style="font-size:75%; margin-top: 10px; margin-bottom: 0px;">
 		  <thead>
 		    <tr>
 		      <th>&nbsp;</th>
@@ -262,20 +281,25 @@
 		      <th>Obs</th>
 		    </tr>
 		  </thead>
-		  <tbody data-bind="foreach: variants"> 
-		    <tr>
-		      <td>
-			<span class="glyphicon glyphicon-remove-sign red" data-bind="click: $root.removeVariant"></span>
-		      </td>
-		      <td data-bind="text: chromosome"></td>
-		      <td data-bind="text: strand"></td>
-		      <td data-bind="text: start"></td>
-		      <td data-bind="text: end"></td>
-		      <td data-bind="text: reference"></td>
-		      <td data-bind="text: observed"></td>
-		    </tr>
-		  </tbody>
 		</table>
+		<div class="var-input-table-wrapper">
+		  <table class="table table-hover table-condensed" style="font-size: 75%;">
+		    <tbody data-bind="foreach: variants"> 
+		      <tr>
+			<td>
+			  <span class="glyphicon glyphicon-remove red" data-bind="click: $root.removeVariant"></span>
+			</td>
+			<td data-bind="text: chromosome"></td>
+			<td data-bind="text: strand"></td>
+			<td data-bind="text: start"></td>
+			<td data-bind="text: end"></td>
+			<td data-bind="text: reference"></td>
+			<td data-bind="text: observed"></td>
+		      </tr>
+		    </tbody>
+		  </table>
+
+		</div>
 
 		<div class="form-group">
 		  <div class="col-sm-offset-4">
@@ -294,6 +318,7 @@
     </div>
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="jquery.inputmask.bundle.min.js"></script>
+    <script src="bootstrap-select.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
     <script src="mutadelic.js"></script>

@@ -44,19 +44,20 @@ function ViewModel() {
 
     self.uploadFile = function() {
 	var fileInput = $('.btn-file :file')[0];
+	console.log(fileInput);
 	if (!fileInput.files) {
 	    self.showFileAlert(true);
 	    self.fileAlertText("Please select a file to upload.");
 	}
 
 	var file = fileInput.files[0];
-	if (file.name.length < 1) {
+	if (!file) {
 	    self.showFileAlert(true);
 	    self.fileAlertText("Please select a file to upload.");
 	}
 	else if (file.size > 100000) {
 	    self.showFileAlert(true);
-	    self.fileAlertText("File size must not be greater than 100K");
+	    self.fileAlertText("File size must not be greater than 100K.");
 	}
 	else {
 	    var formData = new FormData();
@@ -64,12 +65,15 @@ function ViewModel() {
 	    $.ajax({'type': 'POST',
 		    'url': 'http://localhost:8080/mutadelic/variants',
 		    'success': function(returnedData) {
-			self.variants.push(returnedData);
+			console.log(JSON.stringify(returnedData));
+			for (var i = 0; i < returnedData.length; i++) {
+			    self.variants.push(returnedData[i]);
+			}
 			self.showFileAlert(false);
 		    },
 		    'error': function() {
 			self.showFileAlert(true);
-			self.fileAlertText("There was an error processing this file");
+			self.fileAlertText("There was an error processing this file.");
 		    },
 		    'data': formData,
 		    'cache': false,
@@ -105,34 +109,6 @@ function ViewModel() {
 	    var input = new Input('Input' + new Date().getTime(), 2, self.variants);
 	    var data = ko.toJSON(input);
 	    console.log(data);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	    var iid = null;
 
 	    $.ajax({'type':'POST',
@@ -273,6 +249,7 @@ $.ajaxPrefilter( "json script", function( options ) {
 $(document).ready(function(){
     $('.collapse').collapse({toggle: false});
     setUpInputMasks();
+    $('.selectpicker').selectpicker();
 });
 
 $(document).on('change', '.btn-file :file', function() {

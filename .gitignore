@@ -11,3 +11,4 @@ target
 *.#*
 catalog-v*.xml
 *_output
+.DS_Store
