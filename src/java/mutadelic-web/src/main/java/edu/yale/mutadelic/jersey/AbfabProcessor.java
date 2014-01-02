@@ -1,12 +1,18 @@
 package edu.yale.mutadelic.jersey;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
+import edu.yale.abfab.owlapi.HermitAbductor;
+import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.controller.DLController;
 import edu.yale.mutadelic.morphia.entities.AnnotatedVariant;
 import edu.yale.mutadelic.morphia.entities.ValueEntry;
 import edu.yale.mutadelic.morphia.entities.Variant;
@@ -16,6 +22,7 @@ import edu.yale.mutadelic.morphia.entities.Workflow.Criterion;
 import edu.yale.mutadelic.morphia.entities.Workflow.Level;
 import edu.yale.mutadelic.pipeline.PipelineExecutor;
 import static edu.yale.mutadelic.pipeline.service.AbstractPipelineService.*;
+import static edu.yale.abfab.NS.*;
 
 public class AbfabProcessor {
 
@@ -91,7 +98,22 @@ public class AbfabProcessor {
 		av.setVariant(v);
 		av.setValueEntries(valueEntries);
 		av.setFlagged(flagged);
+		av.setRdf(toRDF(ip));
 		return av;
+	}
+	
+	private String toRDF(IndividualPlus ip) {
+		Abductor ab = new HermitAbductor("test");
+		ab.setNamespace(NS);
+		DLController dl = ab.getDLController();
+		dl.addAxioms(ip.getAxioms());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			dl.saveOntology(baos);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return baos.toString();
 	}
 
 	private boolean matchesRestriction(CriteriaRestriction cr, Object output) {

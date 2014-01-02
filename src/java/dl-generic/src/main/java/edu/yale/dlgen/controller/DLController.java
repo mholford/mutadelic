@@ -2,6 +2,7 @@ package edu.yale.dlgen.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Set;
@@ -72,6 +73,8 @@ public interface DLController {
 	 *            Axioms to be removed from the KB
 	 */
 	void removeAxioms(Set<DLAxiom<?>> axioms);
+	
+	void saveOntology(OutputStream os) throws IOException;
 
 	/**
 	 * Write the ontology to a {@link File} specified in the #setOutputFile
@@ -476,6 +479,10 @@ public interface DLController {
 	 * @return The DL "top" Class
 	 */
 	DLClassExpression<?> thing();
+	
+	boolean load(Reader reader, boolean initReasoner);
+	
+	boolean load(Reader reader, String type, boolean initReasoner);
 
 	/**
 	 * Read an ontology (or other collection of DL axioms) from an artifact

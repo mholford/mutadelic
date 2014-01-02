@@ -10,6 +10,8 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Property;
 
+import edu.yale.mutadelic.morphia.dao.WorkflowDAO;
+
 @Entity(value = "outputs")
 public class Output extends MutadelicEntity {
 
@@ -56,33 +58,6 @@ public class Output extends MutadelicEntity {
 	public void setResults(List<AnnotatedVariant> results) {
 		this.results = results;
 	}
-
-	public File asExcelFile() throws Exception {
-		String outfileName = String.format("mutadelic-output-%d.xls", getId());
-		File output = new File(outfileName);
-		BufferedWriter bw = new BufferedWriter(new FileWriter(output));
-
-		// Write header
-		bw.write(String
-				.format("Flagged\tChromosome\tStrand\tStart\tEnd\tReference\tObserved\t"
-						+ "Property Name\tProperty Value\tSignificant\n"));
-		bw.flush();
-
-		for (AnnotatedVariant av : results) {
-			for (ValueEntry ve : av.valueEntries) {
-				bw.write(String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", av
-						.isFlagged() ? "Y" : "N", av.getVariant()
-						.getChromosome(), av.getVariant().getStrand(), av
-						.getVariant().getStart(), av.getVariant().getEnd(), av
-						.getVariant().getReference(), av.getVariant()
-						.getObserved(), ve.getKey(), ve.getValue(), ve
-						.getLevel().equals("UP") ? "Y" : "N"));
-				bw.flush();
-			}
-		}
-		
-		bw.close();
-		
-		return output;
-	}
+	
+	
 }

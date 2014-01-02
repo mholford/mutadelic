@@ -16,6 +16,8 @@ public class AnnotatedVariant {
 	Variant variant;
 	
 	boolean flagged;
+	
+	String rdf;
 
 	@Embedded
 	List<ValueEntry> valueEntries;
@@ -34,6 +36,14 @@ public class AnnotatedVariant {
 
 	public void setFlagged(boolean flagged) {
 		this.flagged = flagged;
+	}
+
+	public String getRdf() {
+		return rdf;
+	}
+
+	public void setRdf(String rdf) {
+		this.rdf = rdf;
 	}
 
 	public List<ValueEntry> getValueEntries() {

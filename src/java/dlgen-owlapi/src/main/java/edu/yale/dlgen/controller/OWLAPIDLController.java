@@ -3,6 +3,7 @@ package edu.yale.dlgen.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,7 +78,12 @@ public abstract class OWLAPIDLController implements DLController {
 
 	@Override
 	public boolean load(Reader reader) {
-		//clearAddedAxioms();
+		return load(reader, true);
+	}
+
+	@Override
+	public boolean load(Reader reader, boolean initReasoner) {
+		// clearAddedAxioms();
 		boolean loaded = true;
 		if (ontology != null) {
 			manager.removeOntology(ontology);
@@ -86,8 +92,9 @@ public abstract class OWLAPIDLController implements DLController {
 			ontology = manager
 					.loadOntologyFromOntologyDocument(new ReaderDocumentSource(
 							reader));
-			reasoner = initReasoner();
-			//coreAxioms = copyAxioms(ontology.getAxioms());
+			if (initReasoner)
+				reasoner = initReasoner();
+			// coreAxioms = copyAxioms(ontology.getAxioms());
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 			loaded = false;
@@ -105,8 +112,13 @@ public abstract class OWLAPIDLController implements DLController {
 
 	@Override
 	public boolean load(Reader reader, String type) {
+		return load(reader, type, true);
+	}
+
+	@Override
+	public boolean load(Reader reader, String type, boolean initReasoner) {
 		// OWLAPI sniffs out the syntax type?
-		return load(reader);
+		return load(reader, initReasoner);
 	}
 
 	@Override
@@ -147,7 +159,7 @@ public abstract class OWLAPIDLController implements DLController {
 
 	@Override
 	public Collection<DLAxiom> getAxioms() {
-		if (ontology == null){
+		if (ontology == null) {
 			return new HashSet<DLAxiom>();
 		}
 		return CollUtils.wrap(ontology.getAxioms(), DLAxiom.class);
@@ -161,6 +173,17 @@ public abstract class OWLAPIDLController implements DLController {
 	@Override
 	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
+	}
+
+	@Override
+	public void saveOntology(OutputStream os) throws IOException {
+		try {
+			manager.saveOntology(ontology,
+					new ManchesterOWLSyntaxOntologyFormat(), os);
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			throw new IOException(e);
+		}
 	}
 
 	@Override

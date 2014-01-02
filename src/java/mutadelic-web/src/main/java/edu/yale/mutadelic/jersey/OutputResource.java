@@ -1,6 +1,12 @@
 package edu.yale.mutadelic.jersey;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +23,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import edu.yale.abfab.Abductor;
+import edu.yale.abfab.owlapi.HermitAbductor;
+import edu.yale.dlgen.controller.DLController;
 import edu.yale.mutadelic.morphia.MorphiaService;
 import edu.yale.mutadelic.morphia.dao.InputDAO;
 import edu.yale.mutadelic.morphia.dao.OutputDAO;
@@ -26,9 +35,11 @@ import edu.yale.mutadelic.morphia.entities.AnnotatedVariant;
 import edu.yale.mutadelic.morphia.entities.Input;
 import edu.yale.mutadelic.morphia.entities.Output;
 import edu.yale.mutadelic.morphia.entities.User;
+import edu.yale.mutadelic.morphia.entities.ValueEntry;
 import edu.yale.mutadelic.morphia.entities.Variant;
 import edu.yale.mutadelic.morphia.entities.Workflow;
 import edu.yale.mutadelic.pipeline.PipelineExecutor;
+import static edu.yale.abfab.NS.*;
 
 @Path("outputs")
 public class OutputResource {
@@ -117,6 +128,35 @@ public class OutputResource {
 		Output o = outputDao.findById(oid);
 		return o;
 	}
+	
+	private File getExcelFile(Output o) throws Exception {
+		String outfileName = String.format("mutadelic-output-%d.xls", o.getId());
+		File output = new File(outfileName);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(output));
+
+		// Write header
+		bw.write(String
+				.format("Flagged\tChromosome\tStrand\tStart\tEnd\tReference\tObserved\t"
+						+ "Property Name\tProperty Value\tSignificant\n"));
+		bw.flush();
+
+		for (AnnotatedVariant av : o.getResults()) {
+			for (ValueEntry ve : av.getValueEntries()) {
+				bw.write(String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", av
+						.isFlagged() ? "Y" : "N", av.getVariant()
+						.getChromosome(), av.getVariant().getStrand(), av
+						.getVariant().getStart(), av.getVariant().getEnd(), av
+						.getVariant().getReference(), av.getVariant()
+						.getObserved(), ve.getKey(), ve.getValue(), ve
+						.getLevel().equals("UP") ? "Y" : "N"));
+				bw.flush();
+			}
+		}
+		
+		bw.close();
+		
+		return output;
+	}
 
 	@GET
 	@Path("{outputId}/excel")
@@ -127,12 +167,61 @@ public class OutputResource {
 		Output o = outputDao.findById(oid);
 
 		try {
-			File f = o.asExcelFile();
+			File f = getExcelFile(o);
 
 			ResponseBuilder resp = Response.ok(f);
 			String outfileName = String.format("mutadelic-output-%d.xls", oid);
 			resp.header("Content-Disposition",
 					String.format("attachment; filename=%s", outfileName));
+			return resp.build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
+	}
+	
+	private File getRDFFile(Output o) {
+		String outfileName = String.format("mutadelic-output-%d.rdf", o.getId());
+		File output = new File(outfileName);
+		workflowDao = morphiaService.getWorkflowDAO();
+		
+		String workflowOnt = workflowDao.findById(o.getWorkflow()).getExecDoc();
+		
+		List<String> outputOnts = new ArrayList<>();
+		for (AnnotatedVariant av:o.getResults()) {
+			outputOnts.add(av.getRdf());
+		}
+		
+		Abductor abductor = new HermitAbductor("test");
+		abductor.setNamespace(NS);
+		DLController dl = abductor.getDLController();
+		dl.load(new StringReader(workflowOnt), false);
+		for (String oo: outputOnts) {
+			dl.load(new StringReader(oo), false);
+		}
+		try {
+			dl.saveOntology(new FileOutputStream(output));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return output;
+	}
+
+	@GET
+	@Path("{outputId}/rdf")
+	@Produces("text/plain")
+	public Response getRDF(@PathParam("outputId") String outputId) {
+		Integer oid = Integer.parseInt(outputId);
+		outputDao = morphiaService.getOutputDAO();
+		Output o = outputDao.findById(oid);
+		
+		try {
+			File f = getRDFFile(o);
+			
+			ResponseBuilder resp = Response.ok();
+			String outfileName = String.format("mutadelic-output-%d.rdf", oid);
+			resp.header("Content-Disposition", String.format("attachment; filename=%s", outfileName));
 			return resp.build();
 		} catch (Exception e) {
 			e.printStackTrace();
