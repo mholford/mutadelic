@@ -42,6 +42,9 @@ function ViewModel() {
     self._observed = ko.observable('');
     self.loading = ko.observable(false);
 
+    self.oid = ko.observable();
+    self.iid = ko.observable();
+
     self.uploadFile = function() {
 	var fileInput = $('.btn-file :file')[0];
 	console.log(fileInput);
@@ -109,7 +112,6 @@ function ViewModel() {
 	    var input = new Input('Input' + new Date().getTime(), 2, self.variants);
 	    var data = ko.toJSON(input);
 	    console.log(data);
-	    var iid = null;
 
 	    $.ajax({'type':'POST',
 		    'url': 'http://localhost:8080/mutadelic/inputs',
@@ -118,20 +120,18 @@ function ViewModel() {
 		    'dataType': 'json',
 		    'success':function(returnedData){
 			console.log("iid=" + returnedData);
-			iid = returnedData;
-
-			var oid = null;
+			self.iid(returnedData);
 
 			$.ajax({'type': 'POST',
-				'url': 'http://localhost:8080/mutadelic/outputs?input_id=' + iid,
+				'url': 'http://localhost:8080/mutadelic/outputs?input_id=' + self.iid(),
 				'contentType': 'application/json',
 				'data':null,
 				'dataType': 'json',
 				'success': function(returnedData) {
 				    console.log("oid=" + returnedData);
-				    oid = returnedData;
+				    self.oid(returnedData);
 
-				    $.ajax({'url': 'http://localhost:8080/mutadelic/outputs/' + oid,
+				    $.ajax({'url': 'http://localhost:8080/mutadelic/outputs/' + self.oid(),
 					    'contentType': 'application/json',
 					    'dataType': 'json',
 					    'success': function(returnedData) {
@@ -145,6 +145,10 @@ function ViewModel() {
 				}});
 		    }});
 	}
+    }
+
+    self.getExcel = function() {
+	window.location = 'http://localhost:8080/mutadelic/outputs/' + self.oid() + '/excel';
     }
 
     self.chroms = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', 

@@ -1,5 +1,6 @@
 package edu.yale.mutadelic.jersey;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import edu.yale.mutadelic.morphia.MorphiaService;
 import edu.yale.mutadelic.morphia.dao.InputDAO;
@@ -114,6 +116,28 @@ public class OutputResource {
 		outputDao = morphiaService.getOutputDAO();
 		Output o = outputDao.findById(oid);
 		return o;
+	}
+
+	@GET
+	@Path("{outputId}/excel")
+	@Produces("application/vnd.ms-excel")
+	public Response getExcel(@PathParam("outputId") String outputId) {
+		Integer oid = Integer.parseInt(outputId);
+		outputDao = morphiaService.getOutputDAO();
+		Output o = outputDao.findById(oid);
+
+		try {
+			File f = o.asExcelFile();
+
+			ResponseBuilder resp = Response.ok(f);
+			String outfileName = String.format("mutadelic-output-%d.xls", oid);
+			resp.header("Content-Disposition",
+					String.format("attachment; filename=%s", outfileName));
+			return resp.build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.serverError().build();
+		}
 	}
 
 	@GET
