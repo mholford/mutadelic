@@ -3,11 +3,14 @@ package edu.yale.mutadelic.pipeline;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
 import edu.yale.abfab.owlapi.HermitAbductor;
+import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.controller.DLController;
@@ -16,6 +19,36 @@ import static edu.yale.abfab.NS.*;
 import static org.junit.Assert.fail;
 
 public class PipelineExecutor {
+
+	public class PipelineResult {
+		String result;
+		Set<DLAxiom<?>> axioms;
+
+		public PipelineResult() {
+
+		}
+
+		public PipelineResult(String result, Set<DLAxiom<?>> axioms) {
+			this.result = result;
+			this.axioms = axioms;
+		}
+
+		public String getResult() {
+			return result;
+		}
+
+		public void setResult(String result) {
+			this.result = result;
+		}
+
+		public Set<DLAxiom<?>> getAxioms() {
+			return axioms;
+		}
+
+		public void setAxioms(Set<DLAxiom<?>> axioms) {
+			this.axioms = axioms;
+		}
+	}
 
 	private Abductor abductor;
 	private DLController dl;
@@ -37,8 +70,8 @@ public class PipelineExecutor {
 	public IndividualPlus execute(Variant v) {
 		IndividualPlus ip = v.toOWL(dl);
 
-//		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
-//				.getResourceAsStream("pipeline-stage.owl")), "Manchester");
+		// dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
+		// .getResourceAsStream("pipeline-stage.owl")), "Manchester");
 		try {
 			stagingDoc.reset();
 		} catch (IOException e) {
@@ -46,8 +79,8 @@ public class PipelineExecutor {
 		}
 		dl.load(stagingDoc, stagingDocFormat);
 		Path p = abductor.getBestPath(ip, dl.clazz(NS + "FinishedVariant"));
-//		dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
-//				.getResourceAsStream("pipeline.owl")), "Manchester");
+		// dl.load(new InputStreamReader(PipelineExecutor.class.getClassLoader()
+		// .getResourceAsStream("pipeline.owl")), "Manchester");
 		try {
 			execDoc.reset();
 		} catch (IOException e) {
@@ -58,9 +91,10 @@ public class PipelineExecutor {
 		return output;
 	}
 
-	public String getResult(IndividualPlus ip, String outputTypeName) {
+	public PipelineResult getResult(IndividualPlus ip, String outputTypeName) {
+		Set<DLAxiom<?>> resultAxioms = new HashSet<>();
 		dl.addAxioms(ip.getAxioms());
-		String output = null;
+		PipelineResult output = null;
 		Collection<DLIndividual> descs = dl.getObjectPropertyValues(
 				ip.getIndividual(), dl.objectProp(SIO + "is_described_by"));
 		for (DLIndividual<?> desc : descs) {
@@ -72,17 +106,28 @@ public class PipelineExecutor {
 						System.out.println("Oops; more than one result");
 						fail();
 					}
-					output = dl.getIRI(ref);
+					resultAxioms.add(dl.newObjectFact(ip.getIndividual(),
+							dl.objectProp(SIO + "is_described_by"), desc));
+					resultAxioms.add(dl.newObjectFact(desc,
+							dl.objectProp(SIO + "refers_to"), ref));
+					resultAxioms.add(dl.individualType(ref,
+							dl.clazz(outputTypeName)));
+
+					output = new PipelineResult();
+					output.setResult(dl.getIRI(ref));
+					output.setAxioms(resultAxioms);
 				}
 			}
 		}
 		return output;
 	}
 
-	public String getLiteralResult(IndividualPlus ip, String outputTypeName) {
+	public PipelineResult getLiteralResult(IndividualPlus ip,
+			String outputTypeName) {
+		Set<DLAxiom<?>> resultAxioms = new HashSet<>();
 		dl.addAxioms(ip.getAxioms());
-		String output = null;
-		//abductor.debug();
+		PipelineResult output = null;
+		// abductor.debug();
 		Collection<DLIndividual> descs = dl.getObjectPropertyValues(
 				ip.getIndividual(), dl.objectProp(SIO + "is_described_by"));
 		for (DLIndividual<?> desc : descs) {
@@ -97,7 +142,16 @@ public class PipelineExecutor {
 							System.out.println("Oops; more than one result");
 							fail();
 						}
-						output = dl.getLiteralValue(val);
+						resultAxioms.add(dl.newObjectFact(ip.getIndividual(),
+								dl.objectProp(SIO + "is_described_by"), desc));
+						resultAxioms.add(dl.newObjectFact(desc,
+								dl.objectProp(SIO + "refers_to"), ref));
+						resultAxioms.add(dl.newDataFact(ref,
+								dl.dataProp(SIO + "has_value"), val));
+
+						output = new PipelineResult();
+						output.setResult(dl.getLiteralValue(val));
+						output.setAxioms(resultAxioms);
 					}
 				}
 			}
