@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.owlapi.HermitAbductor;
+import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.controller.DLController;
 import edu.yale.mutadelic.morphia.MorphiaService;
 import edu.yale.mutadelic.morphia.dao.InputDAO;
@@ -196,8 +197,15 @@ public class OutputResource {
 		abductor.setNamespace(NS);
 		DLController dl = abductor.getDLController();
 		dl.load(new StringReader(workflowOnt), false);
+		
 		for (String oo: outputOnts) {
-			dl.load(new StringReader(oo), false);
+			Abductor a2 = new HermitAbductor("a2");
+			a2.setNamespace(NS);
+			DLController dl2 = a2.getDLController();
+			dl2.load(new StringReader(oo), false);
+			for (DLAxiom<?> ax : dl2.getAxioms()) {
+				dl.addAxiom(ax);
+			}
 		}
 		try {
 			dl.saveOntology(new FileOutputStream(output));
@@ -219,7 +227,7 @@ public class OutputResource {
 		try {
 			File f = getRDFFile(o);
 			
-			ResponseBuilder resp = Response.ok();
+			ResponseBuilder resp = Response.ok(f);
 			String outfileName = String.format("mutadelic-output-%d.rdf", oid);
 			resp.header("Content-Disposition", String.format("attachment; filename=%s", outfileName));
 			return resp.build();

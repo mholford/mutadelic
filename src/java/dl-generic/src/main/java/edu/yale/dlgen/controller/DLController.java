@@ -480,6 +480,8 @@ public interface DLController {
 	 */
 	DLClassExpression<?> thing();
 	
+	void newOntology();
+	
 	boolean load(Reader reader, boolean initReasoner);
 	
 	boolean load(Reader reader, String type, boolean initReasoner);

@@ -106,6 +106,7 @@ public class AbfabProcessor {
 		Abductor ab = new HermitAbductor("test");
 		ab.setNamespace(NS);
 		DLController dl = ab.getDLController();
+		dl.newOntology();
 		dl.addAxioms(ip.getAxioms());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {

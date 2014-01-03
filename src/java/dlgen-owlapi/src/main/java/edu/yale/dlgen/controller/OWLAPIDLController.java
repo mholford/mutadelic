@@ -77,6 +77,18 @@ public abstract class OWLAPIDLController implements DLController {
 	public abstract OWLReasoner initReasoner();
 
 	@Override
+	public void newOntology() {
+		if (ontology != null) {
+			manager.removeOntology(ontology);
+		}
+		try {
+			ontology = manager.createOntology();
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
 	public boolean load(Reader reader) {
 		return load(reader, true);
 	}
@@ -125,14 +137,16 @@ public abstract class OWLAPIDLController implements DLController {
 	public void addAxiom(DLAxiom<?> axiom) {
 		OWLAxiom ax = (OWLAxiom) axiom.get();
 		manager.addAxiom(ontology, ax);
-		reasoner.flush();
+		if (reasoner != null)
+			reasoner.flush();
 	}
 
 	@Override
 	public void addAxioms(Set<DLAxiom<?>> axioms) {
 		Set<OWLAxiom> ax = CollUtils.cast(axioms);
 		manager.addAxioms(ontology, ax);
-		reasoner.flush();
+		if (reasoner != null)
+			reasoner.flush();
 	}
 
 	@Override
