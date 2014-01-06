@@ -106,8 +106,17 @@ public class PipelineExecutor {
 						System.out.println("Oops; more than one result");
 						fail();
 					}
+					Collection<DLIndividual> cits = dl.getObjectPropertyValues(
+							desc, dl.objectProp(SIO + "cites"));
+					for (DLIndividual<?> cit : cits) {
+						resultAxioms.add(dl.newObjectFact(desc,
+								dl.objectProp(SIO + "cites"), cit));
+					}
 					resultAxioms.add(dl.newObjectFact(ip.getIndividual(),
 							dl.objectProp(SIO + "is_described_by"), desc));
+
+					resultAxioms.add(dl.individualType(desc,
+							dl.clazz(SIO + "Description")));
 					resultAxioms.add(dl.newObjectFact(desc,
 							dl.objectProp(SIO + "refers_to"), ref));
 					resultAxioms.add(dl.individualType(ref,
@@ -117,6 +126,7 @@ public class PipelineExecutor {
 					output.setResult(dl.getIRI(ref));
 					output.setAxioms(resultAxioms);
 				}
+
 			}
 		}
 		return output;
@@ -142,10 +152,19 @@ public class PipelineExecutor {
 							System.out.println("Oops; more than one result");
 							fail();
 						}
+						Collection<DLIndividual> cits = dl
+								.getObjectPropertyValues(desc,
+										dl.objectProp(SIO + "cites"));
+						for (DLIndividual<?> cit : cits) {
+							resultAxioms.add(dl.newObjectFact(desc,
+									dl.objectProp(SIO + "cites"), cit));
+						}
 						resultAxioms.add(dl.newObjectFact(ip.getIndividual(),
 								dl.objectProp(SIO + "is_described_by"), desc));
 						resultAxioms.add(dl.newObjectFact(desc,
 								dl.objectProp(SIO + "refers_to"), ref));
+						resultAxioms.add(dl.individualType(ref,
+								dl.clazz(outputTypeName)));
 						resultAxioms.add(dl.newDataFact(ref,
 								dl.dataProp(SIO + "has_value"), val));
 

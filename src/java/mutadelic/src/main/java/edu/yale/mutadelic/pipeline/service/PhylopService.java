@@ -1,12 +1,11 @@
 package edu.yale.mutadelic.pipeline.service;
 
-import java.util.Random;
+import static edu.yale.mutadelic.mongo.MongoConnection.PHYLOP_VALUES;
+
 import java.util.Set;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 import edu.yale.abfab.Abductor;
@@ -18,22 +17,26 @@ import edu.yale.dlgen.controller.DLController;
 import edu.yale.mutadelic.loaders.PhyloPMongoLoader;
 import edu.yale.mutadelic.mongo.MongoConnection;
 import edu.yale.mutadelic.pipeline.model.Variant;
-import static edu.yale.abfab.NS.*;
-import static edu.yale.mutadelic.mongo.MongoConnection.*;
 
 public class PhylopService extends AbstractPipelineService {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
 			throws AbfabServiceException {
-		double result = DefaultValues.PHYLOP;
+//		double result = DefaultValues.PHYLOP;
 		DLController dl = abductor.getDLController();
+		Variant v = Variant.fromOWL(dl, input);
+		Double result = getPhylopScore(v);
 		DLClass<?> phylopScore = dl.clazz(PHYLOP_SCORE);
 		if (valueFilled(dl, input.getIndividual(), phylopScore)) {
 			return input;
 		}
+		String cacheValueProxy = "NULL";
+		if (result != null) {
+			cacheValueProxy = (result > 0.0) ? "HIGH" : "LOW";
+		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
-				phylopScore, dl.individual(MUTADELIC), result);
+				phylopScore, dl.individual(MUTADELIC), result, cacheValueProxy);
 		input.getAxioms().addAll(annotation);
 		return input;
 	}
@@ -69,7 +72,7 @@ public class PhylopService extends AbstractPipelineService {
 	}
 
 	private String phylopKey(Variant v) {
-		String chrNo = v.getChromosome();
+		String chrNo = v.getChromosome().substring(3);
 		int ps = phylopStart(v);
 		return String.format("%s_%d", chrNo, ps);
 	}

@@ -55,7 +55,7 @@ public class Defaults {
 		criteria.add(new Criterion(VARIATION_LOCATION, "Locus", true,
 				"SpliceSite up", RestrictionType.EQ, "SpliceSite", Level.UP));
 		criteria.add(new Criterion(PHYLOP_SCORE, "PhyloP Score", true,
-				"GTE 1.0 Up", RestrictionType.GTE, "1.0", Level.UP));
+				"GTE 1.0 Up", RestrictionType.GTE, "0.0", Level.UP));
 		criteria.add(new Criterion(DOMAIN_COLOCATION, "In Critical Domain",
 				true, "In Domain Up", RestrictionType.EQ, "true", Level.UP));
 
