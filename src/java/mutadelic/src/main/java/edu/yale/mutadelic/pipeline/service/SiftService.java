@@ -35,9 +35,13 @@ public class SiftService extends AbstractPipelineService {
 		if (valueFilled(dl, input.getIndividual(), siftScore)) {
 			return input;
 		}
-		String cacheValueProxy = "NULL";
+//		String cacheValueProxy = "NULL";
+//		if (result != null) {
+//			cacheValueProxy = (result > 0.05) ? "HIGH" : "LOW";
+//		}
+		Double cacheValueProxy = Double.MAX_VALUE;
 		if (result != null) {
-			cacheValueProxy = (result > 0.05) ? "HIGH" : "LOW";
+			cacheValueProxy = (result > 0.05) ? 0d : 1d;
 		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				siftScore, dl.individual(MUTADELIC), result, cacheValueProxy);

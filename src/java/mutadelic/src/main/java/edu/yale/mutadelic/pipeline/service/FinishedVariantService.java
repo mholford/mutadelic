@@ -1,6 +1,5 @@
 package edu.yale.mutadelic.pipeline.service;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +10,6 @@ import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
-import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.controller.DLController;
 import static edu.yale.abfab.NS.*;
