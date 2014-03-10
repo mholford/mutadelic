@@ -34,7 +34,7 @@ public class PhylopService extends AbstractPipelineService {
 		
 		Double cacheValueProxy = Double.MIN_VALUE;
 		if (result != null) {
-			cacheValueProxy = (result > 0.0) ? 10d : -10d;
+			cacheValueProxy = (result > 1.0) ? 10d : -10d;
 		}
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				phylopScore, dl.individual(MUTADELIC), result, cacheValueProxy);
