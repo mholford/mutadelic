@@ -77,8 +77,9 @@ public class AAChangedService extends AbstractPipelineService {
 				for (int i = 0; i < os.length; i++) {
 					obsAAChgMap.put(os[i], scs[i]);
 				}
+				String aaChg;
 				if (obsAAChgMap.containsKey(v.getObserved())) {
-					String aaChg = obsAAChgMap.get(v.getObserved());
+					aaChg = obsAAChgMap.get(v.getObserved());
 					if (aaChg.equals(aa)) {
 						output.type = SYNONYMOUS;
 					} else if (aaChg.equals("*")) {
@@ -87,12 +88,16 @@ public class AAChangedService extends AbstractPipelineService {
 					} else {
 						output.type = NON_SYNONYMOUS;
 					}
-					output.hgvsp = String.format("%s:p.%d%s>%s", ensp,
-							Integer.parseInt(pposPre), aa, aaChg);
+					
 				} else {
+					// Not deciding the AA change, but want to assign HGVSP so
+					// the protein-relative position can be used by the domain
+					// colocation service
+					aaChg = "??";
 					output.type = "NA";
-					output.hgvsp = "NA";
 				}
+				output.hgvsp = String.format("%s:p.%d%s>%s", ensp,
+						Integer.parseInt(pposPre), aa, aaChg);
 			}
 		}
 
