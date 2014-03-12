@@ -35,10 +35,10 @@ public class SiftService extends AbstractPipelineService {
 		if (valueFilled(dl, input.getIndividual(), siftScore)) {
 			return input;
 		}
-//		String cacheValueProxy = "NULL";
-//		if (result != null) {
-//			cacheValueProxy = (result > 0.05) ? "HIGH" : "LOW";
-//		}
+		// String cacheValueProxy = "NULL";
+		// if (result != null) {
+		// cacheValueProxy = (result > 0.05) ? "HIGH" : "LOW";
+		// }
 		Double cacheValueProxy = Double.MAX_VALUE;
 		if (result != null) {
 			cacheValueProxy = (result > 0.05) ? 1d : 0d;
@@ -71,7 +71,9 @@ public class SiftService extends AbstractPipelineService {
 				String[] os = obs.split("\\|", -1);
 				String[] scs = scores.split("\\|", -1);
 				for (int i = 0; i < os.length; i++) {
-					obsScoreMap.put(os[i], scs[i]);
+					if (scs[i].length() > 0) {
+						obsScoreMap.put(os[i], scs[i]);
+					}
 				}
 				if (obsScoreMap.containsKey(v.getObserved())) {
 					String score = obsScoreMap.get(v.getObserved());
