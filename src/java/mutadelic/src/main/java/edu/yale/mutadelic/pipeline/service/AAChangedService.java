@@ -44,7 +44,7 @@ public class AAChangedService extends AbstractPipelineService {
 				result.type);
 		annotation.addAll(annotatedResult(dl, input.getIndividual(),
 				dl.clazz(HGVSP_NOTATION), dl.individual(MUTADELIC),
-				result.hgvsp));
+				result.hgvsp, true));
 		input.getAxioms().addAll(annotation);
 		return input;
 	}

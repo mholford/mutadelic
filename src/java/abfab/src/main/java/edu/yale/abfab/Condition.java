@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import edu.yale.abfab.Abductor.SCCIndividual;
-import edu.yale.abfab.Abductor.SCCKey;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLIndividual;

@@ -5,8 +5,8 @@ import java.util.Set;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
-import edu.yale.abfab.Abductor.SCCIndividual;
-import edu.yale.abfab.Abductor.SCCKey;
+import edu.yale.abfab.SCCIndividual;
+import edu.yale.abfab.SCCKey;
 import edu.yale.abfab.service.AbfabServiceException;
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
