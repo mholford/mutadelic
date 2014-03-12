@@ -53,7 +53,9 @@ public class FinishedVariantService extends AbstractPipelineService {
 		SCCIndividual scOut = abductor.createSCCIndividual(ipOut);
 		SCCIndividual scIn = abductor.createSCCIndividual(input);
 		SCCKey  key = abductor.createSCCKey(serviceClass, scIn, scOut);
-		boolean output = abductor.checkSCCache(key, true);
+		
+		//boolean output = abductor.checkSCCache(key, true);
+		boolean output = abductor.checkSCCache(key);
 		
 		return output;
 	}
