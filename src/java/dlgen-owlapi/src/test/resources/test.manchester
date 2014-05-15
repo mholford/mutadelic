@@ -12,15 +12,18 @@ Class: Musician
 Class: Guitarist
   SubClassOf: Musician
   EquivalentTo: plays some Guitar
-  
+
 Class: Guitar
 	DisjointWith: Person
+	EquivalentTo: hasStrings value 6
   
 DataProperty: hasAge
 
 DataProperty: hasFirstName
 
 DataProperty: hasLastName
+
+DataProperty: hasStrings
 
 ObjectProperty: hasSpouse
 

@@ -15,17 +15,29 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import edu.yale.abfab.Abductor;
 import edu.yale.abfab.IndividualPlus;
 import edu.yale.abfab.Path;
+import edu.yale.abfab.Path2;
 import edu.yale.abfab.TestVals;
 import edu.yale.abfab.Utils;
 import edu.yale.abfab.mazes.MazeGenerator;
 import edu.yale.abfab.mazes.MazeGenerator.Branch;
 import edu.yale.abfab.mazes.MazeGenerator.Maze;
 import edu.yale.abfab.mazes.MazeGenerator.Node;
+import edu.yale.abfab.mazes.MazeGenerator2;
+
+//import edu.yale.abfab.mazes.MazeGenerator2.Branch;
+//import edu.yale.abfab.mazes.MazeGenerator2.Maze;
+//import edu.yale.abfab.mazes.MazeGenerator2.Node;
 import edu.yale.abfab.mazes.MazeTransformer;
+import edu.yale.abfab.mazes.MazeTransformer2;
 import edu.yale.abfab.owlapi.HermitAbductor;
 import edu.yale.abfab.owlapi.OWLAPIAbductor;
 import edu.yale.abfab.pipeline.TestValues;
@@ -33,15 +45,17 @@ import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLDataPropertyExpression;
+import edu.yale.dlgen.DLEntity;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.controller.DLController;
+import edu.yale.dlgen.controller.OWLAPIDLController;
 
 public class OWLAPIAbductorTest {
 
 	private static OWLAPIAbductor abductor;
 	private DLController dl;
-	
+
 	@BeforeClass
 	public static void beforeClass() {
 		abductor = new HermitAbductor("");
@@ -52,6 +66,74 @@ public class OWLAPIAbductorTest {
 	public void setUp() throws Exception {
 		dl = abductor.getDLController();
 		TestValues.revert();
+	}
+
+	@Test
+	public void testTBoxFindTerminal() {
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream(
+							"pipeline-tbox-unexpanded.owl")), "Manchester");
+
+			Collection<DLClassExpression<?>> ts = abductor.findTerminals2(dl
+					.clazz(NS + "FinishedVariant"));
+			assertEquals(dl.clazz(NS + "FinishedVariantService"), ts.iterator()
+					.next());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testTBoxSubsumption() {
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream(
+							"pipeline-tbox-unexpanded.owl")), "Manchester");
+
+			OWLClassExpression oce = (OWLClassExpression) dl.clazz(
+					NS + "FinishedVariantService").get();
+			OWLOntology ont = ((OWLAPIDLController) dl).getOntology();
+			Set<OWLEquivalentClassesAxiom> equivalentClassesAxioms = ont
+					.getEquivalentClassesAxioms((OWLClass) oce);
+
+			boolean b = dl.checkEntailed(dl.subClass(
+					dl.andClass(dl.clazz(NS + "RareVariant"),
+							dl.clazz(NS + "ConservedVariant")),
+					dl.clazz(NS + "InterestingVariant")));
+			assertEquals(true, b);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testTBoxSimpleStaging() {
+		System.out.println("TEST SIMPLE STAGING");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("test1a.owl")),
+					"Manchester");
+			abductor.debug();
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor.getBestPath2(ip,
+					dl.clazz(NS + "FinishedMutation"));
+			assertEquals(String.format("[%s%s -> %s%s]", NS,
+					"GeneAnnotatedMutationService", NS,
+					"FinishedMutationService"), p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
 	}
 
 	@Test
@@ -78,6 +160,33 @@ public class OWLAPIAbductorTest {
 	}
 
 	@Test
+	public void testTBoxBranchedStaging() {
+		System.out.println("TEST BRANCHED STAGING");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("test2a.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor.getBestPath2(ip,
+					dl.clazz(NS + "FinishedMutation"));
+
+			System.out.println(p.toString());
+
+			assertEquals(String.format("[([%s%s] & [%s%s]) -> %s%s]", NS,
+					"GeneAnnotatedMutationService", NS,
+					"SiftValueAnnotatedMutationService", NS,
+					"FinishedMutationService"), p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
 	public void testBranchedStaging() {
 		System.out.println("TEST BRANCHED STAGING");
 		try {
@@ -96,6 +205,32 @@ public class OWLAPIAbductorTest {
 
 			assertEquals(String.format("[([%s%s] & [%s%s]) -> %s%s]", NS,
 					"GMS", NS, "SVS", NS, "FMS"), p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testTBoxBranchedStaging2() {
+		System.out.println("TEST BRANCHED STAGING 2");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("test4a.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"), dl.thing()));
+			Path2 p = abductor.getBestPath2(ip,
+					dl.clazz(NS + "FinishedMutation"));
+
+			System.out.println(p.toString());
+
+			assertEquals(String.format("[%s%s -> ([%s%s] & [%s%s]) -> %s%s]",
+					NS, "MutationService", NS, "GeneAnnotatedMutationService",
+					NS, "SiftValueAnnotatedMutationService", NS,
+					"FinishedMutationService"), p.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -156,6 +291,38 @@ public class OWLAPIAbductorTest {
 	}
 
 	@Test
+	public void testTBox3WayBranchedStaging() {
+		System.out.println("TEST 3-WAY BRANCHED STAGING");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("test3a.owl")),
+					"Manchester");
+			abductor.debug();
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor.getBestPath2(ip,
+					dl.clazz(NS + "FinishedMutation"));
+
+			System.out.println(p.toString());
+
+			boolean matches = p.toString().equals(
+					String.format("[([%s%s] & [%s%s] & [%s%s]) -> %s%s]", NS,
+							"GeneAnnotatedMutationService", NS,
+							"ProteinAnnotatedMutationService", NS,
+							"SiftValueAnnotatedMutationService", NS,
+							"FinishedMutationService"));
+
+			assertEquals(true, matches);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
 	public void testPipelineStaging() {
 		System.out.println("TEST PIPELINE STAGING");
 		try {
@@ -195,6 +362,62 @@ public class OWLAPIAbductorTest {
 					+ "http://krauthammerlab.med.yale.edu/test#MUVS]) -> "
 					+ "http://krauthammerlab.med.yale.edu/test#MRUVS]) -> "
 					+ "http://krauthammerlab.med.yale.edu/test#FS]";
+
+			assertEquals(expected, p.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	@Test
+	public void testTBoxPipelineStaging() {
+		System.out.println("TEST PIPELINE STAGING");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader()
+					.getResourceAsStream("pipeline-stage2.owl")), "Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip,
+					dl.clazz(NS + "FinishedVariant"));
+
+			System.out.println(p.toString());
+			String expected = String
+					.format("[([%s -> %s] || [([%s -> %s] & [([%s -> %s] || "
+							+ "[%s -> %s -> %s -> %s] || [%s -> %s "
+							+ "-> %s -> %s] || [%s -> %s -> %s -> %s] || [([%s -> %s] & [%s]) "
+							+ "-> %s]) -> %s]) -> %s]) -> %s]", NS
+							+ "AlignVariantService", NS
+							+ "DBKnownMutationKnownService", NS
+							+ "AlignVariantService", NS
+							+ "VariantFrequencyRareService", NS
+							+ "AlignVariantService", NS
+							+ "TranscriptLocaleSpliceService", NS
+							+ "AlignVariantService", NS
+							+ "TranscriptLocaleProteinCodingService", NS
+							+ "AAChangeNonSynonymousService", NS
+							+ "SiftSevereService", NS + "AlignVariantService", NS
+							+ "TranscriptLocaleProteinCodingService", NS
+							+ "AAChangeNonSynonymousService", NS
+							+ "CriticalDomainInService", NS + "AlignVariantService",
+							NS + "TranscriptLocaleProteinCodingService", NS
+									+ "AAChangeNonSynonymousService", NS
+									+ "PhylopConservedService", NS
+									+ "AlignVariantService", NS
+									+ "TranscriptLocaleProteinCodingService",
+							NS + "IndelOrPointIndelService", NS
+									+ "CriticalDomainMissingIsService", NS
+									+ "MarkedUnusualVariantService", NS
+									+ "MarkedRareAndUnusualVariantService", NS
+									+ "FinishedVariantService");
+			System.out.println("****************************************");
+			System.out.println(expected);
+			System.out.println("****************************************");
+			System.out.println(p.toString());
 			assertEquals(expected, p.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -224,6 +447,43 @@ public class OWLAPIAbductorTest {
 
 			TestValues.RCMDB_KNOWN = true;
 			output = abductor.exec(ip.copy(ip), p.copy());
+			String known = getLiteralResult(output,
+					dl.clazz(NS + "DatabasePresence"));
+			assertEquals(known, "true");
+
+			// Assure that other condition does not execute
+			String prefreq = getLiteralResult(output,
+					dl.clazz(NS + "AlleleFrequency"));
+			assertNull(prefreq);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testTBoxPipelineExec1() {
+		System.out.println("TEST PIPELINE EXEC 1");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage2.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.RCMDB_KNOWN = true;
+			output = abductor.exec2(ip.copy(ip), p.copy());
 			String known = getLiteralResult(output,
 					dl.clazz(NS + "DatabasePresence"));
 			assertEquals(known, "true");
@@ -593,14 +853,58 @@ public class OWLAPIAbductorTest {
 		assertEquals(5, setPermutations.size());
 	}
 
+//	@Test
+//	public void testMazeStaging() {
+//		System.out.println("TEST MAZE STAGING");
+//		try {
+//			abductor.clearCaches();
+//			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+//					.getResourceAsStream("skel.owl")), "Manchester");
+//			int numNodes = 20;
+//			List<String> mazeNodes = new ArrayList<>();
+//			int i = 0;
+//			while (i <= numNodes) {
+//				mazeNodes.add(String.format("%sT%S", NS, String.valueOf(++i)));
+//			}
+//			int randomOut = new Random().nextInt(numNodes) + 1;
+//			Object randomNode = mazeNodes.get(randomOut);
+//
+//			MazeGenerator mg = new MazeGenerator();
+//			mg.setNodePool(mazeNodes);
+//			Maze m = mg.createDAG(mazeNodes, 0.0, 0.0, -1);
+//			MazeTransformer mt = new MazeTransformer();
+//			Set<DLAxiom<?>> ax = mt.transform(m);
+//			dl.addAxioms(ax);
+//
+//			// abductor.debug();
+//
+//			DLIndividual<?> test = dl.individual(NS + "test");
+//			IndividualPlus ip = new IndividualPlus(test);
+//			DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
+//					+ "Input");
+//			ip.getAxioms().add(dl.individualType(test, ipType));
+//
+//			DLClassExpression<?> goalClass = dl.clazz(String
+//					.valueOf(randomNode) + "Output");
+//			Path p = abductor.getBestPath(ip, goalClass);
+//
+//			String solution = mg.solveRandomDAG(m, String.valueOf(randomNode));
+//
+//			assertEquals(solution, p.toString());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail();
+//		}
+//	}
+	
 	@Test
-	public void testMazeStaging() {
+	public void testTBoxMazeStaging() {
 		System.out.println("TEST MAZE STAGING");
 		try {
 			abductor.clearCaches();
 			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
 					.getResourceAsStream("skel.owl")), "Manchester");
-			int numNodes = 20;
+			int numNodes = 50;
 			List<String> mazeNodes = new ArrayList<>();
 			int i = 0;
 			while (i <= numNodes) {
@@ -611,8 +915,8 @@ public class OWLAPIAbductorTest {
 
 			MazeGenerator mg = new MazeGenerator();
 			mg.setNodePool(mazeNodes);
-			Maze m = mg.createDAG(mazeNodes, 0.0, 0.0, -1);
-			MazeTransformer mt = new MazeTransformer();
+			Maze m = mg.createDAG(mazeNodes, 0.1, 0.0, -1);
+			MazeTransformer2 mt = new MazeTransformer2();
 			Set<DLAxiom<?>> ax = mt.transform(m);
 			dl.addAxioms(ax);
 
@@ -626,11 +930,13 @@ public class OWLAPIAbductorTest {
 
 			DLClassExpression<?> goalClass = dl.clazz(String
 					.valueOf(randomNode) + "Output");
-			Path p = abductor.getBestPath(ip, goalClass);
+			Path2 p = abductor.getBestPath2(ip, goalClass);
 
 			String solution = mg.solveRandomDAG(m, String.valueOf(randomNode));
+			
+			String pathString = p.toString().replace("Service", "");
 
-			assertEquals(solution, p.toString());
+			assertEquals(solution, pathString);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();
@@ -695,8 +1001,104 @@ public class OWLAPIAbductorTest {
 	 * e.printStackTrace(); fail(); } }
 	 */
 
+//	@Test
+//	public void testMazeStaging3() {
+//		System.out.println("TEST MAZE STAGING 3");
+//		try {
+//			abductor.clearCaches();
+//			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+//					.getResourceAsStream("skel.owl")), "Manchester");
+//			MazeGenerator mg = new MazeGenerator();
+//			Node n1 = new Node("1");
+//			Maze m = new Maze(n1);
+//
+//			Node n11 = new Node("1-1");
+//			Maze m1 = new Maze(n11, 0d, 1);
+//			Node n21 = new Node("2-1", n11);
+//			m1.addNode(n21);
+//			n11.getBranches().add(n21);
+//
+//			Node n12 = new Node("1-2");
+//			Maze m2 = new Maze(n12, 0d, 2);
+//			Node n22 = new Node("2-2", n12);
+//			m2.addNode(n22);
+//			n12.getBranches().add(n22);
+//
+//			Branch n2 = new Branch("2", n1,
+//					Arrays.asList(new Maze[] { m1, m2 }));
+//			m.addNode(n2);
+//			n1.getBranches().add(n2);
+//
+//			Node n3 = new Node("3", n2);
+//			m.addNode(n3);
+//			n2.getBranches().add(n3);
+//
+//			Node n13 = new Node("1-3");
+//			Maze m3 = new Maze(n13, 0d, 3);
+//			Node n23 = new Node("2-3", n13);
+//			m3.addNode(n23);
+//			n13.getBranches().add(n23);
+//			Node n33 = new Node("3-3", n23);
+//			m3.addNode(n33);
+//			n23.getBranches().add(n33);
+//			Node n43 = new Node("4-3", n33);
+//			m3.addNode(n43);
+//			n33.getBranches().add(n43);
+//
+//			Node n14 = new Node("1-4");
+//			Maze m4 = new Maze(n14, 0d, 4);
+//			Node n24 = new Node("2-4", n14);
+//			m4.addNode(n24);
+//			n14.getBranches().add(n24);
+//			Node n34 = new Node("3-4", n24);
+//			m4.addNode(n34);
+//			n24.getBranches().add(n34);
+//			Node n44 = new Node("4-4", n34);
+//			m4.addNode(n44);
+//			n34.getBranches().add(n44);
+//
+//			Branch n4 = new Branch("4", n3,
+//					Arrays.asList(new Maze[] { m3, m4 }));
+//			m.addNode(n4);
+//			n3.getBranches().add(n4);
+//
+//			Node n5 = new Node("5", n4);
+//			m.addNode(n5);
+//			n4.getBranches().add(n5);
+//
+//			MazeTransformer mt = new MazeTransformer();
+//			Set<DLAxiom<?>> ax = mt.transform(m);
+//			dl.addAxioms(ax);
+//			String mdump = m.dump();
+//
+//			System.out.println(mdump);
+//			String solution = mg.solveRandomDAG(m, "5");
+//
+//			System.out.println("SOLUTION");
+//			System.out.println(solution);
+//
+//			// abductor.debug();
+//			System.out.println("ABFAB Solution");
+//
+//			DLIndividual<?> test = dl.individual(NS + "test");
+//			IndividualPlus ip = new IndividualPlus(test);
+//			DLClassExpression<?> ipType = dl.clazz(m.getRoot().getName()
+//					+ "Input");
+//			ip.getAxioms().add(dl.individualType(test, ipType));
+//
+//			DLClassExpression<?> goalClass = dl.clazz("5Output");
+//			Path p = abductor.getBestPath(ip, goalClass);
+//			System.out.println(p);
+//
+//			assertEquals(solution, p.toString());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail();
+//		}
+//	}
+	
 	@Test
-	public void testMazeStaging3() {
+	public void testTBoxMazeStaging3() {
 		System.out.println("TEST MAZE STAGING 3");
 		try {
 			abductor.clearCaches();
@@ -760,7 +1162,7 @@ public class OWLAPIAbductorTest {
 			m.addNode(n5);
 			n4.getBranches().add(n5);
 
-			MazeTransformer mt = new MazeTransformer();
+			MazeTransformer2 mt = new MazeTransformer2();
 			Set<DLAxiom<?>> ax = mt.transform(m);
 			dl.addAxioms(ax);
 			String mdump = m.dump();
@@ -781,7 +1183,7 @@ public class OWLAPIAbductorTest {
 			ip.getAxioms().add(dl.individualType(test, ipType));
 
 			DLClassExpression<?> goalClass = dl.clazz("5Output");
-			Path p = abductor.getBestPath(ip, goalClass);
+			Path2 p = abductor.getBestPath2(ip, goalClass);
 			System.out.println(p);
 
 			assertEquals(solution, p.toString());

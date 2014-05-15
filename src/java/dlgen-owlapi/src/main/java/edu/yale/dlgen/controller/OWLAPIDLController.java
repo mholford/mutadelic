@@ -22,6 +22,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
@@ -32,9 +33,13 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLNamedObject;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLObjectVisitor;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -274,6 +279,37 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
+	public DLClassExpression<?> getObjectSomeFiller(DLClassExpression<?> clz) {
+		OWLObjectSomeValuesFrom osvf = (OWLObjectSomeValuesFrom) clz.get();
+		return new DLClassExpression<OWLClassExpression>(osvf.getFiller());
+	}
+	
+	@Override
+	public DLLiteral<?> getDataValueFiller(DLClassExpression<?> clz) {
+		OWLDataHasValue dhv = (OWLDataHasValue) clz.get();
+		return new DLLiteral<OWLLiteral>(dhv.getValue());
+	}
+
+	@Override
+	public DLObjectPropertyExpression<?> getObjectSomeProperty(DLClassExpression<?> clz) {
+		if (!(clz.get() instanceof OWLObjectSomeValuesFrom)) {
+			return null;
+		}
+		OWLObjectSomeValuesFrom osvf = (OWLObjectSomeValuesFrom) clz.get();
+		return new DLObjectPropertyExpression<OWLObjectPropertyExpression>(osvf.getProperty());
+	}
+
+	@Override
+	public DLDataPropertyExpression<?> getDataValueProperty(
+			DLClassExpression<?> clz) {
+		if (!(clz.get() instanceof OWLDataHasValue)) {
+			return null;
+		}
+		OWLDataHasValue dhv = (OWLDataHasValue) clz.get();
+		return new DLDataPropertyExpression<OWLDataPropertyExpression>(dhv.getProperty());
+	}
+
+	@Override
 	public Collection<DLClassExpression> getTypes(DLIndividual<?> individual) {
 		OWLIndividual ind = (OWLIndividual) individual.get();
 		return CollUtils.wrap(ind.getTypes(ontology), DLClassExpression.class);
@@ -350,7 +386,7 @@ public abstract class OWLAPIDLController implements DLController {
 
 	@Override
 	public DLLiteral<?> asLiteral(double val) {
-		return new DLLiteral<>(df.getOWLLiteral(val));
+		return new DLLiteral<OWLLiteral>(df.getOWLLiteral(val));
 	}
 
 	@Override
@@ -397,6 +433,16 @@ public abstract class OWLAPIDLController implements DLController {
 			toJoin.add((OWLClassExpression) c.get());
 		}
 		return new DLClassExpression<>(df.getOWLObjectIntersectionOf(toJoin));
+	}
+
+	@Override
+	public boolean isIntersectionClass(DLClassExpression<?> clz) {
+		return clz.get() instanceof OWLObjectIntersectionOf;
+	}
+	
+	@Override
+	public boolean isUnionClass(DLClassExpression<?> clz) {
+		return clz.get() instanceof OWLObjectUnionOf;
 	}
 
 	@Override
@@ -460,6 +506,14 @@ public abstract class OWLAPIDLController implements DLController {
 		OWLClassExpression r = (OWLClassExpression) restriction.get();
 		return new DLClassExpression<OWLClassExpression>(
 				df.getOWLObjectSomeValuesFrom(op, r));
+	}
+
+	@Override
+	public DLClassExpression<?> value(DLDataPropertyExpression<?> prop,
+			DLLiteral<?> value) {
+		OWLDataPropertyExpression dp = (OWLDataPropertyExpression) prop.get();
+		OWLLiteral val = (OWLLiteral) value.get();
+		return new DLClassExpression<OWLClassExpression>(df.getOWLDataHasValue(dp, val));
 	}
 
 	@Override
@@ -541,7 +595,8 @@ public abstract class OWLAPIDLController implements DLController {
 	public Collection<DLClassExpression> getEquivalentClasses(
 			DLClassExpression<?> clz) {
 		OWLClassExpression oce = (OWLClassExpression) clz.get();
-		Set<OWLClass> ocset = reasoner.getEquivalentClasses(oce).getEntities();
+		OWLClass oc = (OWLClass) oce;
+		Set<OWLClassExpression> ocset = oc.getEquivalentClasses(ontology);
 		return CollUtils.wrap(ocset, DLClassExpression.class);
 	}
 
@@ -565,11 +620,11 @@ public abstract class OWLAPIDLController implements DLController {
 	}
 
 	@Override
-	public Collection<DLEntity> getTerms(DLClassExpression<?> clz) {
+	public Collection<DLClassExpression> getTerms(DLClassExpression<?> clz) {
 		OWLNaryBooleanClassExpression onbce = (OWLNaryBooleanClassExpression) clz
 				.get();
 		Set<OWLClassExpression> operands = onbce.getOperands();
-		return CollUtils.wrap(operands, DLEntity.class);
+		return CollUtils.wrap(operands, DLClassExpression.class);
 	}
 
 	@Override

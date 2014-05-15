@@ -413,7 +413,7 @@ public class Pellet3DLControllerTest {
 
 	@Test
 	public void testGetTerms() {
-		Collection<DLEntity> terms = dl.getTerms(new DLClassExpression<>(and(
+		Collection<DLClassExpression> terms = dl.getTerms(new DLClassExpression<>(and(
 				namedClass(NS + "Person"), namedClass(NS + "Guitarist"))));
 		assertEquals(2, terms.size());
 		DLClass<?> p = dl.clazz(NS + "Person");

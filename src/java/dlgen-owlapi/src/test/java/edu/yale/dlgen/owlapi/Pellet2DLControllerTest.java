@@ -46,8 +46,8 @@ public class Pellet2DLControllerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		dl = new Pellet2DLController();
-		// dl = new HermitDLController();
+		//dl = new Pellet2DLController();
+		dl = new HermitDLController();
 		// dl = new FactPPDLController();
 		dl.load(new InputStreamReader(Pellet2DLControllerTest.class
 				.getClassLoader().getResourceAsStream("test.manchester")),
@@ -61,7 +61,7 @@ public class Pellet2DLControllerTest {
 				df.getOWLClass(IRI.create(NS + "Sitar")),
 				df.getOWLClass(IRI.create(NS + "Instrument")))));
 		Collection<DLAxiom> axioms = dl.getAxioms();
-		assertEquals(28, axioms.size());
+		assertEquals(30, axioms.size());
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class Pellet2DLControllerTest {
 				df.getOWLClass(IRI.create(NS + "Drums")),
 				df.getOWLClass(IRI.create(NS + "Instrument")))));
 		dl.addAxioms(ax);
-		assertEquals(29, dl.getAxioms().size());
+		assertEquals(31, dl.getAxioms().size());
 	}
 
 	@Test
@@ -87,10 +87,10 @@ public class Pellet2DLControllerTest {
 				df.getOWLClass(IRI.create(NS + "Drums")),
 				df.getOWLClass(IRI.create(NS + "Instrument")))));
 		dl.addAxioms(ax);
-		assertEquals(29, dl.getAxioms().size());
+		assertEquals(31, dl.getAxioms().size());
 
 		dl.removeAxioms(ax);
-		assertEquals(27, dl.getAxioms().size());
+		assertEquals(29, dl.getAxioms().size());
 	}
 
 	@Test
@@ -185,6 +185,27 @@ public class Pellet2DLControllerTest {
 		Collection<DLLiteral> dpv = dl.getDataPropertyValues(ind, prop);
 		DLLiteral next = dpv.iterator().next();
 		assertEquals("33", dl.getLiteralValue(next));
+	}
+	
+	@Test
+	public void testGetObjectSomeFiller() {
+		Collection<DLClassExpression> equivs = dl.getEquivalentClasses(dl.clazz(NS + "Guitarist"));
+		DLClassExpression<?> f = dl.getObjectSomeFiller(equivs.iterator().next());
+		assertEquals(dl.clazz(NS + "Guitar"), f);
+	}
+	
+	@Test
+	public void testGetDataValueFiller() {
+		Collection<DLClassExpression> equivs = dl.getEquivalentClasses(dl.clazz(NS + "Guitar"));
+		DLLiteral<?> dataValueFiller = dl.getDataValueFiller(equivs.iterator().next());
+		assertEquals(dl.asLiteral(6), dataValueFiller);
+	}
+	
+	@Test
+	public void testGetObjectSomeProperty() {
+		Collection<DLClassExpression> equivs = dl.getEquivalentClasses(dl.clazz(NS + "Guitarist"));
+		DLObjectPropertyExpression<?> op = dl.getObjectSomeProperty(equivs.iterator().next());
+		assertEquals(dl.objectProp(NS + "plays"), op);
 	}
 
 	@Test
@@ -425,7 +446,7 @@ public class Pellet2DLControllerTest {
 
 	@Test
 	public void testGetTerms() {
-		Collection<DLEntity> terms = dl.getTerms(new DLClassExpression<>(df
+		Collection<DLClassExpression> terms = dl.getTerms(new DLClassExpression<>(df
 				.getOWLObjectIntersectionOf(
 						df.getOWLClass(IRI.create(NS + "Person")),
 						df.getOWLClass(IRI.create(NS + "Guitarist")))));

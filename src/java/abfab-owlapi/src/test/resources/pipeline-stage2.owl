@@ -1,0 +1,223 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: has_input
+    
+ObjectProperty: has_output
+
+DataProperty: has_cost
+
+DataProperty: has_executable
+    
+Class: Service
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
+	
+Class: Variant
+	
+Class: AlignedVariant
+	
+Class: FrequencyAnnotatedVariant
+	
+Class: RareVariant
+    SubClassOf: FrequencyAnnotatedVariant
+	
+Class: CommonVariant
+    SubClassOf: FrequencyAnnotatedVariant
+	
+Class: DBKnownMutationAnnotatedVariant
+	
+Class: DBKnownMutationVariant
+    SubClassOf: DBKnownMutationAnnotatedVariant
+	
+Class: DBUnknownMutationVariant
+    SubClassOf: DBKnownMutationAnnotatedVariant
+	
+Class: IndelOrPointVariant
+	
+Class: IndelVariant
+    SubClassOf: IndelOrPointVariant
+	
+Class: PointVariant
+    SubClassOf: IndelOrPointVariant
+	
+Class: TranscriptLocatedVariant
+	
+Class: SpliceSiteVariant
+    SubClassOf: TranscriptLocatedVariant
+	
+Class: ProteinCodingVariant
+    SubClassOf: TranscriptLocatedVariant
+	
+Class: IntronicVariant
+    SubClassOf: TranscriptLocatedVariant
+	
+Class: AAChangedAnnotatedVariant
+	
+Class: SynonymousVariant
+    SubClassOf: AAChangedAnnotatedVariant
+	
+Class: NonSynonymousVariant
+    SubClassOf: AAChangedAnnotatedVariant
+	
+Class: PhylopAnnotatedVariant
+	
+Class: ConservedVariant
+    SubClassOf: PhylopAnnotatedVariant
+	
+Class: NonConservedVariant
+    SubClassOf: PhylopAnnotatedVariant
+	
+Class: SiftAnnotatedVariant
+	
+Class: NonSevereVariant
+    SubClassOf: SiftAnnotatedVariant
+	
+Class: SevereVariant
+    SubClassOf: SiftAnnotatedVariant
+	
+Class: CriticalDomainAnnotatedVariant
+	
+Class: InCriticalDomainVariant
+    SubClassOf: CriticalDomainAnnotatedVariant
+	
+Class: NotInCriticalDomainVariant
+    SubClassOf: CriticalDomainAnnotatedVariant
+	
+Class: CriticalDomainMissingAnnotatedVariant
+	
+Class: CriticalDomainMissingVariant
+    SubClassOf: CriticalDomainMissingVariant
+	
+Class: CriticalDomainNotMissingVariant
+    SubClassOf: CriticalDomainNotMissingVariant
+	
+Class: InterestingVariant
+    EquivalentTo: DBKnownMutationVariant or MarkedRareAndUnusualVariant
+	
+Class: UnusualVariant
+    EquivalentTo: CriticalDomainMissingVariant or SevereVariant or SpliceSiteVariant or ConservedVariant or InCriticalDomainVariant
+
+Class: RareAndUnusualVariant
+    EquivalentTo: RareVariant and MarkedUnusualVariant
+
+Class: FinishedVariant
+
+Class: MarkedUnusualVariant
+
+Class: MarkedRareAndUnusualVariant
+	
+Class: MarkedUnusualVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some UnusualVariant) and (has_output some MarkedUnusualVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.MarkUnusualService")
+
+Class: MarkedRareAndUnusualVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some RareAndUnusualVariant) and (has_output some MarkedRareAndUnusualVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.MarkRareUnusualService")
+
+Class: AlignVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some AlignedVariant)
+    	and (has_cost value 5.0) and (has_executable value "edu.yale.abfab.pipeline.AlignVariantService")
+	
+Class: VariantFrequencyCommonService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some CommonVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.AlleleFrequencyService")
+
+Class: VariantFrequencyRareService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some RareVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.AlleleFrequencyService")
+	
+Class: DBKnownMutationKnownService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some DBKnownMutationVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.RCMDBKnownService")
+	
+Class: DBKnownMutationUnknownService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some DBUnknownMutationVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.RCMDBKnownService")
+
+Class: IndelOrPointIndelService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some IndelVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.IndelOrPointService")
+
+Class: IndelOrPointPointService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Variant) and (has_output some PointVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.IndelOrPointService")
+	
+Class: TranscriptLocaleSpliceService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some SpliceSiteVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.TranscriptLocaleService")
+
+Class: TranscriptLocaleProteinCodingService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some ProteinCodingVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.TranscriptLocaleService")
+
+Class: TranscriptLocaleIntronService
+    SubClassOf: Service
+    EquivalentTo: (has_input some AlignedVariant) and (has_output some IntronicVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.TranscriptLocaleService")
+	
+Class: AAChangeSynonymousService
+    SubClassOf: Service
+    EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some SynonymousVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.AAChangedService")
+	
+Class: AAChangeNonSynonymousService
+    SubClassOf: Service
+    EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some NonSynonymousVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.AAChangedService")
+
+Class: PhylopConservedService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some ConservedVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.abfab.pipeline.PhylopService")
+	
+Class: PhylopNonConservedService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NonConservedVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.abfab.pipeline.PhylopService")
+
+Class: SiftNonSevereService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NonSevereVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.SiftService")
+
+Class: SiftSevereService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some SevereVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.SiftService")
+	
+Class: CriticalDomainInService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some InCriticalDomainVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.abfab.pipeline.CriticalDomainService")
+	
+Class: CriticalDomainNotInService
+    SubClassOf: Service
+    EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NotInCriticalDomainVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.abfab.pipeline.CriticalDomainService")
+
+Class: CriticalDomainMissingNotService
+    SubClassOf: Service
+    EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant)) and (has_output some CriticalDomainNotMissingVariant)
+    	and (has_cost value 4.0) and (has_executable value "edu.yale.abfab.pipeline.CriticalDomainMissingService")
+
+Class: CriticalDomainMissingIsService
+    SubClassOf: Service
+    EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant)) and (has_output some CriticalDomainMissingVariant)
+    	and (has_cost value 4.0) and (has_executable value "edu.yale.abfab.pipeline.CriticalDomainMissingService")
+	
+Class: FinishedVariantService
+    SubClassOf: Service
+    EquivalentTo: (has_input some InterestingVariant) and (has_output some FinishedVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.pipeline.FinishedVariantService")

@@ -16,8 +16,10 @@ import java.util.UUID;
 
 import edu.yale.abfab.Path;
 import edu.yale.dlgen.DLAxiom;
+import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.DLClassExpression;
 import edu.yale.dlgen.DLDataPropertyExpression;
+import edu.yale.dlgen.DLEntity;
 import edu.yale.dlgen.DLIndividual;
 import edu.yale.dlgen.DLLiteral;
 import edu.yale.dlgen.DLObjectPropertyExpression;
@@ -30,10 +32,13 @@ public abstract class Abductor {
 	private DLController dl;
 	private String namespace;
 	private Path executingPath;
+	private Path2 executingPath2;
 	private DLObjectPropertyExpression<?> HAS_INPUT;
 	private DLObjectPropertyExpression<?> HAS_OUTPUT;
 	private Map<ServiceOutputMatchCacheKey, Collection<Collection<IndividualPlus>>> serviceOutputMatchCache;
+	private Map<ServiceOutputMatchCacheKey2, Collection<Collection<DLClassExpression>>> serviceOutputMatchCache2;
 	private Map<PathCacheKey, Path> pathCache;
+	private Map<PathCacheKey, Path2> pathCache2;
 	private Map<SCCKey, Boolean> scCache;
 
 	public Abductor() {
@@ -41,7 +46,9 @@ public abstract class Abductor {
 		HAS_INPUT = dl.objectProp(NS + "has_input");
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 		serviceOutputMatchCache = new HashMap<>();
+		serviceOutputMatchCache2 = new HashMap<>();
 		pathCache = new HashMap<>();
+		pathCache2 = new HashMap<>();
 		scCache = new HashMap<>();
 	}
 
@@ -130,6 +137,56 @@ public abstract class Abductor {
 		}
 	}
 
+	class ServiceOutputMatchCacheKey2 {
+		DLClassExpression ce;
+		Collection<DLClassExpression> targets;
+
+		public ServiceOutputMatchCacheKey2(DLClassExpression ce,
+				Collection<DLClassExpression> targets) {
+			this.ce = ce;
+			this.targets = targets;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((ce == null) ? 0 : ce.hashCode());
+			result = prime * result
+					+ ((targets == null) ? 0 : targets.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ServiceOutputMatchCacheKey2 other = (ServiceOutputMatchCacheKey2) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (ce == null) {
+				if (other.ce != null)
+					return false;
+			} else if (!ce.equals(other.ce))
+				return false;
+			if (targets == null) {
+				if (other.targets != null)
+					return false;
+			} else if (!targets.equals(other.targets))
+				return false;
+			return true;
+		}
+
+		private Abductor getOuterType() {
+			return Abductor.this;
+		}
+	}
+
 	class ServiceOutputMatchCacheKey {
 		IndividualPlus indiv;
 		Collection<DLClassExpression> targetClasses;
@@ -198,13 +255,22 @@ public abstract class Abductor {
 		return executingPath;
 	}
 
+	public Path2 getExecutingPath2() {
+		return executingPath2;
+	}
+
 	public void setExecutingPath(Path executingPath) {
 		this.executingPath = executingPath;
+	}
+	
+	public void setExecutingPath2(Path2 executingPath2) {
+		this.executingPath2 = executingPath2;
 	}
 
 	public void clearCaches() {
 		serviceOutputMatchCache = new HashMap<>();
 		pathCache = new HashMap<>();
+		pathCache2 = new HashMap<>();
 		scCache = new HashMap<>();
 	}
 
@@ -212,8 +278,8 @@ public abstract class Abductor {
 			SCCIndividual input, SCCIndividual output) {
 		return new SCCKey(serviceClass, input, output);
 	}
-	
-	public boolean checkSCCache(SCCKey key){
+
+	public boolean checkSCCache(SCCKey key) {
 		return checkSCCache(key, false);
 	}
 
@@ -385,6 +451,132 @@ public abstract class Abductor {
 		executingPath = goalPath;
 		return goalPath.exec(input);
 	}
+	
+	public IndividualPlus exec2(IndividualPlus input, Path2 goalPath) {
+		System.out.println("EXEC");
+		executingPath2 = goalPath;
+		return goalPath.exec(input);
+	}
+
+	public DLClassExpression<?> getServiceOutputFiller(
+			DLClassExpression<?> serviceClass) {
+		return getServiceObjectFiller(serviceClass,
+				dl.objectProp(NS + "has_output"));
+	}
+
+	public DLClassExpression<?> getServiceInputFiller(
+			DLClassExpression<?> serviceClass) {
+		return getServiceObjectFiller(serviceClass,
+				dl.objectProp(NS + "has_input"));
+	}
+
+	public double getServiceCost(DLClassExpression<?> serviceClass) {
+		String costPre = getServiceDataFiller(serviceClass,
+				dl.dataProp(NS + "has_cost"));
+		return costPre == null ? Double.MAX_VALUE : Double.parseDouble(costPre);
+	}
+
+	public String getServiceExecutable(DLClassExpression<?> serviceClass) {
+		return getServiceDataFiller(serviceClass,
+				dl.dataProp(NS + "has_executable"));
+	}
+
+	// TODO replace with visitor pattern
+	public String getServiceDataFiller(DLClassExpression<?> sc,
+			DLDataPropertyExpression<?> dp) {
+		DLClassExpression eq = dl.getEquivalentClasses(sc).iterator().next();
+		for (DLEntity<?> term : dl.getTerms(eq)) {
+			DLDataPropertyExpression<?> dataValueProperty = dl
+					.getDataValueProperty((DLClassExpression<?>) term);
+			if (dataValueProperty != null && dataValueProperty.equals(dp)) {
+				return dl.getLiteralValue(dl
+						.getDataValueFiller((DLClassExpression<?>) term));
+			}
+		}
+		return null;
+	}
+
+	// TODO replace with visitor pattern
+	@SuppressWarnings("rawtypes")
+	private DLClassExpression<?> getServiceObjectFiller(
+			DLClassExpression<?> serviceClass, DLObjectPropertyExpression<?> op) {
+		Set<DLClassExpression> fillers = new HashSet<>();
+		Set<DLClassExpression> scs = new HashSet<>();
+		boolean union = false;
+
+		if (dl.isIntersectionClass(serviceClass)) {
+			for (DLEntity<?> term : dl.getTerms(serviceClass)) {
+				scs.add((DLClassExpression) term);
+			}
+		} else if (dl.isUnionClass(serviceClass)) {
+			union = true;
+			for (DLEntity<?> term : dl.getTerms(serviceClass)) {
+				scs.add((DLClassExpression) term);
+			}
+		} else {
+			scs.add(serviceClass);
+		}
+
+		for (DLClassExpression sc : scs) {
+			DLClassExpression eq = dl.getEquivalentClasses(sc).iterator()
+					.next();
+			for (DLEntity<?> term : dl.getTerms(eq)) {
+				DLObjectPropertyExpression<?> objectSomeProperty = dl
+						.getObjectSomeProperty((DLClassExpression<?>) term);
+				if (objectSomeProperty != null && objectSomeProperty.equals(op)) {
+					fillers.add(dl
+							.getObjectSomeFiller((DLClassExpression<?>) term));
+				}
+			}
+		}
+		if (fillers.size() == 1) {
+			return fillers.iterator().next();
+		} else {
+			if (union) {
+				return dl.orClass(fillers.toArray(new DLClassExpression[fillers
+						.size()]));
+			} else {
+				return dl.andClass(fillers
+						.toArray(new DLClassExpression[fillers.size()]));
+			}
+		}
+	}
+
+	public Set<Path2> getAllPaths2(IndividualPlus origInput,
+			DLClassExpression<?> goalClass) {
+		dbg(DBG_PATH_CREATION, "Get All Paths: %s, %s",
+				origInput.getIndividual(), goalClass);
+		Set<Path2> completedPaths = new HashSet<>();
+
+		// Set<Path> paths = extendPath(null, origInput, goalI);
+		Set<Path2> paths = initializePaths2(origInput, goalClass);
+		dbg(DBG_PATH_CREATION, "Initial Paths: %s", paths);
+
+		for (;;) {
+			Set<Path2> nextPaths = new HashSet<>();
+			for (Path2 p : paths) {
+				if (matchesInput2(origInput, p)) {
+					Path2 merged = mergeBranches2(p);
+					completedPaths.add(merged);
+					dbg(DBG_PATH_CREATION, "Path %d(%s) complete",
+							p.hashCode(), merged.toString());
+				} else {
+					Set<Path2> eps = extendPath2(p, origInput, p.getLastInput());
+					for (Path2 ep : eps) {
+						dbg(DBG_PATH_CREATION, "Extend Path %d to %d(%s)",
+								p.hashCode(), ep.hashCode(), ep.toString());
+					}
+					nextPaths.addAll(eps);
+				}
+			}
+			if (nextPaths.size() == 0) {
+				break;
+			}
+			paths = nextPaths;
+		}
+
+		return completedPaths;
+	}
 
 	public Set<Path> getAllPaths(IndividualPlus origInput,
 			DLClassExpression<?> goalClass) {
@@ -503,6 +695,69 @@ public abstract class Abductor {
 		return output;
 	}
 
+	public Path2 mergeBranches2(Path2 input) {
+		Path2 output = new Path2(input.getInitialInput(), input.getAbductor());
+		List<Step2> reverseSteps = new ArrayList<>();
+		for (Step2 s : input.getSteps()) {
+			reverseSteps.add(s.copy());
+		}
+		Collections.reverse(reverseSteps);
+		Iterator<Step2> mainIter = reverseSteps.iterator();
+		while (mainIter.hasNext()) {
+			Step2 s = mainIter.next();
+			if (s instanceof Branch2) {
+				Branch2 b = (Branch2) s;
+				List<Iterator<Step2>> piters = new ArrayList<>();
+				List<Path2> newPaths = new ArrayList<>();
+				for (Path2 p : b.getPaths()) {
+					piters.add(p.getSteps().iterator());
+					newPaths.add(p.copy());
+				}
+				boolean done = false;
+				Step2 stepToAdd = null;
+				int addPos = 0;
+				while (!done) {
+					for (Iterator<Step2> piter : piters) {
+						if (piter.hasNext()) {
+							Step2 step = piter.next();
+
+							if (stepToAdd == null) {
+								stepToAdd = step;
+							}
+							if (!stepToAdd.equals(step)) {
+								done = true;
+								break;
+							} else {
+								stepToAdd = step;
+
+							}
+						} else {
+							done = true;
+							break;
+						}
+					}
+					if (!done && stepToAdd != null) {
+						output.getSteps().add(addPos, stepToAdd);
+						for (Path2 np : newPaths) {
+							np.getSteps().remove(0);
+						}
+						addPos++;
+						stepToAdd = null;
+					}
+				}
+				Branch2 newBranch = new Branch2(this);
+				newBranch.setPaths(new HashSet<>(newPaths));
+				output.getSteps().add(addPos, newBranch);
+			} else {
+				output.getSteps().add(0, s);
+			}
+			if (!(output.equals(input))) {
+				output = mergeBranches2(output);
+			}
+		}
+		return output;
+	}
+
 	public Path getBestPath(IndividualPlus origInput,
 			DLClassExpression<?> goalClass) {
 		PathCacheKey k = createPathCacheKey(origInput, goalClass);
@@ -514,6 +769,20 @@ public abstract class Abductor {
 
 		Path bestPath = chooseBestPath(completedPaths);
 		pathCache.put(k, bestPath);
+		return bestPath;
+	}
+
+	public Path2 getBestPath2(IndividualPlus origInput,
+			DLClassExpression<?> goalClass) {
+		PathCacheKey k = createPathCacheKey(origInput, goalClass);
+		if (pathCache.containsKey(k)) {
+			dbg(DBG_PATH_CREATION, "PATH CACHE HIT");
+			return pathCache2.get(k);
+		}
+		Set<Path2> completedPaths = getAllPaths2(origInput, goalClass);
+
+		Path2 bestPath = chooseBestPath2(completedPaths);
+		pathCache2.put(k, bestPath);
 		return bestPath;
 	}
 
@@ -529,6 +798,42 @@ public abstract class Abductor {
 		}
 
 		return paths;
+	}
+
+	public Set<Path2> initializePaths2(IndividualPlus input,
+			DLClassExpression<?> goalClass) {
+		Set<Path2> paths = new HashSet<>();
+
+		Collection<DLClassExpression<?>> terminals = findTerminals2(goalClass);
+		for (DLClassExpression<?> terminal : terminals) {
+			Path2 p = new Path2(input, this);
+			p.add(terminal);
+			paths.add(p);
+		}
+
+		return paths;
+	}
+
+	public Collection<DLClassExpression<?>> findTerminals2(
+			DLClassExpression<?> goalClass) {
+		long start = System.currentTimeMillis();
+		Set<DLClassExpression<?>> terminals = new HashSet<>();
+
+		for (DLClassExpression<?> serviceClass : dl.getSubclasses(dl.clazz(NS
+				+ "Service"))) {
+			// filler of has_output for serviceClass must be subsumed by
+			// goalClass
+			DLClassExpression<?> serviceOutputFiller = getServiceOutputFiller(serviceClass);
+			boolean isSubsumed = dl.checkEntailed(dl.subClass(
+					serviceOutputFiller, goalClass));
+			if (isSubsumed) {
+				terminals.add(serviceClass);
+			}
+		}
+
+		long end = System.currentTimeMillis();
+		dbg(DBG_TIMING, "findTerminals: %d millis", end - start);
+		return terminals;
 	}
 
 	public Collection<DLIndividual<?>> findTerminals(
@@ -661,6 +966,30 @@ public abstract class Abductor {
 		return output;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public boolean matchesInput2(IndividualPlus input, Path2 p) {
+		boolean output = false;
+		long start = System.currentTimeMillis();
+		Set<DLAxiom<?>> ax = new HashSet<>();
+		try {
+			ax.addAll(input.getAxioms());
+			dl.addAxioms(ax);
+
+			DLClassExpression topClass = p.getTopStepUnifiedClass();
+			DLClassExpression topClassInput = getServiceInputFiller(topClass);
+
+			debug();
+
+			output = dl.checkEntailed(dl.individualType(input.getIndividual(),
+					topClassInput));
+		} finally {
+			dl.removeAxioms(ax);
+		}
+		long end = System.currentTimeMillis();
+		dbg(DBG_TIMING, "matchesInput2: %d millis", end - start);
+		return output;
+	}
+
 	public IndividualPlus mergeIndividuals(Collection<IndividualPlus> inds) {
 		Collection<IndividualPlus> nonNullInds = new HashSet<>();
 		for (IndividualPlus ip : inds) {
@@ -745,6 +1074,74 @@ public abstract class Abductor {
 		} else if (nonNullInds.size() == 1) {
 			output = nonNullInds.iterator().next();
 		}
+
+		return output;
+	}
+
+	public Collection<Collection<DLClassExpression>> findServiceOutputMatch2(
+			DLClassExpression ce,
+			Collection<DLClassExpression> targetServiceClasses) {
+		ServiceOutputMatchCacheKey2 k = new ServiceOutputMatchCacheKey2(ce,
+				targetServiceClasses);
+		if (serviceOutputMatchCache2.containsKey(k)) {
+			System.out.println("CACHE HIT");
+			return serviceOutputMatchCache2.get(k);
+		}
+		Set<Collection<DLClassExpression>> output = new HashSet<>();
+
+		Collection<DLClassExpression> allServiceClasses = dl.getSubclasses(dl
+				.clazz(NS + "Service"));
+		for (DLClassExpression serviceClass : allServiceClasses) {
+			dbg(DBG_SERVICE_MATCH, "Try service: %s", serviceClass);
+			for (DLClassExpression target : targetServiceClasses) {
+				// Service class output must be subsumed by target class input
+				DLClassExpression<?> serviceOutputFiller = getServiceOutputFiller(serviceClass);
+				DLClassExpression<?> targetInputFiller = getServiceInputFiller(target);
+				boolean isSubsumed = dl.checkEntailed(dl.subClass(
+						serviceOutputFiller, targetInputFiller));
+				if (isSubsumed) {
+					output.add(Arrays
+							.asList(new DLClassExpression[] { serviceClass }));
+				}
+			}
+		}
+
+		if (output.size() == 0) {
+			boolean matchFound = false;
+			for (int n = 2; n <= allServiceClasses.size(); n++) {
+				if (matchFound) {
+					break;
+				}
+				Set<Set<DLClassExpression>> serviceClassTuples = Utils
+						.getNTuplePermutations(allServiceClasses, n);
+
+				for (Set<DLClassExpression> serviceClassTuple : serviceClassTuples) {
+					dbg(DBG_SERVICE_MATCH, "Try services: %s",
+							serviceClassTuple);
+					for (DLClassExpression target : targetServiceClasses) {
+						// AND together output of each service; this class must
+						// be
+						// subsumed by target class input
+						Set<DLClassExpression> outputs = new HashSet<>();
+						for (DLClassExpression sctc : serviceClassTuple) {
+							outputs.add(getServiceOutputFiller(sctc));
+						}
+						DLClassExpression<?> serviceOutputFiller = dl
+								.andClass(outputs
+										.toArray(new DLClassExpression[outputs
+												.size()]));
+						DLClassExpression<?> targetInputFiller = getServiceInputFiller(target);
+						boolean isSubsumed = dl.checkEntailed(dl.subClass(
+								serviceOutputFiller, targetInputFiller));
+						if (isSubsumed) {
+							output.add(serviceClassTuple);
+							matchFound = true;
+						}
+					}
+				}
+			}
+		}
+		serviceOutputMatchCache2.put(k, output);
 
 		return output;
 	}
@@ -1060,42 +1457,43 @@ public abstract class Abductor {
 						}
 
 						/* PRE SCC */
-//						if (keepers.size() > 1) {
-//							Set<DLClassExpression> keeperClasses = new HashSet<>();
-//							for (DLIndividual<?> keeper : keepers) {
-//								keeperClasses.addAll(dl.getTypes(keeper));
-//							}
-//							DLClassExpression keeperClass = dl
-//									.andClass(keeperClasses
-//											.toArray(new DLClassExpression[keeperClasses
-//													.size()]));
-//							DLIndividual<?> keeperI = dl.individual(NS
-//									+ "keeperI");
-//							ax2.add(dl.individualType(keeperI, keeperClass));
-//							ax2.add(dl.newObjectFact(
-//									serviceClassI.getIndividual(), propToKeep,
-//									keeperI));
-//
-//						} else {
-//							ax2.add(dl.newObjectFact(
-//									serviceClassI.getIndividual(), propToKeep,
-//									keepers.iterator().next()));
-//						}
-//
-//						ax2.add(dl.newObjectFact(serviceClassI.getIndividual(),
-//								propToReplace, replacer));
-//
-//						ax2.add(dl.individualType(
-//								serviceClassI.getIndividual(),
-//								dl.notClass(serv)));
-//						dl.addAxioms(ax2);
-//						// debug();
-//						if (dl.checkConsistency()) {
-//							add = false;
-//						} else {
-//							add = true;
-//						}
-//						dl.removeAxioms(ax2);
+						// if (keepers.size() > 1) {
+						// Set<DLClassExpression> keeperClasses = new
+						// HashSet<>();
+						// for (DLIndividual<?> keeper : keepers) {
+						// keeperClasses.addAll(dl.getTypes(keeper));
+						// }
+						// DLClassExpression keeperClass = dl
+						// .andClass(keeperClasses
+						// .toArray(new DLClassExpression[keeperClasses
+						// .size()]));
+						// DLIndividual<?> keeperI = dl.individual(NS
+						// + "keeperI");
+						// ax2.add(dl.individualType(keeperI, keeperClass));
+						// ax2.add(dl.newObjectFact(
+						// serviceClassI.getIndividual(), propToKeep,
+						// keeperI));
+						//
+						// } else {
+						// ax2.add(dl.newObjectFact(
+						// serviceClassI.getIndividual(), propToKeep,
+						// keepers.iterator().next()));
+						// }
+						//
+						// ax2.add(dl.newObjectFact(serviceClassI.getIndividual(),
+						// propToReplace, replacer));
+						//
+						// ax2.add(dl.individualType(
+						// serviceClassI.getIndividual(),
+						// dl.notClass(serv)));
+						// dl.addAxioms(ax2);
+						// // debug();
+						// if (dl.checkConsistency()) {
+						// add = false;
+						// } else {
+						// add = true;
+						// }
+						// dl.removeAxioms(ax2);
 
 						/* POST SCC */
 						IndividualPlus keeperInd;
@@ -1120,12 +1518,13 @@ public abstract class Abductor {
 									keeperI));
 
 						} else {
-							keeperInd = new IndividualPlus(keepers.iterator().next());
+							keeperInd = new IndividualPlus(keepers.iterator()
+									.next());
 							ax2.add(dl.newObjectFact(
 									serviceClassI.getIndividual(), propToKeep,
 									keepers.iterator().next()));
 						}
-						if (propToKeep.equals(HAS_INPUT)){
+						if (propToKeep.equals(HAS_INPUT)) {
 							input2 = keeperInd;
 							output2 = new IndividualPlus(replacer);
 						} else {
@@ -1177,10 +1576,41 @@ public abstract class Abductor {
 		return output;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public Set<Path2> extendPath2(Path2 p, IndividualPlus origInput,
+			Collection<DLClassExpression> goal) {
+		Set<Path2> output = new HashSet<>();
+		for (DLClassExpression g : goal) {
+			Collection<DLClassExpression> topStepDLClasses = p != null ? p
+					.getTopStepDLClasses() : null;
+			Collection<Collection<DLClassExpression>> services = findServiceOutputMatch2(
+					g, topStepDLClasses);
+
+			Path2 np = p != null ? p.copy() : new Path2(origInput, this);
+			np.add(services);
+			output.add(np);
+		}
+
+		return output;
+	}
+
 	public Path chooseBestPath(Set<Path> paths) {
 		double bestScore = Double.MAX_VALUE;
 		Path bestPath = null;
 		for (Path p : paths) {
+			if (p.getCost() <= bestScore) {
+				bestPath = p;
+				bestScore = p.getCost();
+			}
+		}
+
+		return bestPath;
+	}
+
+	public Path2 chooseBestPath2(Set<Path2> paths) {
+		double bestScore = Double.MAX_VALUE;
+		Path2 bestPath = null;
+		for (Path2 p : paths) {
 			if (p.getCost() <= bestScore) {
 				bestPath = p;
 				bestScore = p.getCost();

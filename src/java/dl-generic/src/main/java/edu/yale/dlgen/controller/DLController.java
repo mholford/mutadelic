@@ -44,7 +44,7 @@ public interface DLController {
 	void addAxioms(Set<DLAxiom<?>> axioms);
 
 	void removeAxiom(DLAxiom<?> axiom);
-	
+
 	/**
 	 * Remove axioms that are not part of the loaded ontology.
 	 */
@@ -73,7 +73,7 @@ public interface DLController {
 	 *            Axioms to be removed from the KB
 	 */
 	void removeAxioms(Set<DLAxiom<?>> axioms);
-	
+
 	void saveOntology(OutputStream os) throws IOException;
 
 	/**
@@ -250,7 +250,7 @@ public interface DLController {
 	DLLiteral<?> asLiteral(int val);
 
 	DLLiteral<?> asLiteral(float val);
-	
+
 	DLLiteral<?> asLiteral(long val);
 
 	DLLiteral<?> asLiteral(String val);
@@ -299,6 +299,10 @@ public interface DLController {
 	 * @return The Conjunction class
 	 */
 	DLClassExpression<?> andClass(DLClassExpression<?>... clz);
+	
+	boolean isIntersectionClass(DLClassExpression<?> clz);
+	
+	boolean isUnionClass(DLClassExpression<?> clz);
 
 	/**
 	 * Returns a DL data property with the specified IRI
@@ -346,11 +350,20 @@ public interface DLController {
 
 	DLClassExpression<?> some(DLObjectPropertyExpression<?> prop,
 			DLClassExpression<?> restriction);
+	
+	DLClassExpression<?> value(DLDataPropertyExpression<?> prop, DLLiteral<?> value);
 
 	DLAxiom<?> newClazz(DLClassExpression<?> c);
 
 	DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
+	/**
+	 * Creates an axiom declaring c1 to be a subclass of c2
+	 * 
+	 * @param c1 The subclass
+	 * @param c2 The superclass
+	 * @return Axiom declaring c1 a subclass of c2.
+	 */
 	DLAxiom<?> subClass(DLClassExpression<?> c1, DLClassExpression<?> c2);
 
 	/**
@@ -456,11 +469,28 @@ public interface DLController {
 	void addVisitor(DLVisitor<?> visitor, DLEntity<?> entity);
 
 	/**
+	 * Returns the class expression that is the filler of a SomeValuesFrom
+	 * restriction on a given object property for a given class. For example, if
+	 * Class C is equivalentTo prop some X, this will return X
+	 * 
+	 * @param clz
+	 *            The DL Class to find the property filler on
+	* @return The DL Class Expression which fills the specified property
+	 */
+	DLClassExpression<?> getObjectSomeFiller(DLClassExpression<?> clz);
+	
+	DLLiteral<?> getDataValueFiller(DLClassExpression<?> clz);
+	
+	DLObjectPropertyExpression<?> getObjectSomeProperty(DLClassExpression<?> clz);
+	
+	DLDataPropertyExpression<?> getDataValueProperty(DLClassExpression<?> clz);
+
+	/**
 	 * @param clz
 	 *            The compound DL Class (ie Intersection and Union)
 	 * @return
 	 */
-	Collection<DLEntity> getTerms(DLClassExpression<?> clz);
+	Collection<DLClassExpression> getTerms(DLClassExpression<?> clz);
 
 	/**
 	 * Returns the class that acts as the filler in a restriction. E.g. what the
@@ -479,11 +509,11 @@ public interface DLController {
 	 * @return The DL "top" Class
 	 */
 	DLClassExpression<?> thing();
-	
+
 	void newOntology();
-	
+
 	boolean load(Reader reader, boolean initReasoner);
-	
+
 	boolean load(Reader reader, String type, boolean initReasoner);
 
 	/**

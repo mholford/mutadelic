@@ -3,6 +3,7 @@ package edu.yale.dlgen.owl.pellet3;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +47,6 @@ import com.clarkparsia.pellet.tableau.TableauKnowledgeBaseFactory;
 import com.clarkparsia.pellet.util.Vars;
 
 import static com.clarkparsia.pellet.api.term.TermFactory.*;
-
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClass;
 import edu.yale.dlgen.DLClassExpression;
@@ -428,10 +428,10 @@ public class Pellet3DLController implements DLController {
 	}
 
 	@Override
-	public Collection<DLEntity> getTerms(DLClassExpression<?> clz) {
+	public Collection<DLClassExpression> getTerms(DLClassExpression<?> clz) {
 		TermSet<Term> ce = (TermSet<Term>) clz.get();
 		Set<Term> args = ce.getArgs();
-		return CollUtils.wrap(args, DLEntity.class);
+		return CollUtils.wrap(args, DLClassExpression.class);
 	}
 
 	@Override
@@ -519,5 +519,130 @@ public class Pellet3DLController implements DLController {
 
 	public KnowledgeBase getKb() {
 		return kb;
+	}
+
+	@Override
+	public void clearAddedAxioms() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveOntology(OutputStream os) throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public DLLiteral<?> asLiteral(long val) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLClassExpression<?> orClass(DLClassExpression<?>... clz) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLAxiom<?> clazzRestriction(DLClassExpression<?> clz,
+			DLObjectPropertyExpression<?> prop, DLClassExpression<?> restriction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLClassExpression<?> some(DLObjectPropertyExpression<?> prop,
+			DLClassExpression<?> restriction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLAxiom<?> newClazz(DLClassExpression<?> c) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLAxiom<?> equiv(DLClassExpression<?> c1, DLClassExpression<?> c2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLAxiom<?> subClass(DLClassExpression<?> c1, DLClassExpression<?> c2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isDisjoint(DLClassExpression<?> c1, DLClassExpression<?> c2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DLClassExpression<?> getObjectSomeFiller(DLClassExpression<?> clz) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void newOntology() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean load(Reader reader, boolean initReasoner) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean load(Reader reader, String type, boolean initReasoner) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DLObjectPropertyExpression<?> getObjectSomeProperty(
+			DLClassExpression<?> clz) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLLiteral<?> getDataValueFiller(DLClassExpression<?> clz) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DLDataPropertyExpression<?> getDataValueProperty(
+			DLClassExpression<?> clz) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isIntersectionClass(DLClassExpression<?> clz) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isUnionClass(DLClassExpression<?> clz) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DLClassExpression<?> value(DLDataPropertyExpression<?> prop,
+			DLLiteral<?> value) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

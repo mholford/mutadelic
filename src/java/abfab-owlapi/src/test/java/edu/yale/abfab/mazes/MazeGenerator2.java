@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class MazeGenerator {
+public class MazeGenerator2 {
 
 	public static class Maze implements Comparable<Maze> {
 		private Node root;
@@ -116,7 +116,7 @@ public class MazeGenerator {
 		}
 
 		public String getName() {
-			return name;
+			return name + "Service";
 		}
 
 		public void setName(String name) {
@@ -308,7 +308,7 @@ public class MazeGenerator {
 				boolean debug = true;
 			}
 			path = new ArrayList<>();
-			while (!p.equals(maze.root)) {
+			while (p != maze.root) {
 				path.add(0, p);
 				p = p.parent;
 			}
@@ -406,7 +406,7 @@ public class MazeGenerator {
 			for (int i = 1; i <= numNodes; i++) {
 				nodeList.add(String.valueOf(i));
 			}
-			MazeGenerator mg = new MazeGenerator();
+			MazeGenerator2 mg = new MazeGenerator2();
 			Maze m = mg.createDAG(nodeList, 0.2, 0.0, -1);
 			System.out.println();
 			System.out.println("PATH");
