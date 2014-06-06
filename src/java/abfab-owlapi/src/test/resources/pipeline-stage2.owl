@@ -135,12 +135,12 @@ Class: VariantFrequencyRareService
 Class: DBKnownMutationKnownService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some DBKnownMutationVariant)
-    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.RCMDBKnownService")
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.RCMDBKnownMutationService")
 	
 Class: DBKnownMutationUnknownService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some DBUnknownMutationVariant)
-    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.RCMDBKnownService")
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.abfab.pipeline.RCMDBKnownMutationService")
 
 Class: IndelOrPointIndelService
     SubClassOf: Service

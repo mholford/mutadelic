@@ -58,12 +58,14 @@ public class OWLAPIAbductorTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		abductor = new HermitAbductor("");
-		abductor.setNamespace(NS);
+//		abductor = new HermitAbductor("");
+//		abductor.setNamespace(NS);
 	}
 
 	@Before
 	public void setUp() throws Exception {
+		abductor = new HermitAbductor("");
+		abductor.setNamespace(NS);
 		dl = abductor.getDLController();
 		TestValues.revert();
 	}
@@ -136,7 +138,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testSimpleStaging() {
 		System.out.println("TEST SIMPLE STAGING");
 		try {
@@ -186,7 +188,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testBranchedStaging() {
 		System.out.println("TEST BRANCHED STAGING");
 		try {
@@ -237,7 +239,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testBranchedStaging2() {
 		System.out.println("TEST BRANCHED STAGING 2");
 		try {
@@ -261,7 +263,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void test3WayBranchedStaging() {
 		System.out.println("TEST 3-WAY BRANCHED STAGING");
 		try {
@@ -322,7 +324,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testPipelineStaging() {
 		System.out.println("TEST PIPELINE STAGING");
 		try {
@@ -425,7 +427,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testPipelineExec1() {
 		System.out.println("TEST PIPELINE EXEC 1");
 		try {
@@ -477,7 +479,7 @@ public class OWLAPIAbductorTest {
 			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
 
 			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
-					.getClassLoader().getResourceAsStream("pipeline.owl")),
+					.getClassLoader().getResourceAsStream("pipeline2.owl")),
 					"Manchester");
 
 			IndividualPlus output;
@@ -499,7 +501,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testPipelineExec2() {
 		System.out.println("TEST PIPELINE EXEC 2");
 		try {
@@ -531,8 +533,41 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxPipelineExec2() {
+		System.out.println("TEST PIPELINE EXEC 2");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage2.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline2.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.TRANSCRIPT_LOCALE = "SpliceSite";
+			output = abductor.exec2(ip.copy(ip), p.copy());
+			String locale = getLiteralResult(output,
+					dl.clazz(NS + "VariationLocation"));
+			assertEquals(locale, "SpliceSite");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testPipelineExec3() {
 		System.out.println("TEST PIPELINE EXEC 3");
 		try {
@@ -565,8 +600,42 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxPipelineExec3() {
+		System.out.println("TEST PIPELINE EXEC 3");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage2.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline2.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.SIFT = 0.01d;
+			output = abductor.exec2(ip.copy(ip), p.copy());
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftScore"));
+			Double sift = Double.parseDouble(preSift);
+			assertEquals(sift, new Double(0.01));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testPipelineExec4() {
 		System.out.println("TEST PIPELINE EXEC 4");
 		try {
@@ -599,8 +668,42 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxPipelineExec4() {
+		System.out.println("TEST PIPELINE EXEC 4");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage2.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline2.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.PHYLOP = 2.0d;
+			output = abductor.exec2(ip.copy(ip), p.copy());
+			String prePhylop = getLiteralResult(output,
+					dl.clazz(NS + "PhylopScore"));
+			Double phylop = Double.parseDouble(prePhylop);
+			assertEquals(phylop, new Double(2.0));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testPipelineExec5() {
 		System.out.println("TEST PIPELINE EXEC 5");
 		try {
@@ -632,8 +735,41 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxPipelineExec5() {
+		System.out.println("TEST PIPELINE EXEC 5");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage2.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline2.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.CRITICAL_DOMAIN = true;
+			output = abductor.exec2(ip.copy(ip), p.copy());
+			String criticalDomain = getLiteralResult(output,
+					dl.clazz(NS + "VariationDomainColocation"));
+			assertEquals(criticalDomain, "true");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testPipelineExec6() {
 		System.out.println("TEST PIPELINE EXEC 6");
 		try {
@@ -666,8 +802,42 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxPipelineExec6() {
+		System.out.println("TEST PIPELINE EXEC 6");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline-stage2.owl")),
+					"Manchester");
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Variant")));
+			Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedVariant"));
+
+			dl.load(new InputStreamReader(OWLAPIAbductorTest.class
+					.getClassLoader().getResourceAsStream("pipeline2.owl")),
+					"Manchester");
+
+			IndividualPlus output;
+
+			TestValues.ALLELE_FREQUENCY = 0.001d;
+			TestValues.INDEL_OR_POINT = "Indel";
+			TestValues.CRITICAL_DOMAIN_MISSING = true;
+			output = abductor.exec2(ip.copy(ip), p.copy());
+			String criticalDomain = getLiteralResult(output,
+					dl.clazz(NS + "VariationDomainsMissingStatus"));
+			assertEquals(criticalDomain, "true");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testSimpleExec() {
 		System.out.println("TEST SIMPLE EXEC");
 		try {
@@ -684,6 +854,34 @@ public class OWLAPIAbductorTest {
 					.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
 
 			IndividualPlus output = abductor.exec(ip, p);
+
+			// Test results
+			String gene = getResult(output, dl.clazz(SO + "Gene"));
+			assertEquals(NS + "Gene123", gene);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testTBoxSimpleExec() {
+		System.out.println("TEST SIMPLE EXEC");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("integration-abduct-exec-tbox.owl")),
+					"Manchester");
+			abductor.debug();
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor
+					.getBestPath2(ip, dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output = abductor.exec2(ip, p);
 
 			// Test results
 			String gene = getResult(output, dl.clazz(SO + "Gene"));
@@ -741,7 +939,7 @@ public class OWLAPIAbductorTest {
 		return output;
 	}
 
-	@Test
+	//@Test
 	public void testSimpleExecDP() {
 		System.out.println("TEST SIMPLE EXEC DP");
 		try {
@@ -772,8 +970,40 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxSimpleExecDP() {
+		System.out.println("TEST SIMPLE EXEC DP");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("integration-abduct-exec2-tbox.owl")),
+					"Manchester");
+
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor
+					.getBestPath2(ip, dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output = abductor.exec2(ip, p);
+
+			// Test results
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
+			dl.removeAxioms(output.getAxioms());
+
+			assertEquals(new Double(0.5), sift);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testBranchingExec() {
 		System.out.println("TEST BRANCHING EXEC 2");
 		try {
@@ -807,8 +1037,43 @@ public class OWLAPIAbductorTest {
 			fail();
 		}
 	}
-
+	
 	@Test
+	public void testTBoxBranchingExec() {
+		System.out.println("TEST BRANCHING EXEC 2");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("integration-abduct-exec3-tbox.owl")),
+					"Manchester");
+
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor
+					.getBestPath2(ip, dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output = abductor.exec2(ip, p);
+
+			// Test results
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
+			assertEquals(new Double(0.5), sift);
+
+			String gene = getResult(output, dl.clazz(SO + "Gene"));
+
+			dl.removeAxioms(output.getAxioms());
+			assertEquals(NS + "Gene123", gene);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testSimpleExecFDP() {
 		System.out.println("TEST SIMPLE EXEC FDP");
 		try {
@@ -825,6 +1090,39 @@ public class OWLAPIAbductorTest {
 					.getBestPath(ip, dl.clazz(NS + "FinishedMutation"));
 
 			IndividualPlus output = abductor.exec(ip, p);
+
+			// Test results
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
+
+			dl.removeAxioms(output.getAxioms());
+
+			assertEquals(new Double(0.5), sift);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testTBoxSimpleExecFDP() {
+		System.out.println("TEST SIMPLE EXEC FDP");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("integration-abduct-exec4-tbox.owl")),
+					"Manchester");
+
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor
+					.getBestPath2(ip, dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output = abductor.exec2(ip, p);
 
 			// Test results
 			String preSift = getLiteralResult(output,
@@ -897,7 +1195,7 @@ public class OWLAPIAbductorTest {
 //		}
 //	}
 	
-	@Test
+	//@Test
 	public void testTBoxMazeStaging() {
 		System.out.println("TEST MAZE STAGING");
 		try {
@@ -1097,7 +1395,7 @@ public class OWLAPIAbductorTest {
 //		}
 //	}
 	
-	@Test
+	//@Test
 	public void testTBoxMazeStaging3() {
 		System.out.println("TEST MAZE STAGING 3");
 		try {
@@ -1193,7 +1491,7 @@ public class OWLAPIAbductorTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testConditionalBranchingExec() {
 		System.out.println("TEST CONDITIONAL BRANCHING EXEC");
 		abductor.clearCaches();
@@ -1241,8 +1539,57 @@ public class OWLAPIAbductorTest {
 			dl.removeAxioms(output.getAxioms());
 		}
 	}
-
+	
 	@Test
+	public void testTBoxConditionalBranchingExec() {
+		System.out.println("TEST CONDITIONAL BRANCHING EXEC");
+		abductor.clearCaches();
+		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+				.getResourceAsStream("integration-abduct-exec6-tbox.owl")),
+				"Manchester");
+
+		IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+		ip.getAxioms().add(
+				dl.individualType(dl.individual(NS + "test"),
+						dl.clazz(NS + "Mutation")));
+		Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "FinishedMutation"));
+
+		IndividualPlus output = abductor.exec2(ip, p);
+
+		String level;
+		Collection<DLIndividual> descs;
+		try {
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			level = null;
+			descs = dl.getObjectPropertyValues(output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(dl.clazz(NS + "SiftValue"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(NS + "has_level"));
+						for (DLLiteral<?> val : vals) {
+							if (level != null) {
+								System.out.println("Oops; more than one level");
+								fail();
+							}
+							level = dl.getLiteralValue(val);
+
+						}
+					}
+				}
+			}
+
+			assertEquals("High", level);
+		} finally {
+			dl.removeAxioms(output.getAxioms());
+		}
+	}
+
+	//@Test
 	public void testConditionalBranchingExec2() {
 		System.out.println("TEST CONDITIONAL BRANCHING EXEC 2");
 		abductor.clearCaches();
@@ -1326,8 +1673,148 @@ public class OWLAPIAbductorTest {
 			dl.removeAxioms(output.getAxioms());
 		}
 	}
-
+	
 	@Test
+	public void testTBoxConditionalBranchingExec2() {
+		System.out.println("TEST CONDITIONAL BRANCHING EXEC 2");
+		abductor.clearCaches();
+		dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+				.getResourceAsStream("integration-abduct-exec7-tbox.owl")),
+				"Manchester");
+		
+		TestVals.sift = 0.5;
+
+		IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+		ip.getAxioms().add(
+				dl.individualType(dl.individual(NS + "test"),
+						dl.clazz(NS + "Mutation")));
+		Path2 p = abductor.getBestPath2(ip, dl.clazz(NS + "CompletedMutation"));
+
+		IndividualPlus output = abductor.exec2(ip, p);
+
+		Collection<DLIndividual> descs;
+		try {
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			
+			Boolean finished = false;
+			descs = dl.getObjectPropertyValues(output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(
+							dl.clazz(NS + "CompletionStatus"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(SIO + "has_value"));
+						for (DLLiteral<?> val : vals) {
+							finished = Boolean.valueOf(dl.getLiteralValue(val));
+						}
+					}
+				}
+			}
+			if (!finished) {
+				System.out.println("Debug");
+			}
+
+			assertEquals(true, finished);
+		} finally {
+			dl.removeAxioms(output.getAxioms());
+		}
+
+		TestVals.sift = 0.05;
+
+		ip = new IndividualPlus(dl.individual(NS + "test"));
+		ip.getAxioms().add(
+				dl.individualType(dl.individual(NS + "test"),
+						dl.clazz(NS + "Mutation")));
+		p = abductor.getBestPath2(ip, dl.clazz(NS + "CompletedMutation"));
+
+		output = abductor.exec2(ip, p);
+
+		try {
+			// Test results
+			Boolean finished = false;
+			descs = dl.getObjectPropertyValues(output.getIndividual(),
+					dl.objectProp(SIO + "is_described_by"));
+			for (DLIndividual<?> desc : descs) {
+				Collection<DLIndividual> refs = dl.getObjectPropertyValues(
+						desc, dl.objectProp(SIO + "refers_to"));
+				for (DLIndividual<?> ref : refs) {
+					if (dl.getTypes(ref).contains(
+							dl.clazz(NS + "CompletionStatus"))) {
+						Collection<DLLiteral> vals = dl.getDataPropertyValues(
+								ref, dl.dataProp(NS + "has_value"));
+						for (DLLiteral<?> val : vals) {
+							if (finished != null) {
+								System.out.println("Oops; more than one level");
+								fail();
+							}
+							finished = Boolean.valueOf(dl.getLiteralValue(val));
+
+						}
+					}
+				}
+			}
+
+			assertEquals(false, finished);
+		} finally {
+			dl.removeAxioms(output.getAxioms());
+		}
+	}
+	
+	@Test
+	public void testTBoxConditionalExec() {
+		System.out.println("TEST CONDITIONAL EXEC");
+		try {
+			abductor.clearCaches();
+			dl.load(new InputStreamReader(OWLAPIAbductor.class.getClassLoader()
+					.getResourceAsStream("integration-abduct-exec5-tbox.owl")),
+					"Manchester");
+			TestVals.sift = 0.5;
+
+			IndividualPlus ip = new IndividualPlus(dl.individual(NS + "test"));
+			ip.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p = abductor
+					.getBestPath2(ip, dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output = abductor.exec2(ip, p);
+
+			// Test results
+			dl.addAxioms(output.getAxioms());
+			String preSift = getLiteralResult(output,
+					dl.clazz(NS + "SiftValue"));
+			Double sift = Double.parseDouble(preSift);
+
+			assertEquals(new Double(0.5), sift);
+			String gene = getResult(output, dl.clazz(SO + "Gene"));
+			assertEquals(NS + "Gene123", gene);
+
+			// Run again with uninteresting value
+			TestVals.sift = 0.05;
+
+			IndividualPlus ip2 = new IndividualPlus(dl.individual(NS + "test2"));
+			ip2.getAxioms().add(
+					dl.individualType(dl.individual(NS + "test2"),
+							dl.clazz(NS + "Mutation")));
+			Path2 p2 = abductor.getBestPath2(ip2,
+					dl.clazz(NS + "FinishedMutation"));
+
+			IndividualPlus output2 = abductor.exec2(ip2, p2);
+			assertEquals(true, output2.isStop());
+
+			TestVals.sift = 0.5;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+
+	//@Test
 	public void testConditionalExec() {
 		System.out.println("TEST CONDITIONAL EXEC");
 		try {

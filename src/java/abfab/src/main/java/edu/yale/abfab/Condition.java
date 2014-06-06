@@ -208,6 +208,8 @@ public class Condition extends Step {
 								
 								fail = !ab.checkSCCache(sccKey);
 								
+								ab.debug();
+								
 								if (!fail) {
 									// out.setStop(true);
 									long end = System.currentTimeMillis();

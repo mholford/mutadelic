@@ -146,12 +146,21 @@ public class Branch2 extends Step2 {
 				dl.addAxioms(ax2);
 				DLClassExpression<?> nextInput = ab
 						.getServiceInputFiller(nextStep.getUnifiedClass());
-				boolean fail = dl.checkEntailed(dl.individualType(
-						currentEx.getIndividual(), nextInput));
+//				ab.debug();
+//				boolean fail = dl.checkEntailed(dl.individualType(
+//							currentEx.getIndividual(), nextInput));
+//				
+				dl.addAxiom(dl.individualType(currentEx.getIndividual(), dl.notClass(nextInput)));
+				ab.debug();
+				boolean fail = !dl.checkConsistency();
+				dl.removeAxiom(dl.individualType(currentEx.getIndividual(), dl.notClass(nextInput)));
+				
+				// boolean fail = dl.checkEntailed(dl.individualType(
+				// currentEx.getIndividual(), nextInput));
 
 				dl.removeAxioms(ax2);
 
-				if (fail) {
+				if (!fail) {
 					currentEx.setStop(true);
 					long end = System.currentTimeMillis();
 					dbg(DBG_TIMING, "Branch peek: %d millis", end - start);

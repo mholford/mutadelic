@@ -1,0 +1,128 @@
+Ontology: <http://krauthammerlab.med.yale.edu/test#>
+
+Prefix: GELO: <http://krauthammerlab.med.yale.edu/ontologies/gelo#>
+Prefix: SIO: <http://semanticscience.org/ontologi/sio.owl#>
+Prefix: SO: <http://purl.org/obo/owl/SO#>
+Prefix: : <http://krauthammerlab.med.yale.edu/test#>
+
+ObjectProperty: has_input
+	
+ObjectProperty: has_output
+
+ObjectProperty: GELO:has_locus
+	
+ObjectProperty: GELO:on_chromosome
+	
+ObjectProperty: SIO:cites
+	
+ObjectProperty: SIO:is_described_by
+	
+ObjectProperty: SIO:is_modelled_by
+	
+ObjectProperty: SIO:refers_to
+	
+DataProperty: has_cost
+
+DataProperty: has_executable
+	
+DataProperty: GELO:locus_end
+
+DataProperty: GELO:locus_start
+	
+DataProperty: GELO:sequence
+
+DataProperty: GELO:strand
+	
+DataProperty: SIO:has_value
+	
+DataProperty: has_level
+
+Class: Service
+    EquivalentTo: (has_input some owl:Thing) and (has_output some owl:Thing)
+
+Class: GELO:GenomicElement
+	
+Class: SIO:BioinformaticData
+
+Class: SIO:Description
+	
+Class: SIO:InformationContentEntity
+	
+Class: SO:Chromosome
+	
+Class: SO:Gene
+
+Class: SO:SequenceVariant
+
+Class: Annotation
+    EquivalentTo: SIO:Description that SIO:cites some SIO:InformationContentEntity
+	
+Class: CompletionStatus
+    SubClassOf: SIO:InformationContentEntity
+	
+Class: SiftValue
+    SubClassOf: SIO:BioinformaticData
+	
+Class: Mutation
+    SubClassOf: GELO:GenomicElement, SO:SequenceVariant
+    EquivalentTo: (GELO:has_locus some 
+	(GELO:on_chromosome some SO:Chromosome 
+	and (GELO:locus_start min 1 xsd:integer)
+	and (GELO:locus_end min 1 xsd:integer)
+	and (GELO:strand min 1 xsd:string)
+	and (GELO:sequence min 1 xsd:string)))
+	and (SIO:is_modelled_by some (SIO:has_value min 1 xsd:string))
+	
+Class: GeneAnnotatedMutation
+    EquivalentTo: Mutation that
+	SIO:is_described_by some 
+	(Annotation that SIO:refers_to some SO:Gene)
+	
+Class: SiftValueAnnotatedMutation
+    EquivalentTo: Mutation that SIO:is_described_by some 
+	(Annotation that SIO:refers_to some 
+	(SiftValue that SIO:has_value min 1 xsd:double))
+	
+Class: HighSiftMutation
+    EquivalentTo: SiftValueAnnotatedMutation that 
+        SIO:is_described_by some 
+            (Annotation that SIO:refers_to some 
+        (SiftValue that SIO:has_value min 1 xsd:double[>= 0.1])) 
+	
+Class: LowSiftMutation
+    EquivalentTo: SiftValueAnnotatedMutation that
+	SIO:is_described_by some
+	(Annotation that SIO:refers_to some
+	(SiftValue that SIO:has_value min 1 xsd:double[<0.1]))
+	
+Class: InterestingMutation
+    EquivalentTo: HighSiftMutation
+    
+Class: FinishedMutation
+    EquivalentTo: Mutation that SIO:is_described_by some
+	(Annotation that SIO:refers_to some CompletionStatus)
+	and (SIO:has_value min 1 xsd:string)    
+	
+Class: FinishedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some InterestingMutation) and (has_output some FinishedMutation)
+	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.TestFinishedMutationService")
+	
+Class: GeneAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some GeneAnnotatedMutation)
+	and (has_cost value 5.0) and (has_executable value "edu.yale.abfab.TestGeneAnnotatedMutationService")
+	
+Class: HighSiftValueAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some HighSiftMutation)
+	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.TestHighSiftValueAnnotatedMutationService")
+	
+Class: LowSiftValueAnnotatedMutationService
+    SubClassOf: Service
+    EquivalentTo: (has_input some Mutation) and (has_output some LowSiftMutation)
+	and (has_cost value 1.0) and (has_executable value "edu.yale.abfab.TestLowSiftValueAnnotatedMutationService")
+	
+Individual: VEP
+    Types: SIO:InformationContentEntity	
+	

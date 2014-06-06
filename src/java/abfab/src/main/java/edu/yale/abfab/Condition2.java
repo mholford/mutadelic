@@ -151,10 +151,14 @@ public class Condition2 extends Step2 {
 				if (nextStep != null) {
 					DLClassExpression<?> nextInput = ab
 							.getServiceInputFiller(nextStep.getUnifiedClass());
-					fail = dl.checkEntailed(dl.individualType(
-							outcome.getIndividual(), nextInput));
-
-					if (!fail) {
+					try {
+						dl.addAxioms(outcome.getAxioms());
+						fail = dl.checkEntailed(dl.individualType(
+								outcome.getIndividual(), nextInput));
+					} finally {
+						dl.removeAxioms(outcome.getAxioms());
+					}
+					if (fail) {
 						// out.setStop(true);
 						long end = System.currentTimeMillis();
 						dbg(DBG_TIMING, "Condition peek: %d millis", end
