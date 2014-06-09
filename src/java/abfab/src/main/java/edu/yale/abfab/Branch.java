@@ -7,8 +7,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
@@ -20,28 +22,29 @@ import static edu.yale.abfab.Logging.*;
 public class Branch extends Step {
 	Set<Path> paths;
 	DLController dl;
-	Collection<DLIndividual<?>> services;
+	Collection<DLClassExpression> services;
 
 	public Branch(Abductor abductor) {
 		super(abductor);
 		dl = abductor.getDLController();
 	}
 
-	public Branch(Collection<DLIndividual<?>> services,
+	public Branch(Collection<DLClassExpression> services,
 			IndividualPlus initialInput, Abductor abductor) {
 		super(abductor);
 		dl = abductor.getDLController();
-		paths = new HashSet<>();
-		for (DLIndividual<?> i : services) {
-			DLClassExpression<?> unionType = dl.getIntersectingType(i);
-			Path p = abductor.getBestPath(initialInput, unionType);
+		paths = new TreeSet<>(new Path.CostBasedComparator());
+		for (DLClassExpression i : services) {
+			// DLClassExpression<?> unionType = dl.getIntersectingType(i);
+			Path p = abductor.getBestPath(initialInput,
+					abductor.getServiceOutputFiller(i));
 			paths.add(p);
 		}
 	}
 
 	public Branch copy() {
 		Branch out = new Branch(getAbductor());
-		Set<Path> newPaths = new HashSet<>();
+		Set<Path> newPaths = new TreeSet<>(new Path.CostBasedComparator());
 		for (Path p : paths) {
 			newPaths.add(p.copy());
 		}
@@ -92,27 +95,15 @@ public class Branch extends Step {
 			ax.addAll(input.getAxioms());
 			dl.addAxioms(ax);
 
-			// Run the cheapest path first so sort by cost
-			List<Path> costSortedPaths = new ArrayList<>(paths);
-			Collections.sort(costSortedPaths, new Comparator<Path>() {
-
-				@Override
-				public int compare(Path o1, Path o2) {
-					Double d1 = o1.getCost();
-					Double d2 = o2.getCost();
-					return d1.compareTo(d2);
-				}
-			});
-
 			Set<Path> unexecutedPaths = new HashSet<>(paths);
 			IndividualPlus currentEx = null;
-			for (Path p : costSortedPaths) {
+			for (Path p : paths) {
 				unexecutedPaths.remove(p);
 				IndividualPlus latestOutcome = p.exec(input.copy(input));
 
 				// If Path failed, quit here
 				if (latestOutcome.isStop()) {
-					// Merge with out?  ie the latest path to execute?
+					// Merge with out? ie the latest path to execute?
 					outcomes.add(latestOutcome);
 					IndividualPlus early = ab.mergeIndividuals(outcomes);
 					early.setStop(true);
@@ -138,83 +129,44 @@ public class Branch extends Step {
 				Set<DLClassExpression<?>> otherPathOutputClasses = new HashSet<>();
 				for (Path up : unexecutedPaths) {
 					for (DLClassExpression<?> tc : up.getLastStepDLClasses()) {
-						for (DLIndividual<?> tci : dl.getInstances(tc)) {
-							for (DLIndividual<?> tcOut : dl
-									.getObjectPropertyValues(tci,
-											dl.objectProp(NS + "has_output"))) {
-								for (DLClassExpression<?> tcOutC : dl
-										.getTypes(tcOut)) {
-									otherPathOutputClasses.add(tcOutC);
-								}
-							}
-						}
+						DLClassExpression<?> tcOutput = ab
+								.getServiceOutputFiller(tc);
+						otherPathOutputClasses.add(tcOutput);
 					}
 				}
 
-				for (DLClassExpression<?> nc : nextStep.getDLClasses()) {
-					for (DLIndividual<?> nci : dl.getInstances(nc)) {
-						for (DLIndividual<?> ncOut : dl
-								.getObjectPropertyValues(nci,
-										dl.objectProp(NS + "has_output"))) {
-
-							/* PRE SCC */
-							// DLIndividual<?> testI = dl.individual(NS +
-							// "testI");
-							// ax2.add(dl.newObjectFact(testI,
-							// dl.objectProp(NS + "has_output"), ncOut));
-							// IndividualPlus mergedOutcomes =
-							// mergeIndividuals(outcomes);
-							// ax2.addAll(mergedOutcomes.getAxioms());
-							// ax2.add(dl.newObjectFact(testI,
-							// dl.objectProp(NS + "has_input"),
-							// mergedOutcomes.getIndividual()));
-							// for (DLClassExpression<?> otherPathOutputClass :
-							// otherPathOutputClasses) {
-							// ax2.add(dl.individualType(
-							// mergedOutcomes.getIndividual(),
-							// otherPathOutputClass));
-							// }
-							// ax2.add(dl.individualType(testI,
-							// dl.notClass(nc)));
-							// dl.addAxioms(ax2);
-							//
-							// boolean fail = false;
-							// ab.debug();
-							// if (dl.checkConsistency()) {
-							// fail = true;
-							// }
-							// dl.removeAxioms(ax2);
-
-							/* POST SCC */
-							IndividualPlus mergedOutcomes = ab.mergeIndividuals(outcomes);
-							IndividualPlus sInput = mergedOutcomes;
-							for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
-								sInput.getAxioms().add(
-										dl.individualType(
-												mergedOutcomes.getIndividual(),
-												otherPathOutputClass));
-							}
-							IndividualPlus sOutput = new IndividualPlus(ncOut);
-							DLClassExpression<?> service = nc;
-							SCCIndividual sccInput = ab
-									.createSCCIndividual(sInput);
-							SCCIndividual sccOutput = ab
-									.createSCCIndividual(sOutput);
-							SCCKey sccKey = ab.createSCCKey(service, sccInput,
-									sccOutput);
-
-							boolean fail = !ab.checkSCCache(sccKey);
-
-							if (fail) {
-								currentEx.setStop(true);
-								long end = System.currentTimeMillis();
-								dbg(DBG_TIMING, "Branch peek: %d millis", end
-										- start);
-								return currentEx;
-							}
-						}
-					}
+				for (DLClassExpression<?> otherPathOutputClass : otherPathOutputClasses) {
+					currentEx.getAxioms().add(
+							dl.individualType(currentEx.getIndividual(),
+									otherPathOutputClass));
 				}
+
+				ax2.addAll(currentEx.getAxioms());
+
+				dl.addAxioms(ax2);
+				DLClassExpression<?> nextInput = ab
+						.getServiceInputFiller(nextStep.getUnifiedClass());
+//				ab.debug();
+//				boolean fail = dl.checkEntailed(dl.individualType(
+//							currentEx.getIndividual(), nextInput));
+//				
+				dl.addAxiom(dl.individualType(currentEx.getIndividual(), dl.notClass(nextInput)));
+				ab.debug();
+				boolean fail = !dl.checkConsistency();
+				dl.removeAxiom(dl.individualType(currentEx.getIndividual(), dl.notClass(nextInput)));
+				
+				// boolean fail = dl.checkEntailed(dl.individualType(
+				// currentEx.getIndividual(), nextInput));
+
+				dl.removeAxioms(ax2);
+
+				if (!fail) {
+					currentEx.setStop(true);
+					long end = System.currentTimeMillis();
+					dbg(DBG_TIMING, "Branch peek: %d millis", end - start);
+					return currentEx;
+				}
+
 				long end = System.currentTimeMillis();
 				dbg(DBG_TIMING, "Branch peek: %d millis", end - start);
 			}
@@ -234,15 +186,15 @@ public class Branch extends Step {
 		this.paths = paths;
 	}
 
-	public Collection<DLIndividual<?>> getServices() {
+	public Collection<DLClassExpression> getServices() {
 		return services;
 	}
 
 	@Override
-	public Collection<IndividualPlus> getInput() {
-		Set<IndividualPlus> outcomes = new HashSet<>();
+	public Collection<DLClassExpression> getInput() {
+		Set<DLClassExpression> outcomes = new HashSet<>();
 		for (Path p : paths) {
-			for (IndividualPlus ip : p.getLastInput()) {
+			for (DLClassExpression ip : p.getLastInput()) {
 				outcomes.add(ip);
 			}
 		}
@@ -251,15 +203,14 @@ public class Branch extends Step {
 	}
 
 	@Override
-	public Collection<IndividualPlus> getOutput() {
-		Set<IndividualPlus> outcomes = new HashSet<>();
+	public Collection<DLClassExpression> getOutput() {
+		Set<DLClassExpression> outcomes = new HashSet<>();
 		for (Path p : paths) {
-			for (IndividualPlus output : p.getLastOutput()) {
+			for (DLClassExpression output : p.getLastOutput()) {
 				outcomes.add(output);
 			}
 		}
-		return Arrays
-				.asList(new IndividualPlus[] { getAbductor().mergeIndividuals(outcomes) });
+		return outcomes;
 	}
 
 	@Override
@@ -271,6 +222,7 @@ public class Branch extends Step {
 		return output;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public DLClassExpression getUnifiedClass() {
 		DLClassExpression<?> output;

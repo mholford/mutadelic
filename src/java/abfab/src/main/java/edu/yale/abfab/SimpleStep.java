@@ -10,30 +10,22 @@ import edu.yale.dlgen.controller.DLController;
 
 public class SimpleStep extends Step {
 
-	private IndividualPlus input;
-	private IndividualPlus output;
+	private DLClassExpression input;
+	private DLClassExpression output;
 	private DLController dl;
-	private DLIndividual<?> service;
+	private DLClassExpression<?> service;
 	private String executable;
 	private double cost = 0.0;
-
-	public SimpleStep(DLIndividual<?> service, Abductor abductor) {
+	
+	public SimpleStep(DLClassExpression<?> service, Abductor abductor) {
 		super(abductor);
 		this.service = service;
 		dl = abductor.getDLController();
 		String NS = abductor.getNamespace();
-		input = new IndividualPlus(dl
-				.getObjectPropertyValues(service,
-						dl.objectProp(NS + "has_input")).iterator().next());
-		output = new IndividualPlus(dl
-				.getObjectPropertyValues(service,
-						dl.objectProp(NS + "has_output")).iterator().next());
-		cost = Double.parseDouble(dl.getLiteralValue(dl
-				.getDataPropertyValues(service, dl.dataProp(NS + "has_cost"))
-				.iterator().next()));
-		executable = dl.getLiteralValue(dl
-				.getDataPropertyValues(service,
-						dl.dataProp(NS + "has_executable")).iterator().next());
+		input = abductor.getServiceInputFiller(service);
+		output = abductor.getServiceOutputFiller(service);
+		cost = abductor.getServiceCost(service);
+		executable = abductor.getServiceExecutable(service);
 	}
 
 	@Override
@@ -62,13 +54,13 @@ public class SimpleStep extends Step {
 	}
 
 	@Override
-	public Collection<IndividualPlus> getInput() {
-		return Arrays.asList(new IndividualPlus[] { input });
+	public Collection<DLClassExpression> getInput() {
+		return Arrays.asList(new DLClassExpression[] { input });
 	}
 
 	@Override
-	public Collection<IndividualPlus> getOutput() {
-		return Arrays.asList(new IndividualPlus[] { output });
+	public Collection<DLClassExpression> getOutput() {
+		return Arrays.asList(new DLClassExpression[] { output });
 	}
 
 	@Override
@@ -79,23 +71,15 @@ public class SimpleStep extends Step {
 
 	@Override
 	public Collection<DLClassExpression> getDLClasses() {
-		return dl.getTypes(service);
+		return Arrays.asList(new DLClassExpression[] { service });
 	}
 
 	@Override
 	public DLClassExpression<?> getUnifiedClass() {
-		DLClassExpression<?> output;
-		Collection<DLClassExpression> dlClasses = getDLClasses();
-		if (dlClasses.size() == 1) {
-			output = dlClasses.iterator().next();
-		} else {
-			output = dl.andClass(dlClasses
-					.toArray(new DLClassExpression[dlClasses.size()]));
-		}
-		return output;
+		return service;
 	}
 
-	public DLIndividual<?> getService() {
+	public DLClassExpression<?> getService() {
 		return service;
 	}
 

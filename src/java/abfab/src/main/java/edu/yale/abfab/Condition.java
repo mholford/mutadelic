@@ -8,8 +8,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.yale.dlgen.DLAxiom;
 import edu.yale.dlgen.DLClassExpression;
@@ -40,20 +42,17 @@ public class Condition extends Step {
 		HAS_INPUT = dl.objectProp(NS + "has_input");
 		HAS_OUTPUT = dl.objectProp(NS + "has_output");
 
-		paths = new HashSet<>();
+		paths = new TreeSet<>(new Path.CostBasedComparator());
 		for (Step s : steps) {
 			if (s instanceof SimpleStep) {
 				SimpleStep simp = (SimpleStep) s;
-				for (IndividualPlus output : simp.getOutput()) {
-					DLClassExpression<?> unionType = dl
-							.getIntersectingType(output.getIndividual());
-					Set<Path> ps = abductor
-							.getAllPaths(initialInput, unionType);
+				for (DLClassExpression output : simp.getOutput()) {
+					Set<Path> ps = abductor.getAllPaths(initialInput, output);
 					paths.addAll(ps);
 				}
 			} else if (s instanceof Branch) {
 				Path newPath = new Path(initialInput, abductor);
-				Set<Collection<DLIndividual<?>>> toAdd = new HashSet<>();
+				Set<Collection<DLClassExpression>> toAdd = new HashSet<>();
 				toAdd.add(((Branch) s).getServices());
 				paths.add(newPath);
 			}
@@ -63,7 +62,7 @@ public class Condition extends Step {
 	@Override
 	public Condition copy() {
 		Condition out = new Condition(getAbductor());
-		Set<Path> newPaths = new HashSet<>();
+		Set<Path> newPaths = new TreeSet<>(new Path.CostBasedComparator());
 		for (Path p : paths) {
 			newPaths.add(p.copy());
 		}
@@ -120,20 +119,6 @@ public class Condition extends Step {
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Path contextPath) {
-		// Path pathToUse = null;
-		// Abductor ab = getAbductor();
-		// for (Path p : paths) {
-		// if (ab.matchesInput(input, p)) {
-		// pathToUse = p;
-		// break;
-		// }
-		// }
-		// if (pathToUse == null) {
-		// return null;
-		// } else {
-		// return pathToUse.exec(input);
-		// }
-
 		Abductor ab = getAbductor();
 		IndividualPlus out = null;
 		Set<DLAxiom<?>> ax = new HashSet<>();
@@ -141,21 +126,9 @@ public class Condition extends Step {
 			ax.addAll(input.getAxioms());
 			dl.addAxioms(ax);
 
-			// Try the cheapest path first
-			List<Path> costSortedPaths = new ArrayList<>(paths);
-			Collections.sort(costSortedPaths, new Comparator<Path>() {
-
-				@Override
-				public int compare(Path o1, Path o2) {
-					Double d1 = o1.getCost();
-					Double d2 = o2.getCost();
-					return d1.compareTo(d2);
-				}
-			});
-
 			IndividualPlus latestOutcome;
 
-			for (Path p : costSortedPaths) {
+			for (Path p : paths) {
 				boolean fail = false;
 				// ab.setExecutingPath(p);
 				IndividualPlus outcome = p.exec(input);
@@ -176,51 +149,23 @@ public class Condition extends Step {
 				}
 
 				if (nextStep != null) {
-					for (DLClassExpression<?> nc : nextStep.getDLClasses()) {
-						for (DLIndividual<?> nci : dl.getInstances(nc)) {
-							for (DLIndividual<?> ncOut : dl
-									.getObjectPropertyValues(nci, HAS_OUTPUT)) {
-
-								/* PRE SCC*/
-//								DLIndividual<?> testI = dl.individual(NS
-//										+ "testI");
-//								ax2.add(dl.newObjectFact(testI, HAS_OUTPUT,
-//										ncOut));
-//								ax2.addAll(outcome.getAxioms());
-//								ax2.add(dl.newObjectFact(testI, HAS_INPUT,
-//										outcome.getIndividual()));
-//								ax2.add(dl.individualType(testI,
-//										dl.notClass(nc)));
-//								dl.addAxioms(ax2);
-//								ab.debug();
-//								if (dl.checkConsistency()) {
-//									fail = true;
-//								}
-//								dl.removeAxioms(ax2);
-								
-								/* POST SCC*/
-								IndividualPlus sInput = outcome;
-								IndividualPlus sOutput = new IndividualPlus(ncOut);
-								DLClassExpression<?> service = nc;
-								SCCIndividual sccInput = ab.createSCCIndividual(sInput);
-								SCCIndividual sccOutput = ab.createSCCIndividual(sOutput);
-								SCCKey sccKey = ab.createSCCKey(service, sccInput, sccOutput);
-								
-								fail = !ab.checkSCCache(sccKey);
-								
-								ab.debug();
-								
-								if (!fail) {
-									// out.setStop(true);
-									long end = System.currentTimeMillis();
-									dbg(DBG_TIMING,
-											"Condition peek: %d millis", end
-													- start);
-									return out;
-								}
-							}
-						}
+					DLClassExpression<?> nextInput = ab
+							.getServiceInputFiller(nextStep.getUnifiedClass());
+					try {
+						dl.addAxioms(outcome.getAxioms());
+						fail = dl.checkEntailed(dl.individualType(
+								outcome.getIndividual(), nextInput));
+					} finally {
+						dl.removeAxioms(outcome.getAxioms());
 					}
+					if (fail) {
+						// out.setStop(true);
+						long end = System.currentTimeMillis();
+						dbg(DBG_TIMING, "Condition peek: %d millis", end
+								- start);
+						return out;
+					}
+
 				} else {
 					// out = mergeIndividuals(Arrays
 					// .asList(latestOutcome, outcome));
@@ -241,10 +186,10 @@ public class Condition extends Step {
 	}
 
 	@Override
-	public Collection<IndividualPlus> getInput() {
-		Set<IndividualPlus> outcomes = new HashSet<>();
+	public Collection<DLClassExpression> getInput() {
+		Set<DLClassExpression> outcomes = new HashSet<>();
 		for (Path p : paths) {
-			for (IndividualPlus ip : p.getLastInput()) {
+			for (DLClassExpression ip : p.getLastInput()) {
 				outcomes.add(ip);
 			}
 		}
@@ -252,10 +197,10 @@ public class Condition extends Step {
 	}
 
 	@Override
-	public Collection<IndividualPlus> getOutput() {
-		Set<IndividualPlus> outcomes = new HashSet<>();
+	public Collection<DLClassExpression> getOutput() {
+		Set<DLClassExpression> outcomes = new HashSet<>();
 		for (Path p : paths) {
-			for (IndividualPlus ip : p.getLastOutput()) {
+			for (DLClassExpression ip : p.getLastOutput()) {
 				outcomes.add(ip);
 			}
 		}

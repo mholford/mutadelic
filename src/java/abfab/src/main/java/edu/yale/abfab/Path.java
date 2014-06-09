@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,18 @@ import edu.yale.dlgen.controller.DLController;
 
 public class Path implements Comparable<Path> {
 
+	public static class CostBasedComparator implements Comparator<Path> {
+		@Override
+		public int compare(Path o1, Path o2) {
+			Double d1 = o1.getCost();
+			Double d2 = o2.getCost();
+			if (d1.equals(d2)) {
+				return o1.toString().compareTo(o2.toString());
+			}
+			return d1.compareTo(d2);
+		}
+	}
+	
 	private List<Step> steps;
 	private DLController dl;
 	private Abductor abductor;
@@ -39,20 +52,20 @@ public class Path implements Comparable<Path> {
 		return out;
 	}
 
-	public void add(Collection<Collection<IndividualPlus>> collInds) {
+	public void add(Collection<Collection<DLClassExpression>> collInds) {
 		if (collInds == null || collInds.size() == 0) {
 			//abductor.debug();
 			throw new RuntimeException("Invalid addition to path");
 		}
 		Set<Step> ss = new HashSet<>();
-		for (Collection<IndividualPlus> inds : collInds) {
+		for (Collection<DLClassExpression> inds : collInds) {
 			if (inds.size() == 1) {
-				ss.add(new SimpleStep(inds.iterator().next().getIndividual(),
+				ss.add(new SimpleStep(inds.iterator().next(),
 						abductor));
 			} else {
-				List<DLIndividual<?>> l = new ArrayList<>();
-				for (IndividualPlus ip : inds) {
-					l.add(ip.getIndividual());
+				List<DLClassExpression> l = new ArrayList<>();
+				for (DLClassExpression ip : inds) {
+					l.add(ip);
 				}
 				ss.add(new Branch(l, initialInput, abductor));
 			}
@@ -80,8 +93,8 @@ public class Path implements Comparable<Path> {
 	// }
 	// }
 
-	public void add(DLIndividual<?> ind) {
-		steps.add(0, new SimpleStep(ind, abductor));
+	public void add(DLClassExpression<?> ce) {
+		steps.add(0, new SimpleStep(ce, abductor));
 	}
 
 	public double getCost() {
@@ -225,11 +238,11 @@ public class Path implements Comparable<Path> {
 		return steps;
 	}
 
-	public Collection<IndividualPlus> getLastOutput() {
+	public Collection<DLClassExpression> getLastOutput() {
 		return steps.get(0).getOutput();
 	}
 
-	public Collection<IndividualPlus> getLastInput() {
+	public Collection<DLClassExpression> getLastInput() {
 		return steps.get(0).getInput();
 	}
 

@@ -27,9 +27,9 @@ public abstract class Step implements Comparable {
 
 	public abstract IndividualPlus exec(IndividualPlus input, Path contextPath);
 
-	public abstract Collection<IndividualPlus> getInput();
+	public abstract Collection<DLClassExpression> getInput();
 
-	public abstract Collection<IndividualPlus> getOutput();
+	public abstract Collection<DLClassExpression> getOutput();
 
 	public abstract Step copy();
 
