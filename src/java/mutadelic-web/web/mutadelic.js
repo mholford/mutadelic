@@ -65,7 +65,7 @@ function ViewModel() {
 			formData.append("file", file);
 			$.ajax({
 				'type' : 'POST',
-				'url' : 'http://localhost:8080/mutadelic/variants',
+				'url' : 'http://espresso.med.yale.edu:8081/mutadelic/variants',
 				'success' : function(returnedData) {
 					console.log(JSON.stringify(returnedData));
 					for (var i = 0; i < returnedData.length; i++) {
@@ -114,7 +114,7 @@ function ViewModel() {
 
 			$.ajax({
 				'type' : 'POST',
-				'url' : 'http://localhost:8080/mutadelic/inputs',
+				'url' : 'http://espresso.med.yale.edu:8081/mutadelic/inputs',
 				'contentType' : 'application/json',
 				'data' : data,
 				'dataType' : 'json',
@@ -124,7 +124,7 @@ function ViewModel() {
 
 					$.ajax({
 						'type' : 'POST',
-						'url' : 'http://localhost:8080/mutadelic/outputs?input_id='
+						'url' : 'http://espresso.med.yale.edu:8081/mutadelic/outputs?input_id='
 								+ self.iid(),
 						'contentType' : 'application/json',
 						'data' : null,
@@ -135,7 +135,7 @@ function ViewModel() {
 
 							$
 									.ajax({
-										'url' : 'http://localhost:8080/mutadelic/outputs/'
+										'url' : 'http://espresso.med.yale.edu:8081/mutadelic/outputs/'
 												+ self.oid(),
 										'contentType' : 'application/json',
 										'dataType' : 'json',
@@ -162,12 +162,12 @@ function ViewModel() {
 	}
 
 	self.getExcel = function() {
-		window.location = 'http://localhost:8080/mutadelic/outputs/' + self.oid()
+		window.location = 'http://espresso.med.yale.edu:8081/mutadelic/outputs/' + self.oid()
 				+ '/excel';
 	}
 
 	self.getRDF = function() {
-		window.location = 'http://localhost:8080/mutadelic/outputs/' + self.oid()
+		window.location = 'http://espresso.med.yale.edu:8081/mutadelic/outputs/' + self.oid()
 				+ '/rdf';
 	}
 

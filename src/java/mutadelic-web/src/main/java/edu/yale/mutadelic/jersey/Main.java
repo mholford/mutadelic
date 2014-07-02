@@ -63,7 +63,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(
-				URI.create("http://localhost:8080/mutadelic/"), configure());
+				URI.create("http://localhost:8081/mutadelic/"), configure());
 		System.out.println("Press any key to stop");
 		try {
 			System.in.read();

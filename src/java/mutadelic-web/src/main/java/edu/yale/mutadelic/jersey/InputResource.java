@@ -70,6 +70,7 @@ public class InputResource {
 	@Path("{inputId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Input getInput(@PathParam(value = "inputId") String inputId) {
+		System.out.println("HELLO");
 		Integer iid = Integer.parseInt(inputId);
 		inputDao = morphiaService.getInputDAO();
 		Input i = inputDao.findById(iid);
