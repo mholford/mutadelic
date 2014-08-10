@@ -19,7 +19,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import edu.yale.mutadelic.morphia.MorphiaService;
 
 public class Main {
-	
+
 	static class MorphiaBinder implements Binder {
 
 		@Override
@@ -29,48 +29,60 @@ public class Main {
 		}
 
 	}
-	
-	static class CORSFilter implements ContainerResponseFilter
-	{
-	  private static final String ORIGINHEADER = "Origin";
-	  private static final String ACAOHEADER = "Access-Control-Allow-Origin";
-	  private static final String ACRHHEADER = "Access-Control-Request-Headers";
-	  private static final String ACAHHEADER = "Access-Control-Allow-Headers";
 
-	  public CORSFilter()
-	  {
-	  }
+	static class CORSFilter implements ContainerResponseFilter {
+		private static final String ORIGINHEADER = "Origin";
+		private static final String ACAOHEADER = "Access-Control-Allow-Origin";
+		private static final String ACRHHEADER = "Access-Control-Request-Headers";
+		private static final String ACAHHEADER = "Access-Control-Allow-Headers";
 
-	  @Override
-	  public void filter(final ContainerRequestContext request, final ContainerResponseContext response)
-	  {
-	    final String requestOrigin = request.getHeaderString(ORIGINHEADER);
-	    response.getHeaders().add(ACAOHEADER, requestOrigin);
+		public CORSFilter() {
+		}
 
-	    final String requestHeaders = request.getHeaderString(ACRHHEADER);
-	    response.getHeaders().add(ACAHHEADER, requestHeaders);
-	  }
+		@Override
+		public void filter(final ContainerRequestContext request,
+				final ContainerResponseContext response) {
+			final String requestOrigin = request.getHeaderString(ORIGINHEADER);
+			response.getHeaders().add(ACAOHEADER, requestOrigin);
+
+			final String requestHeaders = request.getHeaderString(ACRHHEADER);
+			response.getHeaders().add(ACAHHEADER, requestHeaders);
+		}
 	}
 
 	protected static ResourceConfig configure() {
 
 		ResourceConfig rc = new ResourceConfig();
-		rc.packages("edu.yale.mutadelic.jersey");
-		rc.registerInstances(new MorphiaBinder(), new JacksonFeature(), new MultiPartFeature());
+		// rc.packages("edu.yale.mutadelic.jersey");
+		rc.registerClasses(OutputResource.class, VariantResource.class,
+				UserResource.class, WorkflowResource.class, InputResource.class);
+		rc.registerInstances(new MorphiaBinder(), new JacksonFeature(),
+				new MultiPartFeature());
 		rc.register(CORSFilter.class);
+		for (Class c : rc.getClasses()) {
+			System.out.println(c);
+		}
 		return rc;
 	}
 
 	public static void main(String[] args) {
+		String address = args[0];
+		// Deploy - 128.36.40.88:8081/mutadelic
+
 		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(
-				URI.create("http://localhost:8081/mutadelic/"), configure());
-		System.out.println("Press any key to stop");
-		try {
-			System.in.read();
-			server.stop();
-		} catch (IOException e) {
-			e.printStackTrace();
+				URI.create(address), configure());
+		// System.out.println("Press any key to stop");
+		// try {
+		// System.in.read();
+		// server.stop();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		//
+		boolean stop = false;
+		while (!stop) {
+
 		}
-		
+		server.stop();
 	}
 }

@@ -20,6 +20,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
@@ -62,7 +63,7 @@ public class MutWebTest extends JerseyTest {
 
 		ResourceConfig rc = new ResourceConfig();
 		rc.packages("edu.yale.mutadelic.jersey");
-		rc.registerInstances(new MorphiaBinder(), new JacksonFeature());
+		rc.registerInstances(new MorphiaBinder(), new JacksonFeature(), new MultiPartFeature());
 
 		return rc;
 	}
