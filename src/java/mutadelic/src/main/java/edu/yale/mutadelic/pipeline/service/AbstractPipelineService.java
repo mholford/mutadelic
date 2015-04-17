@@ -24,6 +24,10 @@ public abstract class AbstractPipelineService implements Service {
 	public static final String MUTADELIC = NS + "Mutadelic";
 	public static final String HGVS_NOTATION = NS + "HGVSNotation";
 	public static final String HGVSP_NOTATION = NS + "HGVSPNotation";
+	
+	// Added for 3/2 paper submit
+	public static final String GENE = NS + "Gene";
+	
 	public static final String PROTEIN_DOMAIN = NS + "ProteinDomain";
 	public static final String ALLELE_FREQUENCY = NS + "AlleleFrequency";
 	public static final String DOMAINS_MISSING = NS

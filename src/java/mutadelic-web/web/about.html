@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+<title>Mutadelic</title>
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css"
+	rel="stylesheet">
+<link href="bootstrap-select.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style type='text/css'>
+body {
+	background-color: #CCC;
+}
+
+.black {
+	color: #000000;
+}
+
+#content {
+	background-color: #fff;
+}
+
+.red {
+	color: #ff0000;
+}
+
+.green {
+	color: #00aa00;
+}
+
+.lghighlight {
+	/*background-color: #99ff99;*/
+	background-color: #98FB98;
+}
+
+.badge-highlight {
+	background-color: #ff0000;
+}
+
+.form-horizontal .control-label {
+	text-align: left;
+}
+
+.lg-expand {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.lg-expand-sig {
+	font-weight: bold;
+}
+
+.btn-file {
+	position: relative;
+	overflow: hidden;
+}
+
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 999px;
+	text-align: right;
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	background: red;
+	cursor: inherit;
+	display: block;
+}
+
+input[readonly] {
+	background-color: white !important;
+	cursor: text !important;
+}
+
+.cleanselect {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-webkit-transition: none;
+	transition: none;
+}
+
+.var-input-table-wrapper {
+	overflow: auto;
+	max-height: 150px;
+	margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<h1>MUTADELIC</h1>
+		<nav class="navbar navbar-inverse" role="navigation">
+			<div class="nav-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="./index.html">Application</a></li>
+					<li><a href="./documentation.html">Documentation</a></li>
+					<li><a href="./about.html">About</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div id="content" class="row" style="padding-top: 10px;">
+			<div class="col-md-8 main">
+				<h2 style="padding-bottom: 10px;">About</h2>
+				<p>This application generates reports on inherited mutations in
+					five genes (ANK1, SLC4A1, SPTA1, SPTB and EPB42) associated with
+					the following rare Mendelian blood disorders: Hereditary
+					Spherocytosis (HS), Hereditary Elliptocytosis (HE) and Hereditary
+					Pyropoikilocytosis. It is driven by abductive reasoning expressed
+					in Description Logic (DL). The application incorporates rules from
+					genetic experts in red cell membrane disorders, and accesses
+					various interpretation services for matching an individual's
+					inherited variants to an expert's rule.</p>
+				<p>Abstract from upcoming paper:
+				<blockquote>Mutadelic is a tool that analyzes and
+					prioritizes genomic variants by using Description Logic (DL)
+					inferencing to generate workflows which are logically verifiable.
+					It differs from other variant analysis frameworks in its
+					flexibility and efficiency, processing only information that will
+					contribute to interpretation of each variant. In cases where
+					certain operations may be time-consuming and/or resource-intensive
+					this leads to substantial improvements in the performance of a
+					workflow. Workflows are dynamically generated using a novel
+					abductive reasoning framework which was created for this project.
+					These abductive workflows are logically verifiable because they are
+					enforced by DL axioms and can be regenerated in the event of
+					changes to underlying data or knowledge.The abductive workflow
+					engine AbFab (A Basic Framework For Abductive Workflow Generation)
+					was created. Criteria for identifying disease-causing variants in
+					Mendelian blood disorders were identified and implemented as AbFab
+					services. A web application was built allowing users to run
+					workflows generated from the criteria to analyze genomic variants.
+					Significant variants are flagged and explanations provided for why
+					they match or fail to match the criteria.</blockquote>
+				</p>
+			</div>
+		</div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="jquery.inputmask.bundle.min.js"></script>
+	<script src="bootstrap-select.js"></script>
+	<script
+		src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script
+		src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
+	<script src="mutadelic.js"></script>
+</body>
+</html>

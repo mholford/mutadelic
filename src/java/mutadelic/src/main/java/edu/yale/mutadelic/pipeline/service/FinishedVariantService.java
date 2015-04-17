@@ -33,31 +33,30 @@ public class FinishedVariantService extends AbstractPipelineService {
 	}
 
 	private boolean getResult(IndividualPlus input, Abductor abductor) {
+		
 		// Check if input fits the defined Service
-		if (input.isStop()) {
-			return false;
-		}
-		DLController dl = abductor.getDLController();
-		DLClass<?> serviceClass = dl.clazz(NS + "FinishedVariantService");
-		Set<DLIndividual> serviceClassOutputs = new HashSet<>();
-		Set<IndividualPlus> serviceClassOutputIPs = new HashSet<>();
-		for (DLIndividual<?> serviceClassInstance : dl
-				.getInstances(serviceClass)) {
-			serviceClassOutputs.addAll(dl.getObjectPropertyValues(serviceClassInstance,
-					dl.objectProp(NS + "has_output")));
-		}
-		for (DLIndividual serviceClassOutput:serviceClassOutputs) {
-			serviceClassOutputIPs.add(new IndividualPlus(serviceClassOutput));
-		}
-		IndividualPlus ipOut = abductor.mergeIndividuals(serviceClassOutputIPs);
-		SCCIndividual scOut = abductor.createSCCIndividual(ipOut);
-		SCCIndividual scIn = abductor.createSCCIndividual(input);
-		SCCKey  key = abductor.createSCCKey(serviceClass, scIn, scOut);
-		
-		//boolean output = abductor.checkSCCache(key, true);
-		boolean output = abductor.checkSCCache(key);
-		
-		return output;
+				boolean result = false;
+				DLController dl = abductor.getDLController();
+				Set<DLAxiom<?>> newAx = new HashSet<>();
+				for (DLAxiom<?> ax : input.getAxioms()) {
+					if (!dl.getAxioms().contains(ax)) {
+						newAx.add(ax);
+					}
+				}
+				try {
+					dl.addAxioms(newAx);
+
+					boolean output = dl.checkEntailed(dl.individualType(
+							input.getIndividual(), dl.clazz(NS + "InterestingVariant")));
+					if (!output)
+						input.setStop(true);
+					result = output;
+					System.out.println(result);
+				} finally {
+					dl.removeAxioms(newAx);
+				}
+
+				return result;
 	}
 
 	@Override

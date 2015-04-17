@@ -27,7 +27,7 @@ public class VariantResource {
 			"Y" });
 
 	private static final List<String> strands = Arrays.asList(new String[] {
-			"+", "-" });
+			"+" });
 
 	private static final List<Character> seqChars = Arrays
 			.asList(new Character[] { 'A', 'C', 'T', 'G' });
@@ -59,6 +59,7 @@ public class VariantResource {
 					v.setChromosome(chrom);
 
 					// Must be + or -
+					// A/o 3/2/2015 only + allowed
 					String strand = ss[1].trim();
 					if (!strands.contains(strand)) {
 						throw invalid();

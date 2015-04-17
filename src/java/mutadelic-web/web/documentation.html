@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+<title>Mutadelic</title>
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css"
+	rel="stylesheet">
+<link href="bootstrap-select.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style type='text/css'>
+body {
+	background-color: #CCC;
+}
+
+.black {
+	color: #000000;
+}
+
+#content {
+	background-color: #fff;
+}
+
+.red {
+	color: #ff0000;
+}
+
+.green {
+	color: #00aa00;
+}
+
+.lghighlight {
+	/*background-color: #99ff99;*/
+	background-color: #98FB98;
+}
+
+.badge-highlight {
+	background-color: #ff0000;
+}
+
+.form-horizontal .control-label {
+	text-align: left;
+}
+
+.lg-expand {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.lg-expand-sig {
+	font-weight: bold;
+}
+
+.btn-file {
+	position: relative;
+	overflow: hidden;
+}
+
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 999px;
+	text-align: right;
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	background: red;
+	cursor: inherit;
+	display: block;
+}
+
+input[readonly] {
+	background-color: white !important;
+	cursor: text !important;
+}
+
+.cleanselect {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-webkit-transition: none;
+	transition: none;
+}
+
+.var-input-table-wrapper {
+	overflow: auto;
+	max-height: 150px;
+	margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<h1>MUTADELIC</h1>
+		<nav class="navbar navbar-inverse" role="navigation">
+			<div class="nav-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="./index.html">Application</a></li>
+					<li><a href="./documentation.html">Documentation</a></li>
+					<li><a href="./about.html">About</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div id="content" class="row" style="padding-top: 10px;">
+			<div class="col-md-8 main">
+				<h2 style="padding-bottom: 10px;">Documentation</h2>
+				<p>
+				<ol>
+					<li>Upload the genomic coordinates of inherited DNA variants
+						through the web interface, or upload file in the default VEP
+						format. (see <a href="example-upload.vcf">example</a>)
+					</li>
+					<li>Results are displayed in the web interface, or can be
+						downloaded in Excel or RDF formats</li>
+				</ol>
+				</h2>
+			</div>
+		</div>
+	</div>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="jquery.inputmask.bundle.min.js"></script>
+	<script src="bootstrap-select.js"></script>
+	<script
+		src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script
+		src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
+	<script src="mutadelic.js"></script>
+</body>
+</html>

@@ -11,7 +11,7 @@ public class Variant extends MutadelicEntity {
 
 	private Integer end;
 
-	private String strand;
+	private String strand = "+";
 
 	private String reference;
 
@@ -25,7 +25,10 @@ public class Variant extends MutadelicEntity {
 		this.chromosome = chromosome;
 		this.start = start;
 		this.end = end;
-		this.strand = strand;
+
+		// a/o 3/2/2015: only allow + strand
+		//this.strand = strand;
+
 		this.reference = reference;
 		this.observed = observed;
 	}

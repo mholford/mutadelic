@@ -164,7 +164,8 @@ public class InputResource {
 			v.setStart(newV.getStart());
 		}
 		if (newV.getStrand() != null) {
-			v.setStrand(newV.getStrand());
+			// As of 3/2/2015 only '+' strand is allowed
+			//v.setStrand(newV.getStrand());
 		}
 
 		variantDao.save(v);

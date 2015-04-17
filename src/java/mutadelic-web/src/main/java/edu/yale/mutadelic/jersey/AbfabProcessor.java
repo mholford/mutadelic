@@ -1,5 +1,6 @@
 package edu.yale.mutadelic.jersey;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -38,9 +39,23 @@ public class AbfabProcessor {
 	public AbfabProcessor(PipelineExecutor pipelineExecutor, Workflow workflow) {
 		this.pipelineExecutor = pipelineExecutor;
 		this.workflow = workflow;
-		pipelineExecutor.setStagingDoc(new StringReader(workflow
+		BufferedReader stagingReader = new BufferedReader(new StringReader(workflow
 				.getStagingDoc()));
-		pipelineExecutor.setExecDoc(new StringReader(workflow.getExecDoc()));
+		try {
+			stagingReader.mark(100000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pipelineExecutor.setStagingDoc(stagingReader);
+		BufferedReader execReader = new BufferedReader(new StringReader(workflow.getExecDoc()));
+		try {
+			execReader.mark(100000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pipelineExecutor.setExecDoc(execReader);
 	}
 
 	public AnnotatedVariant annotateVariant(Variant v) {

@@ -63,6 +63,8 @@ public class OutputResource {
 			@QueryParam("input_id") String inputId) {
 		User u = null;
 		Workflow w = null;
+		
+		workflowId = null;
 
 		if (userId == null) {
 			User defU = Defaults.getDefaultUser();
@@ -81,14 +83,15 @@ public class OutputResource {
 			try {
 				defW = Defaults.getDefaultWorkflow();
 
-				workflowDao = morphiaService.getWorkflowDAO();
-				Workflow testW = workflowDao.findByName(defW.getName());
-				if (testW != null) {
-					w = testW;
-				} else {
-					w = defW;
-					workflowDao.save(defW);
-				}
+//				workflowDao = morphiaService.getWorkflowDAO();
+//				Workflow testW = workflowDao.findByName(defW.getName());
+//				if (testW != null) {
+//					w = testW;
+//				} else {
+//					w = defW;
+//					workflowDao.save(defW);
+//				}
+				w = defW;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

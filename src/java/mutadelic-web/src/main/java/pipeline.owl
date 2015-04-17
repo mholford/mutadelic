@@ -62,11 +62,6 @@ Class: SIO:BioinformaticData
 Class: HGVSNotation
     SubClassOf: SIO:BioinformaticData
 	
-Class: HGVSPNotation
-    SubClassOf: SIO:BioinformaticData	
-	
-Class: ProteinDomain	
-
 Class: SIO:Probability
 	
 Class: AlleleFrequency
@@ -182,11 +177,6 @@ Class: IntronicVariant
 	(Annotation that SIO:refers_to some
 	(VariationLocation that SIO:has_value value "Intron"^^xsd:string))
 	
-Class: IntergenicVariant
-    EquivalentTo: TranscriptLocatedVariant that SIO:is_described_by some
-	(Annotation that SIO:refers_to some
-	(VariationLocation that SIO:has_value value "Intergenic"^^xsd:string))
-	
 Class: AAChangedAnnotatedVariant
     EquivalentTo: Variant that SIO:is_described_by some
 	(Annotation that SIO:refers_to some
@@ -263,8 +253,6 @@ Class: CriticalDomainNotMissingVariant
 Class: InterestingVariant
     EquivalentTo: DBKnownMutationVariant or MarkedRareAndUnusualVariant
 	
-Class: NotInterestingVariant
-	
 Class: UnusualVariant
     EquivalentTo: CriticalDomainMissingVariant or SevereVariant or SpliceSiteVariant or ConservedVariant or InCriticalDomainVariant
 
@@ -289,324 +277,118 @@ Class: MarkedRareAndUnusualVariant
 Class: MarkedUnusualVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some UnusualVariant) and (has_output some MarkedUnusualVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.MarkUnusualService")
 
 Class: MarkedRareAndUnusualVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some RareAndUnusualVariant) and (has_output some MarkedRareAndUnusualVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.MarkRareUnusualService")
 
 Class: AlignVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some Variant) and (has_output some AlignedVariant)
+    	and (has_cost value 5.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.AlignVariantService")
 	
 Class: VariantFrequencyCommonService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some CommonVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.AlleleFrequencyService")
 
 Class: VariantFrequencyRareService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some RareVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.AlleleFrequencyService")
 	
 Class: DBKnownMutationKnownService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some DBKnownMutationVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.RCMDBKnownMutationService")
 	
 Class: DBKnownMutationUnknownService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some DBUnknownMutationVariant)
+    	and (has_cost value 2.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.RCMDBKnownMutationService")
 
 Class: IndelOrPointIndelService
     SubClassOf: Service
     EquivalentTo: (has_input some Variant) and (has_output some IndelVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.IndelOrPointService")
 
 Class: IndelOrPointPointService
     SubClassOf: Service
     EquivalentTo: (has_input some Variant) and (has_output some PointVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.IndelOrPointService")
 	
 Class: TranscriptLocaleSpliceService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some SpliceSiteVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService")
 
 Class: TranscriptLocaleProteinCodingService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some ProteinCodingVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService")
 
 Class: TranscriptLocaleIntronService
     SubClassOf: Service
     EquivalentTo: (has_input some AlignedVariant) and (has_output some IntronicVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService")
 	
 Class: AAChangeSynonymousService
     SubClassOf: Service
     EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some SynonymousVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.AAChangedService")
 	
 Class: AAChangeNonSynonymousService
     SubClassOf: Service
     EquivalentTo: (has_input some ProteinCodingVariant) and (has_output some NonSynonymousVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.AAChangedService")
 
 Class: PhylopConservedService
     SubClassOf: Service
     EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some ConservedVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.PhylopService")
 	
 Class: PhylopNonConservedService
     SubClassOf: Service
     EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NonConservedVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.PhylopService")
 
 Class: SiftNonSevereService
     SubClassOf: Service
     EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NonSevereVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.SiftService")
 
 Class: SiftSevereService
     SubClassOf: Service
     EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some SevereVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.SiftService")
 	
 Class: CriticalDomainInService
     SubClassOf: Service
     EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some InCriticalDomainVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.CriticalDomainService")
 	
 Class: CriticalDomainNotInService
     SubClassOf: Service
     EquivalentTo: (has_input some NonSynonymousVariant) and (has_output some NotInCriticalDomainVariant)
+    	and (has_cost value 3.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.CriticalDomainService")
 
 Class: CriticalDomainMissingNotService
     SubClassOf: Service
     EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant)) and (has_output some CriticalDomainNotMissingVariant)
+    	and (has_cost value 4.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.CriticalDomainMissingService")
 
 Class: CriticalDomainMissingIsService
     SubClassOf: Service
     EquivalentTo: (has_input some (IndelVariant and ProteinCodingVariant)) and (has_output some CriticalDomainMissingVariant)
+    	and (has_cost value 4.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.CriticalDomainMissingService")
 	
 Class: FinishedVariantService
     SubClassOf: Service
     EquivalentTo: (has_input some InterestingVariant) and (has_output some FinishedVariant)
+    	and (has_cost value 1.0) and (has_executable value "edu.yale.mutadelic.pipeline.service.FinishedVariantService")
 	
 Individual: Mutadelic
     Types: SIO:InformationContentEntity
 
-Individual: AVS
-    Types: AlignVariantService
-    Facts: has_input AVSI, has_output AVSO, has_cost 5.0, has_executable "edu.yale.mutadelic.pipeline.service.AlignVariantService"
-	
-Individual: CVFS
-    Types: VariantFrequencyCommonService
-    Facts: has_input CVFSI, has_output CVFSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.AlleleFrequencyService"
-	
-Individual: RVFS
-    Types: VariantFrequencyRareService
-    Facts: has_input RVFSI, has_output RVFSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.AlleleFrequencyService"
-	
-Individual: DBKS
-    Types: DBKnownMutationKnownService
-    Facts: has_input DBKSI, has_output DBKSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.RCMDBKnownMutationService"
-	
-Individual: DBUS
-    Types: DBKnownMutationUnknownService
-    Facts: has_input DBUSI, has_output DBUSO, has_cost 2.0, has_executable "edu.yale.mutadelic.pipeline.service.RCMDBKnownMutationService"
-	
-Individual: IPIS
-    Types: IndelOrPointIndelService
-    Facts: has_input IPISI, has_output IPISO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.IndelOrPointService"
-
-Individual: IPPS
-    Types: IndelOrPointPointService
-    Facts: has_input IPPSI, has_output IPPSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.IndelOrPointService"
-	
-Individual: TLSS
-    Types: TranscriptLocaleSpliceService
-    Facts: has_input TLSSI, has_output TLSSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService"
-	
-Individual: TLPS
-    Types: TranscriptLocaleProteinCodingService
-    Facts: has_input TLPSI, has_output TLPSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService"
-	
-Individual: TLIS
-    Types: TranscriptLocaleIntronService
-    Facts: has_input TLISI, has_output TLISO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.TranscriptLocaleService"
-	
-Individual: AASS
-    Types: AAChangeSynonymousService
-    Facts: has_input AASSI, has_output AASSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.AAChangedService"
-	
-Individual: AANS
-    Types: AAChangeNonSynonymousService
-    Facts: has_input AANSI, has_output AANSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.AAChangedService"
-	
-Individual: PPNS
-    Types: PhylopNonConservedService
-    Facts: has_input PPNSI, has_output PPNSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.PhylopService"
-	
-Individual: PPCS
-    Types: PhylopConservedService
-    Facts: has_input PPCSI, has_output PPCSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.PhylopService"
-	
-Individual: SNS
-    Types: SiftNonSevereService
-    Facts: has_input SNSI, has_output SNSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.SiftService"
-	
-Individual: SSS
-    Types: SiftSevereService
-    Facts: has_input SSSI, has_output SSSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.SiftService"
-	
-Individual: ICDS
-    Types: CriticalDomainInService
-    Facts: has_input ICDSI, has_output ICDSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainService"
-	
-Individual: NCDS
-    Types: CriticalDomainNotInService
-    Facts: has_input NCDSI, has_output NCDSO, has_cost 3.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainService"
-	
-Individual: CDNS
-    Types: CriticalDomainMissingNotService
-    Facts: has_input CDNSI, has_output CDNSO, has_cost 4.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainMissingService"
-	
-Individual: CDMS
-    Types: CriticalDomainMissingIsService
-    Facts: has_input CDMSI, has_output CDMSO, has_cost 4.0, has_executable "edu.yale.mutadelic.pipeline.service.CriticalDomainMissingService"
-
-Individual: MUVS
-    Types: MarkedUnusualVariantService
-    Facts: has_input MUVSI, has_output MUVSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.MarkUnusualService"
-
-Individual: MRUVS
-    Types: MarkedRareAndUnusualVariantService
-    Facts: has_input MRUVSI, has_output MRUVSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.MarkRareUnusualService"
-	
-Individual: FS
-    Types: FinishedVariantService
-    Facts: has_input FSI, has_output FSO, has_cost 1.0, has_executable "edu.yale.mutadelic.pipeline.service.FinishedVariantService"
-
-Individual: AVSI
-    Types: Variant
-	
-Individual: CVFSI
-    Types: AlignedVariant
-	
-Individual: RVFSI
-    Types: AlignedVariant
-	
-Individual: DBKSI
-    Types: AlignedVariant
-
-Individual: DBUSI
-    Types: AlignedVariant
-	
-Individual: IPISI
-    Types: Variant
-	
-Individual: IPPSI
-    Types: Variant
-	
-Individual: TLSSI
-    Types: AlignedVariant
-	
-Individual: TLPSI
-    Types: AlignedVariant
-	
-Individual: TLISI
-    Types: AlignedVariant
-
-Individual: AASSI
-    Types: ProteinCodingVariant
-	
-Individual: AANSI
-    Types: ProteinCodingVariant	
-	
-Individual: PPCSI
-    Types: NonSynonymousVariant
-	
-Individual: PPNSI
-    Types: NonSynonymousVariant
-	
-Individual: SSSI
-    Types: NonSynonymousVariant
-	
-Individual: SNSI
-    Types: NonSynonymousVariant
-	
-Individual: ICDSI
-    Types: NonSynonymousVariant
-	
-Individual: NCDSI
-    Types: NonSynonymousVariant
-	
-Individual: CDNSI
-    Types: ProteinCodingVariant and IndelVariant
-
-Individual: CDMSI
-    Types: ProteinCodingVariant and IndelVariant
-
-Individual: MUVSI
-    Types: UnusualVariant
-
-Individual: MRUVSI
-    Types: RareAndUnusualVariant
-	
-Individual: FSI
-    Types: InterestingVariant
-
-Individual: AVSO
-    Types: AlignedVariant
-	
-Individual: CVFSO
-    Types: CommonVariant
-	
-Individual: RVFSO
-    Types: RareVariant
-	
-Individual: DBUSO
-    Types: DBUnknownMutationVariant
-	
-Individual: DBKSO
-    Types: DBKnownMutationVariant
-	
-Individual: IPISO
-    Types: IndelVariant
-	
-Individual: IPPSO
-    Types: PointVariant
-	
-Individual: TLSSO
-    Types: SpliceSiteVariant
-	
-Individual: TLISO
-    Types: IntronicVariant
-	
-Individual: TLPSO
-    Types: ProteinCodingVariant
-	
-Individual: AASSO
-    Types: SynonymousVariant
-	
-Individual: AANSO
-    Types: NonSynonymousVariant
-	
-Individual: PPCSO
-    Types: ConservedVariant
-	
-Individual: PPNSO
-    Types: NonConservedVariant
-	
-Individual: SSSO
-    Types: SevereVariant
-	
-Individual: SNSO
-    Types: NonSevereVariant
-	
-Individual: ICDSO
-    Types: InCriticalDomainVariant
-	
-Individual: NCDSO
-    Types: NotInCriticalDomainVariant
-	
-Individual: CDNSO
-    Types: CriticalDomainNotMissingVariant
-	
-Individual: CDMSO
-    Types: CriticalDomainMissingVariant
-
-Individual: MUVSO
-    Types: MarkedUnusualVariant
-
-Individual: MRUVSO
-    Types: MarkedRareAndUnusualVariant
-	
-Individual: FSO
-    Types: FinishedVariant

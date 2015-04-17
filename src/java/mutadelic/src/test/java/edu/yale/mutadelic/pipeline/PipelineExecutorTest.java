@@ -3,6 +3,8 @@ package edu.yale.mutadelic.pipeline;
 import static org.junit.Assert.*;
 import static edu.yale.abfab.NS.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.junit.BeforeClass;
@@ -23,11 +25,27 @@ public class PipelineExecutorTest {
 	@BeforeClass
 	public static void beforeClass() {
 		pex = new PipelineExecutor();
-		pex.setStagingDoc(new InputStreamReader(PipelineExecutor.class
-				.getClassLoader().getResourceAsStream("pipeline-stage.owl")));
+		BufferedReader stagingDoc = new BufferedReader(new InputStreamReader(
+				PipelineExecutor.class.getClassLoader().getResourceAsStream(
+						"pipeline-stage.owl")));
+		try {
+			stagingDoc.mark(100000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pex.setStagingDoc(stagingDoc);
 		pex.setStagingDocFormat("Manchester");
-		pex.setExecDoc(new InputStreamReader(PipelineExecutor.class
-				.getClassLoader().getResourceAsStream("pipeline.owl")));
+		BufferedReader execDoc = new BufferedReader(new InputStreamReader(
+				PipelineExecutor.class.getClassLoader().getResourceAsStream(
+						"pipeline.owl")));
+		try {
+			execDoc.mark(100000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pex.setExecDoc(execDoc);
 		pex.setExecDocFormat("Manchester");
 	}
 
@@ -42,12 +60,14 @@ public class PipelineExecutorTest {
 
 			v = new Variant("22", 50563994, 50563994, "C", "T", "+");
 			output = pex.execute(v);
-			varType = pex.getLiteralResult(output, VARIATION_OUTCOME).getResult();
+			varType = pex.getLiteralResult(output, VARIATION_OUTCOME)
+					.getResult();
 			assertEquals(varType, SYNONYMOUS);
 
 			v = new Variant("22", 50563994, 50563994, "C", "G", "+");
 			output = pex.execute(v);
-			varType = pex.getLiteralResult(output, VARIATION_OUTCOME).getResult();
+			varType = pex.getLiteralResult(output, VARIATION_OUTCOME)
+					.getResult();
 			assertEquals(varType, NON_SYNONYMOUS);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -66,37 +86,44 @@ public class PipelineExecutorTest {
 
 			v = new Variant("1", 158655079, 158655079, "C", "A", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, CDS);
 
 			v = new Variant("22", 50528500, 50528500, "G", "A", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, INTERGENIC);
 
 			v = new Variant("9", 82340060, 82340060, "G", "A", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, INTERGENIC);
 
 			v = new Variant("22", 50564345, 50564345, "G", "A", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, INTRON);
 
 			v = new Variant("9", 82191100, 82191100, "G", "A", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, INTRON);
 
 			v = new Variant("9", 82336654, 82336654, "C", "T", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, SPLICE_SITE);
 
 			v = new Variant("9", 82336804, 82336804, "C", "T", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, VARIATION_LOCATION).getResult();
+			varVal = pex.getLiteralResult(output, VARIATION_LOCATION)
+					.getResult();
 			assertEquals(varVal, SPLICE_SITE);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,14 +142,16 @@ public class PipelineExecutorTest {
 
 			v = new Variant("1", 158653179, 158653179, "C", "T", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION).getResult();
+			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION)
+					.getResult();
 			assertEquals(varVal, "true");
 			varVal = pex.getLiteralResult(output, PROTEIN_DOMAIN).getResult();
 			assertEquals(varVal, "PF00435");
 
 			v = new Variant("1", 158655079, 158655079, "C", "G", "+");
 			output = pex.execute(v);
-			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION).getResult();
+			varVal = pex.getLiteralResult(output, DOMAIN_COLOCATION)
+					.getResult();
 			assertEquals(varVal, "false");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -137,12 +166,14 @@ public class PipelineExecutorTest {
 			Variant v1 = new Variant("1", 123, 123, "G", "A", "+");
 			DefaultValues.ALLELE_FREQUENCY = 0.001;
 			IndividualPlus output = pex.execute(v1);
-			String varType = pex.getLiteralResult(output, NS + "VariationType").getResult();
+			String varType = pex.getLiteralResult(output, NS + "VariationType")
+					.getResult();
 			assertEquals(varType, "Point");
 
 			Variant v2 = new Variant("1", 234, 234, "G", "GA", "-");
 			output = pex.execute(v2);
-			varType = pex.getLiteralResult(output, NS + "VariationType").getResult();
+			varType = pex.getLiteralResult(output, NS + "VariationType")
+					.getResult();
 			assertEquals(varType, "Indel");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -158,14 +189,16 @@ public class PipelineExecutorTest {
 			Variant v1 = new Variant("19", 80840, 80840, "CCT", "C", "+");
 			IndividualPlus output = pex.execute(v1);
 			String preMAF = pex
-					.getLiteralResult(output, NS + "AlleleFrequency").getResult();
+					.getLiteralResult(output, NS + "AlleleFrequency")
+					.getResult();
 			Double freq = Double.parseDouble(preMAF);
 			assertEquals(new Double(0.2029), freq);
 
 			Variant v2 = new Variant("19", 80841, 80841, "CCT", "C", "+");
 			// Not a known variant
 			output = pex.execute(v2);
-			preMAF = pex.getLiteralResult(output, NS + "AlleleFrequency").getResult();
+			preMAF = pex.getLiteralResult(output, NS + "AlleleFrequency")
+					.getResult();
 			freq = Double.parseDouble(preMAF);
 			assertEquals(new Double(0d), freq);
 		} catch (Exception e) {
@@ -197,8 +230,8 @@ public class PipelineExecutorTest {
 			// PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 159682233, 159682233, "C", "A", "+");
 			IndividualPlus output = pex.execute(v1);
-			String alignment = pex.getLiteralResult(output, NS
-					+ "DatabasePresence").getResult();
+			String alignment = pex.getLiteralResult(output,
+					NS + "DatabasePresence").getResult();
 			assertEquals(false, Boolean.parseBoolean(alignment));
 
 			// Variant v2 = new Variant("1", 158655079, 158655079, "C", "T",
@@ -220,13 +253,15 @@ public class PipelineExecutorTest {
 			// PipelineExecutor pex = new PipelineExecutor();
 			Variant v1 = new Variant("1", 229577655, 229577655, "A", "G", "-");
 			IndividualPlus output = pex.execute(v1);
-			String preSift = pex.getLiteralResult(output, NS + "SiftScore").getResult();
+			String preSift = pex.getLiteralResult(output, NS + "SiftScore")
+					.getResult();
 			Double sift = Double.parseDouble(preSift);
 			assertEquals(new Double(0.04), sift);
 
 			Variant v2 = new Variant("1", 229553999, 229553999, "C", "A", "+");
 			output = pex.execute(v2);
-			preSift = pex.getLiteralResult(output, NS + "SiftScore").getResult();
+			preSift = pex.getLiteralResult(output, NS + "SiftScore")
+					.getResult();
 			assertEquals(null, preSift);
 		} catch (Exception e) {
 			e.printStackTrace();

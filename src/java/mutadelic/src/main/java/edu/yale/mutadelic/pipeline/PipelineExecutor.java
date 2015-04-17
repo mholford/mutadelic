@@ -1,5 +1,6 @@
 package edu.yale.mutadelic.pipeline;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
@@ -53,9 +54,9 @@ public class PipelineExecutor {
 
 	private Abductor abductor;
 	private DLController dl;
-	private Reader stagingDoc;
+	private BufferedReader stagingDoc;
 	private String stagingDocFormat;
-	private Reader execDoc;
+	private BufferedReader execDoc;
 	private String execDocFormat;
 
 	public PipelineExecutor() {
@@ -179,19 +180,19 @@ public class PipelineExecutor {
 		return output;
 	}
 
-	public Reader getStagingDoc() {
+	public BufferedReader getStagingDoc() {
 		return stagingDoc;
 	}
 
-	public void setStagingDoc(Reader stagingDoc) {
+	public void setStagingDoc(BufferedReader stagingDoc) {
 		this.stagingDoc = stagingDoc;
 	}
 
-	public Reader getExecDoc() {
+	public BufferedReader getExecDoc() {
 		return execDoc;
 	}
 
-	public void setExecDoc(Reader execDoc) {
+	public void setExecDoc(BufferedReader execDoc) {
 		this.execDoc = execDoc;
 	}
 

@@ -1,6 +1,8 @@
 package edu.yale.mutadelic.pipeline.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.junit.Test;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -34,10 +38,25 @@ import static edu.yale.abfab.NS.*;
 import static edu.yale.mutadelic.mongo.MongoConnection.*;
 import static edu.yale.mutadelic.ncbivr.NCBIVariationReporter.*;
 import static edu.yale.mutadelic.pipeline.service.SiftService.*;
+import static org.junit.Assert.*;
 
 public class AlignVariantService extends AbstractPipelineService {
 
-	private final static String CCDS_NIO_PATH = System.getProperty("user.home") + "/nio/ccds";
+	private final static String CCDS_NIO_PATH = System.getProperty("user.home")
+			+ "/nio/ccds";
+
+	private final static Map<String, String> flipMap;
+	private final static Map<String, String> nm2Gene;
+
+	static {
+		flipMap = new HashMap<>();
+		flipMap.put("A", "T");
+		flipMap.put("C", "G");
+		flipMap.put("G", "C");
+		flipMap.put("T", "A");
+		nm2Gene = new HashMap<>();
+		initNM2Gene();
+	}
 
 	class ExonMatch {
 		String name;
@@ -55,6 +74,48 @@ public class AlignVariantService extends AbstractPipelineService {
 			return String.format("%s: %d-%d", name, start, end);
 		}
 	}
+
+	private static void initNM2Gene() {
+		// File downloaded from NCBI's ftp site (gene2refseq) and then processed
+		// via bash (grep "^9606" | cut 4,16 | grep "^NM_" | uniq >
+		// nm2GeneSymbol)
+		BufferedReader br = new BufferedReader(new InputStreamReader(
+				AlignVariantService.class.getClassLoader().getResourceAsStream(
+						"nm2GeneSymbol")));
+		String s;
+		try {
+			while ((s = br.readLine()) != null) {
+				String[] ss = s.split("\t");
+				String key = ss[0].substring(0, ss[0].indexOf("."));
+				nm2Gene.put(key, ss[1]);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private String flip(String orig) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : orig.toCharArray()) {
+			String k = String.valueOf(c);
+			String v = flipMap.get(k);
+			sb.append(v);
+		}
+		return sb.reverse().toString();
+	}
+	
+//	@Test
+//	public void testFlip() {
+//		assertEquals("C", flip("G"));
+//		assertEquals("CGT", flip("ACG"));
+//	}
 
 	@Override
 	public IndividualPlus exec(IndividualPlus input, Abductor abductor)
@@ -77,7 +138,28 @@ public class AlignVariantService extends AbstractPipelineService {
 		Set<DLAxiom<?>> annotation = annotatedResult(dl, input.getIndividual(),
 				hgvs, dl.individual(MUTADELIC), result, true);
 		input.getAxioms().addAll(annotation);
+
+		// For 3/2/2015: add the Gene symbol
+		Set<DLAxiom<?>> geneAnnotation = annotatedResult(dl,
+				input.getIndividual(), dl.clazz(GENE),
+				dl.individual(MUTADELIC), getGeneName(result), true);
+		input.getAxioms().addAll(geneAnnotation);
+
 		return input;
+	}
+
+	public String getGeneName(String alignment) {
+		if (alignment != null && alignment.startsWith("NM")) {
+			int periodIdx = alignment.indexOf(".");
+			String key = alignment;
+			if (periodIdx > 0) {
+				key = alignment.substring(0, periodIdx);
+			}
+			if (nm2Gene.containsKey(key)) {
+				return nm2Gene.get(key);
+			}
+		}
+		return "NA";
 	}
 
 	public String getAlignmentFromCCDS(Variant v) {
@@ -107,13 +189,21 @@ public class AlignVariantService extends AbstractPipelineService {
 		for (String seq : seqs) {
 			Matcher exonMatcher = exonMatchPattern.matcher(seq);
 			if (exonMatcher.matches()) {
-				if (exonMatches == null)
+				if (exonMatches == null) {
 					exonMatches = new HashSet<>();
-				exonMatches.add(seq);
+				}
+				// Hack to force red cell's NM
+				if (!seq.startsWith("chr8_CCDS47849.1")
+						&& !seq.startsWith("chr8_6121.1")) {
+					exonMatches.add(seq);
+				}
 			} else {
 				if (transcriptMatches == null)
 					transcriptMatches = new HashSet<>();
-				transcriptMatches.add(seq);
+				if (!seq.startsWith("chr8_CCDS47849.1")
+						&& !seq.startsWith("chr8_6121.1")) {
+					transcriptMatches.add(seq);
+				}
 			}
 		}
 
@@ -131,6 +221,11 @@ public class AlignVariantService extends AbstractPipelineService {
 
 			int exonNo = Integer.parseInt(exonNoPre);
 			int transcriptPos = 0;
+
+			// These will be 'flipped' if on '-' strand
+			String vref = v.getReference();
+			String vobs = v.getObserved();
+
 			for (int i = 0; i <= exonNo; i++) {
 				String iexon = String.format("%s_%d", transcript, i);
 
@@ -149,6 +244,9 @@ public class AlignVariantService extends AbstractPipelineService {
 						transcriptPos += 1 + (v.getStartPos() - start);
 					} else {
 						transcriptPos += 1 + (end - v.getStartPos());
+						// Flip the nucleotides
+						vref = flip(vref);
+						vobs = flip(vobs);
 					}
 				}
 			}
@@ -164,7 +262,7 @@ public class AlignVariantService extends AbstractPipelineService {
 			String refseqTranscript = (String) r.get(CCDS_REF_REFSEQ);
 
 			alignment = String.format("%s:c.%d%s>%s", refseqTranscript,
-					transcriptPos, v.getReference(), v.getObserved());
+					transcriptPos, vref, vobs);
 		}
 
 		if (alignment == null) {
@@ -178,6 +276,10 @@ public class AlignVariantService extends AbstractPipelineService {
 				m.matches();
 				String transcript = m.group(1);
 				String strand = m.group(2);
+
+				// Will need to 'flip' the nucleotides if on '-' strand
+				String vref = v.getReference();
+				String vobs = v.getObserved();
 
 				// Get all exons within this transcript by querying Mongo
 				Pattern key = Pattern.compile(String
@@ -214,6 +316,9 @@ public class AlignVariantService extends AbstractPipelineService {
 							match1 = exon;
 						}
 					} else {
+						// Flip nucleotides b./c on '-' strand
+						vref = flip(vref);
+						vobs = flip(vobs);
 						if (v.getStartPos() > exon.end) {
 							match2 = exon;
 							break;
@@ -262,6 +367,7 @@ public class AlignVariantService extends AbstractPipelineService {
 								offset = "-" + offsetPre;
 							}
 						} else {
+							
 							if (v.getStartPos() > em.end) {
 								transcriptPos += 1;
 								int offsetPre = v.getStartPos() - em.end;
@@ -274,7 +380,8 @@ public class AlignVariantService extends AbstractPipelineService {
 						}
 					}
 				}
-
+				
+				
 				// Lookup the NM in mongo
 				DBCollection refTable = MongoConnection.instance()
 						.getCCDSRefTable();
@@ -287,8 +394,7 @@ public class AlignVariantService extends AbstractPipelineService {
 				String refseqTranscript = (String) r.get(CCDS_REF_REFSEQ);
 
 				alignment = String.format("%s:c.%d%s%s>%s", refseqTranscript,
-						transcriptPos, offset, v.getReference(),
-						v.getObserved());
+						transcriptPos, offset, vref, vobs);
 
 			} else {
 				alignment = "INTERGENIC";
@@ -355,5 +461,4 @@ public class AlignVariantService extends AbstractPipelineService {
 	public double cost() {
 		return 1.0;
 	}
-
 }

@@ -13,7 +13,7 @@ function Variant(chromosome, strand, start, end, reference, observed) {
 	var self = this;
 
 	self.chromosome = chromosome;
-	self.strand = strand;
+	self.strand = '+';
 	self.start = start;
 	self.end = end;
 	self.reference = reference;

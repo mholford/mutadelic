@@ -30,28 +30,48 @@ public class MarkUnusualService extends AbstractPipelineService {
 
 	private String getResult(IndividualPlus input, Abductor abductor) {
 		// Check if input fits the defined Service
+		String result = null;
 		DLController dl = abductor.getDLController();
-		DLClass<?> serviceClass = dl.clazz(NS + "MarkedUnusualVariantService");
-		Set<DLIndividual> serviceClassOutputs = new HashSet<>();
-		Set<IndividualPlus> serviceClassOutputIPs = new HashSet<>();
-		for (DLIndividual<?> serviceClassInstance : dl
-				.getInstances(serviceClass)) {
-			serviceClassOutputs.addAll(dl.getObjectPropertyValues(
-					serviceClassInstance, dl.objectProp(NS + "has_output")));
+		Set<DLAxiom<?>> newAx = new HashSet<>();
+		for (DLAxiom<?> ax : input.getAxioms()) {
+			if (!dl.getAxioms().contains(ax)) {
+				newAx.add(ax);
+			}
 		}
-		for (DLIndividual serviceClassOutput : serviceClassOutputs) {
-			serviceClassOutputIPs.add(new IndividualPlus(serviceClassOutput));
-		}
-		IndividualPlus ipOut = abductor.mergeIndividuals(serviceClassOutputIPs);
-		SCCIndividual scOut = abductor.createSCCIndividual(ipOut);
-		SCCIndividual scIn = abductor.createSCCIndividual(input);
-		SCCKey key = abductor.createSCCKey(serviceClass, scIn, scOut);
-		boolean output = abductor.checkSCCache(key, true);
-		
-		if (!output)
-			input.setStop(true);
+		try {
+			dl.addAxioms(newAx);
 
-		return output ? "Unusual" : "Not Unusual";
+			// DLClass<?> serviceClass = dl.clazz(NS +
+			// "MarkedUnusualVariantService");
+			// Set<DLIndividual> serviceClassOutputs = new HashSet<>();
+			// Set<IndividualPlus> serviceClassOutputIPs = new HashSet<>();
+			// for (DLIndividual<?> serviceClassInstance : dl
+			// .getInstances(serviceClass)) {
+			// serviceClassOutputs.addAll(dl.getObjectPropertyValues(
+			// serviceClassInstance, dl.objectProp(NS + "has_output")));
+			// }
+			// for (DLIndividual serviceClassOutput : serviceClassOutputs) {
+			// serviceClassOutputIPs.add(new
+			// IndividualPlus(serviceClassOutput));
+			// }
+			// IndividualPlus ipOut =
+			// abductor.mergeIndividuals(serviceClassOutputIPs);
+			// SCCIndividual scOut = abductor.createSCCIndividual(ipOut);
+			// SCCIndividual scIn = abductor.createSCCIndividual(input);
+			// SCCKey key = abductor.createSCCKey(serviceClass, scIn, scOut);
+			// boolean output = abductor.checkSCCache(key, true);
+
+			boolean output = dl.checkEntailed(dl.individualType(
+					input.getIndividual(), dl.clazz(NS + "UnusualVariant")));
+			if (!output)
+				input.setStop(true);
+			result = output ? "Unusual" : "NotUnusual";
+			System.out.println(result);
+		} finally {
+			dl.removeAxioms(newAx);
+		}
+
+		return result;
 	}
 
 	@Override

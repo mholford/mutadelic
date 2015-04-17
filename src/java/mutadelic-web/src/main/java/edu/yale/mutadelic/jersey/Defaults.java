@@ -58,6 +58,12 @@ public class Defaults {
 				"GTE 1.0 Up", RestrictionType.GTE, "0.0", Level.UP));
 		criteria.add(new Criterion(DOMAIN_COLOCATION, "In Critical Domain",
 				true, "In Domain Up", RestrictionType.EQ, "true", Level.UP));
+		criteria.add(new Criterion(HGVS_NOTATION, "HGVS", true,
+				"HGVS notation", RestrictionType.EQ, "XXX", Level.UP));
+		criteria.add(new Criterion(HGVSP_NOTATION, "HGVSP", true,
+				"HGVSP notation", RestrictionType.EQ, "XXX", Level.UP));
+		criteria.add(new Criterion(GENE, "Gene", true, "Gene symbol",
+				RestrictionType.EQ, "XXX", Level.UP));
 
 		return criteria;
 	}

@@ -1,347 +1,369 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Mutadelic</title>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css" rel="stylesheet">
-    <link href="bootstrap-select.css" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <style type='text/css'>
-     body {
-       background-color: #CCC;
-     }
+<head>
+<title>Mutadelic</title>
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css"
+	rel="stylesheet">
+<link href="bootstrap-select.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style type='text/css'>
+body {
+	background-color: #CCC;
+}
 
-    .black {
-      color: #000000;
-      }
+.black {
+	color: #000000;
+}
 
-     #content {
-       background-color: #fff;
-     }
+#content {
+	background-color: #fff;
+}
 
-     .red {
-       color: #ff0000;
-     }
+.red {
+	color: #ff0000;
+}
 
-     .green {
-       color: #00aa00;
-     }
+.green {
+	color: #00aa00;
+}
 
-     .lghighlight {
-       /*background-color: #99ff99;*/
-       background-color: #98FB98;
-     }
+.lghighlight {
+	/*background-color: #99ff99;*/
+	background-color: #98FB98;
+}
 
-     .badge-highlight {
-       background-color: #ff0000;
-     }
+.badge-highlight {
+	background-color: #ff0000;
+}
 
-     .form-horizontal .control-label{
-       text-align: left;
-     }
+.form-horizontal .control-label {
+	text-align: left;
+}
 
-     .lg-expand {
-       padding-top: 5px;
-       padding-bottom: 5px;
-     }
+.lg-expand {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
 
-     .lg-expand-sig {
-       font-weight: bold;
-     }
+.lg-expand-sig {
+	font-weight: bold;
+}
 
-     .btn-file {
-       position: relative;
-       overflow: hidden;
-     }
+.btn-file {
+	position: relative;
+	overflow: hidden;
+}
 
-     .btn-file input[type=file] {
-       position: absolute;
-       top: 0;
-       right: 0;
-       min-width: 100%;
-       min-height: 100%;
-       font-size: 999px;
-       text-align: right;
-       filter: alpha(opacity=0);
-       opacity: 0;
-       background: red;
-       cursor: inherit;
-       display: block;
-     }
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 999px;
+	text-align: right;
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	background: red;
+	cursor: inherit;
+	display: block;
+}
 
-     input[readonly] {
-       background-color: white !important;
-       cursor: text !important;
-     }
+input[readonly] {
+	background-color: white !important;
+	cursor: text !important;
+}
 
-      .cleanselect {
-       -webkit-box-shadow: none;
-       box-shadow: none;
-       -webkit-transition: none;
-       transition: none;
-      }
+.cleanselect {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	-webkit-transition: none;
+	transition: none;
+}
 
-     .var-input-table-wrapper {
-       overflow: auto;
-       max-height: 150px;
-      margin-bottom: 10px;
-     }
+.var-input-table-wrapper {
+	overflow: auto;
+	max-height: 150px;
+	margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<h1>MUTADELIC</h1>
+		<nav class="navbar navbar-inverse" role="navigation">
+			<div class="nav-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="./index.html">Application</a></li>
+					<li><a href="./documentation.html">Documentation</a></li>
+					<li><a href="./about.html">About</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div id="content" class="row" style="padding-top: 10px;">
+			<div class="col-md-8 main">
+				<h2 style="padding-bottom: 10px;">Analyzed Variants</h2>
+				<div class="col-sm-offset-5" style="padding-top: 150px;"
+					data-bind="visible: loading() == true">
+					<img src="preloader-green.gif">
+				</div>
+				<div class="col-sm-4 sidebar"
+					data-bind="visible: annotatedVariants().length > 0">
+					<ul class="nav nav-pills nav-stacked">
+						<li
+							data-bind="css: { active: selectedOutputGroup() === 'all-var-list-group-item' }, 
+		  click: $data.setAll"
+							id="all-var-list-group-item"><a href="#"> <span
+								class="badge pull-right" data-bind='text: numAll'></span> All
+								Variants
+						</a></li>
+						<li
+							data-bind="css: { active: selectedOutputGroup() === 'int-var-list-group-item' }, 
+		  click: $data.setInteresting"
+							id="int-var-list-group-item"><a href="#"> <span
+								class="badge badge-highlight pull-right"
+								data-bind='text: numInteresting'></span> Interesting Variants
+						</a></li>
+						<li
+							data-bind="css: { active: selectedOutputGroup() === 'ni-var-list-group-item' }, 
+		  click: $data.setUninteresting"
+							id="ni-var-list-group-item"><a href="#"> <span
+								class="badge pull-right" data-bind='text: numUninteresting'></span>
+								Uninteresting Variants
+						</a></li>
+					</ul>
+					<div class="row" style="padding-top: 30px;">
+						<div class="col-sm-offset-2">
+							<button type="button" class="btn btn-primary"
+								data-bind="click: $root.getExcel">Download Excel Output
+							</button>
+						</div>
+					</div>
 
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>MUTADELIC</h1>
-      <nav class="navbar navbar-inverse" role="navigation">
-	<div class="nav-collapse">
-	  <ul class="nav navbar-nav">
-	    <li class="active"><a href="#">Application</a></li>
-	    <li><a href="#">Documentation</a></li>
-	    <li><a href="#">About</a></li>
-	  </ul>
-	</div>
-      </nav>
-      <div id="content" class="row" style="padding-top: 10px;">
-	<div class="col-md-8 main">
-	  <h2 style="padding-bottom: 10px;">Analyzed Variants</h2>
-	  <div class="col-sm-offset-5" style="padding-top: 150px;" data-bind="visible: loading() == true">
-	    <img src="preloader-green.gif">
-	  </div>
-	  <div class="col-sm-4 sidebar" data-bind="visible: annotatedVariants().length > 0">
-	    <ul class="nav nav-pills nav-stacked" >
-	      <li data-bind="css: { active: selectedOutputGroup() === 'all-var-list-group-item' }, 
-		  click: $data.setAll" id="all-var-list-group-item">
-		<a href="#">
-		  <span class="badge pull-right" data-bind='text: numAll'></span>
-		  All Variants
-		</a>
-	      </li>
-	      <li data-bind="css: { active: selectedOutputGroup() === 'int-var-list-group-item' }, 
-		  click: $data.setInteresting" id="int-var-list-group-item">
-		<a href="#">
-		  <span class="badge badge-highlight pull-right" 
-			data-bind='text: numInteresting'></span>
-		  Interesting Variants
-		</a>
-	      </li>
-	      <li data-bind="css: { active: selectedOutputGroup() === 'ni-var-list-group-item' }, 
-		  click: $data.setUninteresting" id="ni-var-list-group-item">
-		<a href="#">
-		  <span class="badge pull-right" data-bind='text: numUninteresting'></span>
-		  Uninteresting Variants
-		</a>
-	      </li>
-	    </ul>
-	    <div class="row" style="padding-top: 30px;">
-	      <div class="col-sm-offset-2">
-		<button type="button" class="btn btn-primary" data-bind="click: $root.getExcel">
-		    Download Excel Output
-		</button>
-	      </div>
-	    </div>
+					<div class="row" style="padding-top: 15px;">
+						<div class="col-sm-offset-2">
+							<button type="button" class="btn btn-primary"
+								data-bind="click: $root.getRDF">Download RDF Output</button>
+						</div>
+					</div>
 
-	    <div class="row" style="padding-top: 15px;">
-	      <div class="col-sm-offset-2">
-		<button type="button" class="btn btn-primary" data-bind="click: $root.getRDF">
-		    Download RDF Output
-		</button>
-	      </div>
-	    </div>
+				</div>
 
-	  </div>
-
-	  <!-- TODO: think about moving visibility logic out of view page (tried.. but hard :() -->
-	  <div class="col-sm-8">
-	    <div class="list-group" data-bind="foreach: { data: annotatedVariants, as: 'av'}">
-	      <a data-toggle="collapse" class="list-group-item" data-bind='css: {lghighlight: flagged == true }, 
+				<!-- TODO: think about moving visibility logic out of view page (tried.. but hard :() -->
+				<div class="col-sm-8">
+					<div class="list-group"
+						data-bind="foreach: { data: annotatedVariants, as: 'av'}">
+						<a data-toggle="collapse" class="list-group-item"
+							data-bind='css: {lghighlight: flagged == true }, 
 		 visible: $root.selectedOutputGroup() === "all-var-list-group-item" ||
 		 ($root.selectedOutputGroup() === "int-var-list-group-item" && flagged) ||
 		 ($root.selectedOutputGroup() === "ni-var-list-group-item" && !flagged),
 		 attr: {href: "#collapse" + $index()}'>
-		<div class="row" data-bind="with: variant">
-		  <div class="col-xs-1">
-		    <span class="glyphicon glyphicon-plus black"></span>
-		  </div>
-		  <div class="col-xs-1">
-		    <span data-bind="text: chromosome"></span>
-		  </div>
-		  <div class="col-xs-3">
-		    <span data-bind="text: start"></span>
-		  </div>
-		  <div class="col-xs-3">
-		    <span data-bind="text: end"></span>
-		  </div>
-		  <div class="col-xs-2">
-		    <span data-bind="text: reference"></span>
-		  </div>
-		  <div class="col-xs-2">
-		    <span data-bind="text: observed"></span>
-		  </div>
-		</div>
-	      </a>
+							<div class="row" data-bind="with: variant">
+								<div class="col-xs-1">
+									<span class="glyphicon glyphicon-plus black"></span>
+								</div>
+								<div class="col-xs-1">
+									<span data-bind="text: chromosome"></span>
+								</div>
+								<div class="col-xs-3">
+									<span data-bind="text: start"></span>
+								</div>
+								<div class="col-xs-3">
+									<span data-bind="text: end"></span>
+								</div>
+								<div class="col-xs-2">
+									<span data-bind="text: reference"></span>
+								</div>
+								<div class="col-xs-2">
+									<span data-bind="text: observed"></span>
+								</div>
+							</div>
+						</a>
 
-	      <div class="collapse" data-bind="attr: {id: 'collapse' + $index()}">
-		<div class="row lg-expand" data-bind="foreach: valueEntries">
-		  <div class="col-xs-offset-1 col-xs-1">
-		    <span class="glyphicon glyphicon-remove red" data-bind="visible: level === 'DOWN'"></span>
-		    <span class="glyphicon glyphicon-ok green" data-bind="visible: level === 'UP'"></span>
-		  </div>
-		  <div class="col-xs-5" data-bind="css: {'lg-expand-sig': level === 'UP'}">
-		    <span data-bind="text: key"></span>
-		  </div>
-		  <div class="col-xs-5" data-bind="css: {'lg-expand-sig': level === 'UP'}">
-		    <span data-bind="text: value"></span>
-		  </div>
+						<div class="collapse"
+							data-bind="attr: {id: 'collapse' + $index()}">
+							<div class="row lg-expand" data-bind="foreach: valueEntries">
+								<div class="col-xs-offset-1 col-xs-1">
+									<span class="glyphicon glyphicon-remove red"
+										data-bind="visible: level === 'DOWN'"></span> <span
+										class="glyphicon glyphicon-ok green"
+										data-bind="visible: level === 'UP'"></span>
+								</div>
+								<div class="col-xs-5"
+									data-bind="css: {'lg-expand-sig': level === 'UP'}">
+									<span data-bind="text: key"></span>
+								</div>
+								<div class="col-xs-5"
+									data-bind="css: {'lg-expand-sig': level === 'UP'}">
+									<span data-bind="text: value"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4 sidebar">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<form class="form-horizontal">
+							<legend>Enter variant(s) <span style="font-size: 12px;">[GRCh37/hg19]</span></legend>
+
+							<div class="form-group">
+								<label for="chromosome" class="col-sm-4 control-label">Chromosome</label>
+
+								<div class="col-sm-5">
+									<select id="chromosome"
+										data-bind="value: _chromosome, options: chroms"
+										class="form-control selectpicker" style="padding-left: 8px;">
+									</select>
+								</div>
+
+								<!-- <label for="strand" class="col-sm-3 control-label">Strand</label>
+
+								<label for="plus" class="radio-inline col-sm-2 control-label">+
+									<input id="plus" type="radio" value="+" name="strand" checked
+									data-bind="checked:_strand" />
+								</label> <label for="minus" class="radio col-sm-2 control-label">
+									<input id="minus" type="radio" value="-" name="strand"
+									data-bind="checked:_strand" />-
+								</label> -->
+							</div>
+
+							<div class="form-group">
+								<label for="startCoord" class="col-sm-4 control-label">Start</label>
+								<div class="col-sm-8">
+									<input type="text" id="startCoord"
+										data-bind='value: _start, valueUpdate: "afterkeydown"'
+										class="form-control" placeholder="Start coordinate..."
+										required />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="endCoord" class="col-sm-4 control-label">End</label>
+								<div class="col-sm-8">
+									<input type="text" id="endCoord" data-bind="value: _end"
+										class="form-control" placeholder="End coordinate..." />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="refSequence" class="col-sm-4 control-label">Reference</label>
+								<div class="col-sm-8">
+									<input type="text" id="refSequence"
+										data-bind="value: _reference" class="form-control"
+										placeholder="Reference Sequence..." />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="obsSequence" class="col-sm-4 control-label">Observed</label>
+								<div class="col-sm-8">
+									<input type="text" id="obsSequence"
+										data-bind="value: _observed" class="form-control"
+										placeholder="Observed Sequence..." />
+								</div>
+							</div>
+
+							<div class="alert alert-danger"
+								data-bind='visible: $root.showAlert()'>Please fill in each
+								row of the form.</div>
+
+							<div class="form-group">
+								<div class="col-sm-offset-4">
+									<button type="button" class="btn btn-primary"
+										data-bind="click: $root.addVariant">Add Variant</button>
+								</div>
+							</div>
+
+							<legend>Or upload a file..</legend>
+
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-btn"> <span
+											class="btn btn-primary btn-file"> Browse&hellip; <input
+												type="file" />
+										</span>
+										</span> <input type="text" class="form-control" readonly>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="col-sm-offset-5">
+									<button type="button" class="btn btn-primary"
+										data-bind="click: $root.uploadFile">Upload</button>
+								</div>
+							</div>
+
+							<div class="alert alert-danger"
+								data-bind='visible: $root.showFileAlert(), text: $root.fileAlertText()'></div>
+
+							<table class="table table-hover table-condensed"
+								style="font-size: 75%; margin-top: 10px; margin-bottom: 0px;">
+								<thead>
+									<tr>
+										<th>&nbsp;</th>
+										<th>Chr</th>
+										<th>+/-</th>
+										<th>Start</th>
+										<th>End</th>
+										<th>Ref</th>
+										<th>Obs</th>
+									</tr>
+								</thead>
+							</table>
+							<div class="var-input-table-wrapper">
+								<table class="table table-hover table-condensed"
+									style="font-size: 75%;">
+									<tbody data-bind="foreach: variants">
+										<tr>
+											<td><span class="glyphicon glyphicon-remove red"
+												data-bind="click: $root.removeVariant"></span></td>
+											<td data-bind="text: chromosome"></td>
+											<td data-bind="text: strand"></td>
+											<td data-bind="text: start"></td>
+											<td data-bind="text: end"></td>
+											<td data-bind="text: reference"></td>
+											<td data-bind="text: observed"></td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+
+							<div class="form-group">
+								<div class="col-sm-offset-3">
+									<button type="button" id="submitButton" class="btn btn-primary"
+										data-loading-text="Processing..."
+										data-bind="click: $root.submitVariants">Submit
+										Variants</button>
+
+									<button type="button" id="clearButton" class="btn btn-primary"
+										data-loading-text="Clear"
+										data-bind="click: $root.clearVariants">Clear</button>
+								</div>
+							</div>
+
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
-	      </div>
-	    </div>
-	  </div>
 	</div>
-	<div class="col-md-4 sidebar">
-	  <div class="panel panel-default">
-	    <div class="panel-body">
-	      <form class="form-horizontal">
-		<legend>Enter variant(s)</legend>
-		
-		<div class="form-group">
-		  <label for="chromosome" class="col-sm-2 control-label">Chrom.</label>
-
-		  <div class="col-sm-3">
-		    <select id="chromosome" data-bind="value: _chromosome, options: chroms" class="form-control selectpicker" 
-		    	style="padding-left: 8px;">
-		    </select>
-		  </div>
-
-		  <label for="strand" class="col-sm-3 control-label">Strand</label>
-		  
-		  <label for="plus" class="radio-inline col-sm-2 control-label">+
-		    <input id="plus" type="radio" value="+" name="strand" checked data-bind="checked:_strand"/>
-		  </label>
-		  <label for="minus" class="radio col-sm-2 control-label">
-		    <input id="minus" type="radio" value="-" name="strand" data-bind="checked:_strand"/>-
-		  </label>
-		</div>
-
-		<div class="form-group">
-		  <label for="startCoord" class="col-sm-4 control-label">Start</label>
-		  <div class="col-sm-8">
-		    <input type="text" id="startCoord" data-bind='value: _start, valueUpdate: "afterkeydown"' 
-			   class="form-control" placeholder="Start coordinate..." required/>
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <label for="endCoord" class="col-sm-4 control-label">End</label>
-		  <div class="col-sm-8">
-		    <input type="text" id="endCoord" data-bind="value: _end" class="form-control"
-			   placeholder="End coordinate..." />
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <label for="refSequence" class="col-sm-4 control-label">Reference</label>
-		  <div class="col-sm-8">
-		    <input type="text" id="refSequence" data-bind="value: _reference" class="form-control"
-			   placeholder="Reference Sequence..."/>
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <label for="obsSequence" class="col-sm-4 control-label">Observed</label>
-		  <div class="col-sm-8">
-		    <input type="text" id="obsSequence" data-bind="value: _observed" class="form-control"
-			   placeholder="Observed Sequence..." />
-		  </div>
-		</div>
-
-		<div class="alert alert-danger" data-bind='visible: $root.showAlert()'>Please fill in each row of the form.</div>
-
-		<div class="form-group">
-		  <div class="col-sm-offset-4">
-		    <button type="button" class="btn btn-primary" data-bind="click: $root.addVariant">Add Variant</button>
-		  </div>
-		</div>
-		
-		<legend>Or upload a file..</legend>
-		
-		<div class="form-group">
-		  <div class="col-sm-12">
-		  <div class="input-group">
-		    <span class="input-group-btn">
-		      <span class="btn btn-primary btn-file">
-    			Browse&hellip;  <input type="file"/>
-		      </span>
-		    </span>
-		    <input type="text" class="form-control" readonly>
-		  </div>
-		  </div>
-		</div>
-
-		<div class="form-group">
-		  <div class="col-sm-offset-5">
-		    <button type="button" class="btn btn-primary" data-bind="click: $root.uploadFile">Upload</button>
-		  </div>
-		</div>
-
-		<div class="alert alert-danger" data-bind='visible: $root.showFileAlert(), text: $root.fileAlertText()'></div>
-
-		<table class="table table-hover table-condensed" style="font-size:75%; margin-top: 10px; margin-bottom: 0px;">
-		  <thead>
-		    <tr>
-		      <th>&nbsp;</th>
-		      <th>Chr</th>
-		      <th>+/-</th>
-		      <th>Start</th>
-		      <th>End</th>
-		      <th>Ref</th>
-		      <th>Obs</th>
-		    </tr>
-		  </thead>
-		</table>
-		<div class="var-input-table-wrapper">
-		  <table class="table table-hover table-condensed" style="font-size: 75%;">
-		    <tbody data-bind="foreach: variants"> 
-		      <tr>
-			<td>
-			  <span class="glyphicon glyphicon-remove red" data-bind="click: $root.removeVariant"></span>
-			</td>
-			<td data-bind="text: chromosome"></td>
-			<td data-bind="text: strand"></td>
-			<td data-bind="text: start"></td>
-			<td data-bind="text: end"></td>
-			<td data-bind="text: reference"></td>
-			<td data-bind="text: observed"></td>
-		      </tr>
-		    </tbody>
-		  </table>
-
-		</div>
-
-		<div class="form-group">
-		  <div class="col-sm-offset-3">
-		    <button type="button" id="submitButton" class="btn btn-primary" 
-			    data-loading-text="Processing..." data-bind="click: $root.submitVariants">
-		      Submit Variants
-		    </button>
-		  
-		    <button type="button" id="clearButton" class="btn btn-primary" 
-			    data-loading-text="Clear" data-bind="click: $root.clearVariants">
-		      Clear
-		    </button>
-		  </div>
-		</div>
-		
-	      </form>
-	    </div>
-	  </div>
-	</div>
-      </div>
-    </div>
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="jquery.inputmask.bundle.min.js"></script>
-    <script src="bootstrap-select.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
-    <script src="mutadelic.js"></script>
-  </body>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="jquery.inputmask.bundle.min.js"></script>
+	<script src="bootstrap-select.js"></script>
+	<script
+		src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script
+		src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.0.0/knockout-min.js"></script>
+	<script src="mutadelic.js"></script>
+</body>
 </html>
